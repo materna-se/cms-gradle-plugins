@@ -1,0 +1,13 @@
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+
+    project.plugins.withId("java") {
+        java {
+            toolchain {
+                languageVersion.set(JavaLanguageVersion.of(8))
+            }
+        }
+    }
+}
