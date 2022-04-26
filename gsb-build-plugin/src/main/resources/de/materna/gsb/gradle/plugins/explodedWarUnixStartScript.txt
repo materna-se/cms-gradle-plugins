@@ -147,7 +147,7 @@ case "\$( uname )" in                #(
   NONSTOP* )        nonstop=true ;;
 esac
 
-CLASSPATH=$classpath
+CLASSPATH=\${GSB_LIB_DIR:-/opt/gsb/lib}/*:\${APP_HOME}/WEB-INF/classes:\${APP_HOME}/WEB-INF/lib-provided/*:\${APP_HOME}/WEB-INF/lib/*
 <% if ( mainClassName.startsWith('--module ') ) { %>
 MODULE_PATH=$modulePath
 <% } %>

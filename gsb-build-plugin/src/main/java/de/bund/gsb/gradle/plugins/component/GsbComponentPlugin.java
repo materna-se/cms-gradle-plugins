@@ -13,9 +13,11 @@ import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.provider.Property;
+import org.gradle.api.resources.TextResource;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.application.CreateStartScripts;
 import org.gradle.api.tasks.bundling.War;
+import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
 public class GsbComponentPlugin implements Plugin<Project> {
@@ -57,6 +59,11 @@ public class GsbComponentPlugin implements Plugin<Project> {
         });
 
         project.getPlugins().withType(WarPlugin.class, this::configureWarComponent);
+        project.getPlugins().withType(ApplicationPlugin.class, this::configureApplicationComponent);
+    }
+
+    void configureApplicationComponent(ApplicationPlugin applicationPlugin) {
+
     }
 
     void configureWarComponent(WarPlugin warPlugin) {
@@ -69,9 +76,21 @@ public class GsbComponentPlugin implements Plugin<Project> {
             warTask.set(bootWar);
 
             TaskProvider<CreateStartScripts> css = project.getTasks().register(ApplicationPlugin.TASK_START_SCRIPTS_NAME, CreateStartScripts.class, startScripts -> {
-                startScripts.getMainClass().set("org.springframework.boot.loader.WarLauncher");
+                startScripts.getMainClass().set(bootWar.flatMap(BootWar::getMainClass));
                 startScripts.setOutputDir(project.getLayout().getBuildDirectory().dir("gsbScripts").get().getAsFile());
                 startScripts.setApplicationName(extension.getName().get());
+
+                TextResource unixStartScript = project.getResources()
+                        .getText()
+                        .fromUri(getClass().getClassLoader()
+                                .getResource("de/materna/gsb/gradle/plugins/explodedWarUnixStartScript.txt"));
+                ((TemplateBasedScriptGenerator) startScripts.getUnixStartScriptGenerator()).setTemplate(unixStartScript);
+
+                TextResource windowsStartScript = project.getResources()
+                        .getText()
+                        .fromUri(getClass().getClassLoader()
+                                .getResource("de/materna/gsb/gradle/plugins/explodedWarWindowsStartScript.txt"));
+                ((TemplateBasedScriptGenerator) startScripts.getWindowsStartScriptGenerator()).setTemplate(windowsStartScript);
             });
 
             mainDistribution.contents(dist -> {

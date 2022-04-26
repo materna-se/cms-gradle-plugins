@@ -69,6 +69,7 @@ goto fail
 @rem Setup the command line
 
 set CLASSPATH=$classpath
+if defined GSB_LIB_DIR (set CLASSPATH=%GSB_LIB_DIR%;%CLASSPATH%)
 <% if ( mainClassName.startsWith('--module ') ) { %>set MODULE_PATH=$modulePath<% } %>
 
 @rem Execute ${applicationName}

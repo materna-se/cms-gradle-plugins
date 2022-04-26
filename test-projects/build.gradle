@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath "de.bund.gsb.gradle:gsb-build-plugin"
+        classpath "de.materna.gsb.tools:gsb-build-plugin"
     }
 }
 
