@@ -1,0 +1,11 @@
+buildscript {
+    dependencies {
+        classpath "de.bund.gsb.gradle:gsb-build-plugin"
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}

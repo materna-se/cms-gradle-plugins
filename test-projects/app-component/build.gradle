@@ -1,0 +1,12 @@
+plugins {
+    id "de.materna.gsb.component"
+    id "application"
+    id "maven-publish"
+}
+publishing {
+    publications {
+        myLibrary(MavenPublication) {
+            from components.java
+        }
+    }
+}

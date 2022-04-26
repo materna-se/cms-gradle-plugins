@@ -1,0 +1,19 @@
+plugins {
+    id 'java-gradle-plugin'
+    id "maven-publish"
+}
+
+group = "de.materna.gsb.tools"
+
+dependencies {
+    implementation "io.freefair.gradle:aspectj-plugin:5.3.3.3"
+}
+
+gradlePlugin {
+    plugins {
+        tracelog {
+            id = 'de.materna.gsb.tracelog'
+            implementationClass = 'de.materna.gsb.gradle.tracelog.TracelogPlugin'
+        }
+    }
+}

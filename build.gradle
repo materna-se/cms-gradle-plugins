@@ -1,6 +1,11 @@
+plugins {
+    id "io.freefair.git-version" version "5.3.3.3"
+}
+
 allprojects {
     repositories {
         mavenCentral()
+        gradlePluginPortal()
     }
 
     project.plugins.withId("java") {
@@ -8,6 +13,19 @@ allprojects {
             toolchain {
                 languageVersion.set(JavaLanguageVersion.of(8))
             }
+        }
+
+        dependencies {
+            implementation platform("org.springframework.boot:spring-boot-dependencies:2.6.7")
+        }
+
+        tasks.withType(Jar).configureEach {
+            manifest.attributes(
+                    "Implementation-Version": project.version,
+                    "Implementation-Vendor": "Materna Information & Communications SE",
+                    "Implementation-Vendor-Id": project.group,
+                    "X-Gradle-Version": gradle.gradleVersion
+            )
         }
     }
 }
