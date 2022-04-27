@@ -11,11 +11,14 @@ import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.distribution.plugins.DistributionPlugin;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.ApplicationPlugin;
+import org.gradle.api.plugins.JavaApplication;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.provider.Property;
 import org.gradle.api.resources.TextResource;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.application.CreateStartScripts;
+import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.bundling.War;
 import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
@@ -26,6 +29,8 @@ public class GsbComponentPlugin implements Plugin<Project> {
     private Distribution mainDistribution;
     private GsbComponentExtension extension;
 
+    private TaskProvider<CreateStartScripts> createStartScriptsTaskProvider;
+
     @Override
     public void apply(Project project) {
         this.project = project;
@@ -33,7 +38,6 @@ public class GsbComponentPlugin implements Plugin<Project> {
         extension = project.getExtensions().create("gsbComponent", GsbComponentExtension.class);
 
         extension.getName().convention(project.getName());
-
 
         project.getPlugins().apply(DistributionPlugin.class);
 
@@ -60,10 +64,42 @@ public class GsbComponentPlugin implements Plugin<Project> {
 
         project.getPlugins().withType(WarPlugin.class, this::configureWarComponent);
         project.getPlugins().withType(ApplicationPlugin.class, this::configureApplicationComponent);
+
+        project.afterEvaluate(p -> {
+            if (extension.getOverlay().get() && createStartScriptsTaskProvider != null) {
+                createStartScriptsTaskProvider.configure(css -> css.setEnabled(false));
+            }
+        });
+
     }
 
     void configureApplicationComponent(ApplicationPlugin applicationPlugin) {
+        JavaApplication javaApplication = project.getExtensions().getByType(JavaApplication.class);
+        javaApplication.setApplicationName(extension.getName().get());
 
+        createStartScriptsTaskProvider = project.getTasks().named(ApplicationPlugin.TASK_START_SCRIPTS_NAME, CreateStartScripts.class);
+
+        createStartScriptsTaskProvider.configure(startScripts -> {
+            startScripts.setClasspath(project.files(project.file("*")));
+
+            TextResource unixStartScript = project.getResources()
+                    .getText()
+                    .fromUri(getClass().getClassLoader().getResource("de/materna/gsb/gradle/plugins/applicationUnixStartScript.txt"));
+            TextResource windowsStartScript = project.getResources()
+                    .getText()
+                    .fromUri(getClass().getClassLoader()
+                            .getResource("de/materna/gsb/gradle/plugins/applicationWindowsStartScript.txt"));
+
+            ((TemplateBasedScriptGenerator) startScripts.getUnixStartScriptGenerator()).setTemplate(unixStartScript);
+            ((TemplateBasedScriptGenerator) startScripts.getWindowsStartScriptGenerator()).setTemplate(windowsStartScript);
+        });
+
+        project.afterEvaluate(p -> {
+            javaApplication.setApplicationName(extension.getName().get());
+            if (extension.getOverlay().get()) {
+                p.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class, jar -> jar.getArchiveAppendix().set(p.getRootProject().getName()));
+            }
+        });
     }
 
     void configureWarComponent(WarPlugin warPlugin) {
@@ -75,7 +111,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
             TaskProvider<BootWar> bootWar = project.getTasks().named("bootWar", BootWar.class);
             warTask.set(bootWar);
 
-            TaskProvider<CreateStartScripts> css = project.getTasks().register(ApplicationPlugin.TASK_START_SCRIPTS_NAME, CreateStartScripts.class, startScripts -> {
+            createStartScriptsTaskProvider = project.getTasks().register(ApplicationPlugin.TASK_START_SCRIPTS_NAME, CreateStartScripts.class, startScripts -> {
                 startScripts.getMainClass().set(bootWar.flatMap(BootWar::getMainClass));
                 startScripts.setOutputDir(project.getLayout().getBuildDirectory().dir("gsbScripts").get().getAsFile());
                 startScripts.setApplicationName(extension.getName().get());
@@ -95,7 +131,9 @@ public class GsbComponentPlugin implements Plugin<Project> {
 
             mainDistribution.contents(dist -> {
                 dist.into("bin", binSpec -> {
-                    binSpec.from(css);
+                    binSpec.from(createStartScriptsTaskProvider);
+                    //noinspection OctalInteger
+                    binSpec.setFileMode(0755);
                 });
             });
 
@@ -106,7 +144,10 @@ public class GsbComponentPlugin implements Plugin<Project> {
             p.getTasks().getByName("distZip").dependsOn(warTask);
             p.getTasks().getByName("distTar").dependsOn(warTask);
             mainDistribution.contents(distContent -> {
-                distContent.from(p.zipTree(warTask.flatMap(War::getArchiveFile)));
+                distContent.from(p.zipTree(warTask.flatMap(War::getArchiveFile)), spec -> {
+                    spec.exclude("org/springframework/boot/loader/**");
+                    spec.setIncludeEmptyDirs(false);
+                });
             });
         });
     }

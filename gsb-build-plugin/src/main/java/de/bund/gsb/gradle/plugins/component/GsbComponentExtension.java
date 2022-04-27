@@ -11,8 +11,11 @@ import javax.inject.Inject;
 public class GsbComponentExtension {
 
     private Property<String> name;
+
+    private Property<Boolean> overlay;
     @Inject
     public GsbComponentExtension(ObjectFactory objectFactory) {
         name = objectFactory.property(String.class);
+        overlay = objectFactory.property(Boolean.class).convention(false);
     }
 }
