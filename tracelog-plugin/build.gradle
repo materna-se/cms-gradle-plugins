@@ -3,8 +3,6 @@ plugins {
     id "de.materna.gsb.gsb-publishing" version "0.6.2"
 }
 
-group = "de.materna.gsb.tools"
-
 dependencies {
     implementation "io.freefair.gradle:aspectj-plugin:5.3.3.3"
 }

@@ -6,8 +6,6 @@ plugins {
     id 'io.freefair.lombok' version "5.3.3.3"
 }
 
-group = "de.materna.gsb.tools"
-
 dependencies {
     implementation 'org.aspectj:aspectjrt'
     implementation 'org.slf4j:slf4j-api'

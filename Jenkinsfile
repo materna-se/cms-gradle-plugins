@@ -26,6 +26,9 @@ pipeline {
         stage("Check") {
             steps {
                 sh "./gradlew check --continue"
+                dir('test-projects') {
+                    sh "./gradlew build -s --continue"
+                }
             }
             post {
                 always {
