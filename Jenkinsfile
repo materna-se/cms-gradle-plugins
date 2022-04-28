@@ -28,7 +28,7 @@ pipeline {
                 sh "./gradlew check --continue"
             }
             post {
-                success {
+                always {
                     junit "**/build/test-results/test/*.xml"
                     jacoco classPattern: '**/build/classes/*/main', execPattern: '**/build/jacoco/*.exec'
                     recordIssues(tools: [
