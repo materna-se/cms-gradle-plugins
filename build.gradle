@@ -30,4 +30,33 @@ allprojects {
             )
         }
     }
+
+    plugins.withId("maven-publish") {
+        publishing {
+            publications.withType(MavenPublication) {
+                pom {
+                    description = project.description
+                    inceptionYear = '2022'
+                    organization {
+                        name = 'Materna Information & Communications SE'
+                        url = 'https://materna.de'
+                    }
+                    developers {
+                        developer {
+                            id = 'lgrefer'
+                            name = 'Lars Grefer'
+                            email = 'lars.grefer@materna.de'
+                            timezone = 'Europe/Berlin'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:https://bitbucket.materna.de/scm/gsb/gsb-gradle-plugin.git'
+                        developerConnection = 'scm:git:ssh://git@bitbucket.materna.de/gsb/gsb-gradle-plugin.git'
+                        url = 'https://bitbucket.materna.de/projects/GSB/repos/gsb-gradle-plugin'
+                    }
+                }
+            }
+        }
+
+    }
 }
