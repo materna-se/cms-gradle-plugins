@@ -1,5 +1,5 @@
 plugins {
-    id "io.freefair.git-version" version "5.3.3.3"
+    id "io.freefair.git-version" version "6.4.3"
 }
 
 allprojects {

@@ -1,7 +1,7 @@
 plugins {
     id 'java-gradle-plugin'
     id "de.materna.gsb.gsb-publishing" version "0.6.2"
-    id 'io.freefair.lombok' version "5.3.3.3"
+    id 'io.freefair.lombok' version "6.4.3"
 }
 
 dependencies {
