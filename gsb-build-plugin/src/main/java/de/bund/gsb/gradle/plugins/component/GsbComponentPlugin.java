@@ -1,5 +1,7 @@
 package de.bund.gsb.gradle.plugins.component;
 
+import com.google.cloud.tools.jib.gradle.ContainerParameters;
+import com.google.cloud.tools.jib.gradle.JibExtension;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -22,6 +24,8 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.bundling.War;
 import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
+
+import java.util.List;
 
 public class GsbComponentPlugin implements Plugin<Project> {
 
@@ -64,6 +68,8 @@ public class GsbComponentPlugin implements Plugin<Project> {
 
         project.getPlugins().withType(WarPlugin.class, this::configureWarComponent);
         project.getPlugins().withType(ApplicationPlugin.class, this::configureApplicationComponent);
+
+        project.getPlugins().withId("com.google.cloud.tools.jib", this::configureJib);
 
         project.afterEvaluate(p -> {
             if (extension.getOverlay().get() && createStartScriptsTaskProvider != null) {
@@ -149,6 +155,28 @@ public class GsbComponentPlugin implements Plugin<Project> {
                     spec.setIncludeEmptyDirs(false);
                 });
             });
+        });
+    }
+
+    private void configureJib(Plugin<?> plugin) {
+        JibExtension jibExtension = project.getExtensions().getByType(JibExtension.class);
+        ContainerParameters container = jibExtension.getContainer();
+
+        jibExtension.getFrom().setImage("eclipse-temurin:11");
+        container.setCreationTime("USE_CURRENT_TIMESTAMP");
+
+        project.afterEvaluate(p -> {
+            JavaApplication javaApplication = project.getExtensions().findByType(JavaApplication.class);
+
+            if (javaApplication != null) {
+                if (container.getJvmFlags() == null || container.getJvmFlags().isEmpty()) {
+                    container.setJvmFlags((List<String>) javaApplication.getApplicationDefaultJvmArgs());
+                }
+                if (container.getMainClass() == null) {
+                    container.setMainClass(javaApplication.getMainClass().get());
+                }
+            }
+
         });
     }
 }
