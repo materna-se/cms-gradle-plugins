@@ -4,7 +4,15 @@ buildscript {
     }
 }
 
+plugins {
+    id "io.freefair.git-version" version "6.5.0.2"
+}
+
+apply plugin: "de.materna.gsb.maven-publish-repo"
+
 allprojects {
+    group = "de.materna.gsb.gradle.test"
+
     repositories {
         mavenCentral()
     }
