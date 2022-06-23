@@ -1,6 +1,5 @@
 package de.bund.gsb.gradle.plugins.maven;
 
-import io.freefair.gradle.plugins.compress.tasks.SevenZip;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
