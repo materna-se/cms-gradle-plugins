@@ -56,15 +56,8 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
             zipTask.from(repoDir);
             zipTask.dependsOn(publishAllTask);
             zipTask.setZip64(true);
-            zipTask.getArchiveAppendix().set("mavenRepo");
+            zipTask.getArchiveAppendix().set("maven-repository");
             zipTask.getDestinationDirectory().convention(project.getLayout().getBuildDirectory());
-        });
-
-        TaskProvider<SevenZip> mavenRepo7z = project.getTasks().register("mavenRepo7z", SevenZip.class, szTask -> {
-            szTask.from(repoDir);
-            szTask.dependsOn(publishAllTask);
-            szTask.getArchiveAppendix().set("mavenRepo");
-            szTask.getDestinationDirectory().convention(project.getLayout().getBuildDirectory());
         });
 
         project.getPlugins().apply("maven-publish");
@@ -72,9 +65,8 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
         PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
 
         repositoryPublication = publishing.getPublications().create("mavenRepo", MavenPublication.class, mrp -> {
-            mrp.setArtifactId(project.getName() + "-mavenRepo");
+            mrp.setArtifactId(project.getName() + "-mavenr-repository");
             mrp.artifact(mavenRepoZip);
-            mrp.artifact(mavenRepo7z);
         });
 
         project.getTasks().withType(PublishToMavenRepository.class).configureEach(ptmr -> {
