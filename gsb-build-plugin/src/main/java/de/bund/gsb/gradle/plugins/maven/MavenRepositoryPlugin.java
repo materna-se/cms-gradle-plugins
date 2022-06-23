@@ -54,6 +54,7 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
         TaskProvider<Zip> mavenRepoZip = project.getTasks().register("mavenRepoZip", Zip.class, zipTask -> {
             zipTask.from(repoDir);
             zipTask.dependsOn(publishAllTask);
+            zipTask.setZip64(true);
             zipTask.getArchiveClassifier().set("mavenRepo");
             zipTask.getDestinationDirectory().convention(project.getLayout().getBuildDirectory());
         });
