@@ -43,20 +43,24 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
         mavenRepository.setUrl(repoDir);
         mavenRepository.setName("localTemp");
 
-        cleanLocalMavenRepo = project.getTasks().register("cleanLocalMavenRepo", Delete.class, task -> {
+        cleanLocalMavenRepo = project.getTasks().register("cleanLocalTempRepository", Delete.class, task -> {
+            task.setGroup("publishing");
             task.delete(repoDir);
         });
 
-        publishAllTask = project.getTasks().register("publishToLocalMavenRepo", task -> {
+        publishAllTask = project.getTasks().register("publishToLocalTempRepository", task -> {
             task.setGroup("publishing");
+            task.setDescription("Publiziert alle Projekte in das lokale temporäre Repository");
+            task.dependsOn(cleanLocalMavenRepo);
         });
 
-        TaskProvider<Zip> mavenRepoZip = project.getTasks().register("mavenRepoZip", Zip.class, zipTask -> {
-            zipTask.from(repoDir);
-            zipTask.dependsOn(publishAllTask);
-            zipTask.setZip64(true);
-            zipTask.getArchiveAppendix().set("maven-repository");
-            zipTask.getDestinationDirectory().convention(project.getLayout().getBuildDirectory());
+        TaskProvider<Zip> mavenRepoZip = project.getTasks().register("mavenRepoZip", Zip.class, task -> {
+            task.setGroup("publishing");
+            task.from(repoDir);
+            task.dependsOn(publishAllTask);
+            task.setZip64(true);
+            task.getArchiveAppendix().set("maven-repository");
+            task.getDestinationDirectory().convention(project.getLayout().getBuildDirectory());
         });
 
         project.getPlugins().apply("maven-publish");
@@ -64,7 +68,7 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
         PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
 
         repositoryPublication = publishing.getPublications().create("mavenRepo", MavenPublication.class, mrp -> {
-            mrp.setArtifactId(project.getName() + "-mavenr-repository");
+            mrp.setArtifactId(mrp.getArtifactId() + "-maven-repository");
             mrp.artifact(mavenRepoZip);
         });
 
@@ -86,10 +90,8 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
                         .matching(ptmr -> ptmr.getRepository() == mavenRepository && ptmr.getPublication() != repositoryPublication));
             });
 
-        });
-
-        project.afterEvaluate(sp -> {
             project.getTasks().withType(PublishToMavenRepository.class).configureEach(ptmr -> {
+                ptmr.mustRunAfter(cleanLocalMavenRepo);
                 if (ptmr.getRepository() == mavenRepository) {
                     ptmr.dependsOn(cleanLocalMavenRepo);
                 }
