@@ -8,6 +8,7 @@ dependencies {
 
     implementation "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
     implementation "gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:3.2.1"
+    implementation "io.freefair.gradle:compress-plugin:6.5.0.2"
 
     testImplementation 'junit:junit:4.12'
 }

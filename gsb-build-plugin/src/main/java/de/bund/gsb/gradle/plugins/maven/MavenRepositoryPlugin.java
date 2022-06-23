@@ -1,5 +1,6 @@
 package de.bund.gsb.gradle.plugins.maven;
 
+import io.freefair.gradle.plugins.compress.tasks.SevenZip;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -41,7 +42,7 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 
         mavenRepository = repositoryFactory.createMavenRepository();
         mavenRepository.setUrl(repoDir);
-        mavenRepository.setName("localMavenRepo");
+        mavenRepository.setName("localTemp");
 
         cleanLocalMavenRepo = project.getTasks().register("cleanLocalMavenRepo", Delete.class, task -> {
             task.delete(repoDir);
@@ -55,8 +56,15 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
             zipTask.from(repoDir);
             zipTask.dependsOn(publishAllTask);
             zipTask.setZip64(true);
-            zipTask.getArchiveClassifier().set("mavenRepo");
+            zipTask.getArchiveAppendix().set("mavenRepo");
             zipTask.getDestinationDirectory().convention(project.getLayout().getBuildDirectory());
+        });
+
+        TaskProvider<SevenZip> mavenRepo7z = project.getTasks().register("mavenRepo7z", SevenZip.class, szTask -> {
+            szTask.from(repoDir);
+            szTask.dependsOn(publishAllTask);
+            szTask.getArchiveAppendix().set("mavenRepo");
+            szTask.getDestinationDirectory().convention(project.getLayout().getBuildDirectory());
         });
 
         project.getPlugins().apply("maven-publish");
@@ -64,7 +72,9 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
         PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
 
         repositoryPublication = publishing.getPublications().create("mavenRepo", MavenPublication.class, mrp -> {
+            mrp.setArtifactId(project.getName() + "-mavenRepo");
             mrp.artifact(mavenRepoZip);
+            mrp.artifact(mavenRepo7z);
         });
 
         project.getTasks().withType(PublishToMavenRepository.class).configureEach(ptmr -> {
