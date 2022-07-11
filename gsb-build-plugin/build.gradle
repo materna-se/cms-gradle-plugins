@@ -6,6 +6,7 @@ plugins {
 
 dependencies {
 
+    implementation "io.freefair.gradle:git-plugin:6.5.0.2"
     implementation "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
     implementation "gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:3.2.1"
 

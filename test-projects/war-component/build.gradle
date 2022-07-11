@@ -4,6 +4,7 @@ plugins {
     id 'io.spring.dependency-management'
     id "de.materna.gsb.component"
     id "maven-publish"
+    id "com.google.cloud.tools.jib"
 }
 
 dependencies {
@@ -12,4 +13,9 @@ dependencies {
     providedRuntime 'org.apache.tomcat.embed:tomcat-embed-jasper'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+jib {
+    from.image = "eclipse-temurin:17-jre-focal"
+    to.image = "docker-gsbos.materna.de/gsb/test/war-component:$version"
 }

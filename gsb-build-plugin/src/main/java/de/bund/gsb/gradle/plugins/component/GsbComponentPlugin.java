@@ -2,6 +2,7 @@ package de.bund.gsb.gradle.plugins.component;
 
 import com.google.cloud.tools.jib.gradle.ContainerParameters;
 import com.google.cloud.tools.jib.gradle.JibExtension;
+import org.codehaus.groovy.runtime.ProcessGroovyMethods;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -23,8 +24,11 @@ import org.gradle.api.tasks.application.CreateStartScripts;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.bundling.War;
 import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
+import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
+import java.time.Instant;
+import java.util.Arrays;
 import java.util.List;
 
 public class GsbComponentPlugin implements Plugin<Project> {
@@ -59,7 +63,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
         project.getComponents().all(softwareComponent -> {
             project.getLogger().warn("{} -> {} : {}", softwareComponent.getName(), softwareComponent.getClass(), softwareComponent);
 
-            if(softwareComponent instanceof AdhocComponentWithVariants) {
+            if (softwareComponent instanceof AdhocComponentWithVariants) {
                 ((AdhocComponentWithVariants) softwareComponent).addVariantsFromConfiguration(configuration, action -> {
 
                 });
@@ -162,8 +166,43 @@ public class GsbComponentPlugin implements Plugin<Project> {
         JibExtension jibExtension = project.getExtensions().getByType(JibExtension.class);
         ContainerParameters container = jibExtension.getContainer();
 
-        jibExtension.getFrom().setImage("eclipse-temurin:11");
+        jibExtension.getFrom().setImage(JibUtil.getBaseImage(project));
         container.setCreationTime("USE_CURRENT_TIMESTAMP");
+
+        container.getLabels().put("org.label-schema.schema-version", "1.0");
+
+        String dateString = Instant.now().toString();
+        container.getLabels().put("org.label-schema.build-date", dateString);
+        container.getLabels().put("org.opencontainers.image.created", dateString);
+
+        container.getLabels().put("org.label-schema.version", project.getVersion().toString());
+        container.getLabels().put("org.opencontainers.image.version", project.getVersion().toString());
+
+        try {
+            Process execute = ProcessGroovyMethods.execute("git rev-parse HEAD");
+            String gitSha = ProcessGroovyMethods.getText(execute).trim();
+
+            container.getLabels().put("org.label-schema.vcs-ref", gitSha);
+            container.getLabels().put("org.opencontainers.image.revision", gitSha);
+
+        } catch (Exception e) {
+            project.getLogger().warn(e.getLocalizedMessage(), e);
+        }
+
+        project.getPlugins().withType(WarPlugin.class, wp -> {
+            project.getPlugins().withType(SpringBootPlugin.class, sbp -> {
+
+                container.setAppRoot("/app");
+                container.setEntrypoint(Arrays.asList(
+                        "java",
+                        "-cp",
+                        "/app",
+                        "org.springframework.boot.loader.WarLauncher"
+                ));
+
+            });
+        });
+
 
         project.afterEvaluate(p -> {
             JavaApplication javaApplication = project.getExtensions().findByType(JavaApplication.class);

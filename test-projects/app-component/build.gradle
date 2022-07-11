@@ -2,6 +2,7 @@ plugins {
     id "de.materna.gsb.component"
     id "application"
     id "maven-publish"
+    id "com.google.cloud.tools.jib"
 }
 publishing {
     publications {
@@ -9,4 +10,17 @@ publishing {
             from components.java
         }
     }
+}
+
+application.mainClass = "de.materna.gsb.gradle.app.DemoApplication"
+
+dependencies {
+    implementation 'io.github.classgraph:classgraph:4.8.147'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+jib {
+    from.image = "eclipse-temurin:17-jre-focal"
+    to.image = "docker-gsbos.materna.de/gsb/test/app-component:$version"
 }

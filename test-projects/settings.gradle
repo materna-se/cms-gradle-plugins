@@ -2,3 +2,4 @@ includeBuild "../"
 
 include "app-component"
 include "war-component"
+include "war-component-overlay"
