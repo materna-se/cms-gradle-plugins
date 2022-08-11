@@ -24,5 +24,9 @@ gradlePlugin {
             id = 'de.materna.gsb.maven-publish-repo'
             implementationClass = 'de.bund.gsb.gradle.plugins.maven.MavenRepositoryPlugin'
         }
+        ideaDownloadJavadocs {
+            id = 'de.materna.gsb.idea-download-javadocs'
+            implementationClass = 'de.bund.gsb.gradle.plugins.idea.IdeaDownloadJavadocsPlugin'
+        }
     }
 }
