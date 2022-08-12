@@ -13,10 +13,7 @@ import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.distribution.plugins.DistributionPlugin;
 import org.gradle.api.model.ObjectFactory;
-import org.gradle.api.plugins.ApplicationPlugin;
-import org.gradle.api.plugins.JavaApplication;
-import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.WarPlugin;
+import org.gradle.api.plugins.*;
 import org.gradle.api.provider.Property;
 import org.gradle.api.resources.TextResource;
 import org.gradle.api.tasks.TaskProvider;
@@ -42,10 +39,13 @@ public class GsbComponentPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         this.project = project;
+        project.getPlugins().apply(BasePlugin.class);
         ObjectFactory objectFactory = project.getObjects();
         extension = project.getExtensions().create("gsbComponent", GsbComponentExtension.class);
 
-        extension.getName().convention(project.getName());
+        BasePluginExtension basePluginExtension = project.getExtensions().getByType(BasePluginExtension.class);
+
+        extension.getName().convention(basePluginExtension.getArchivesName());
 
         project.getPlugins().apply(DistributionPlugin.class);
 
