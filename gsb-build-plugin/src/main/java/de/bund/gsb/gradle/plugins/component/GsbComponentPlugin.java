@@ -8,19 +8,16 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
-import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.distribution.plugins.DistributionPlugin;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.*;
 import org.gradle.api.provider.Property;
-import org.gradle.api.resources.TextResource;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.application.CreateStartScripts;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.bundling.War;
-import org.gradle.jvm.application.scripts.TemplateBasedScriptGenerator;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
@@ -59,16 +56,6 @@ public class GsbComponentPlugin implements Plugin<Project> {
         configuration.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "gsb-component"));
 
         project.getArtifacts().add(configuration.getName(), project.getTasks().named("distZip"));
-
-        project.getComponents().all(softwareComponent -> {
-            project.getLogger().warn("{} -> {} : {}", softwareComponent.getName(), softwareComponent.getClass(), softwareComponent);
-
-            if (softwareComponent instanceof AdhocComponentWithVariants) {
-                ((AdhocComponentWithVariants) softwareComponent).addVariantsFromConfiguration(configuration, action -> {
-
-                });
-            }
-        });
 
         project.getPlugins().withType(WarPlugin.class, this::configureWarComponent);
         project.getPlugins().withType(ApplicationPlugin.class, this::configureApplicationComponent);

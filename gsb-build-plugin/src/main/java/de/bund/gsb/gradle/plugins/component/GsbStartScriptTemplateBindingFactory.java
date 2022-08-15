@@ -29,6 +29,11 @@ public class GsbStartScriptTemplateBindingFactory implements Transformer<Map<Str
 
         base.put("classpath", this.classpath);
 
+        String mainClassName = base.get("mainClassName");
+        if (mainClassName == null || mainClassName.isEmpty() || mainClassName.isBlank()) {
+            log.warn("Keine Main-Klasse gesetzt.");
+        }
+
         if (log.isInfoEnabled()) {
             base.entrySet().stream().map(Objects::toString).forEach(log::info);
         }
