@@ -81,6 +81,8 @@ public class GsbComponentPlugin implements Plugin<Project> {
             StartScriptUtil.disableWindowsScript(startScripts);
         });
 
+        SpringBootUtils.excludeDependenciesStarters(mainDistribution.getContents());
+
         project.afterEvaluate(p -> {
             javaApplication.setApplicationName(extension.getName().get());
             if (extension.getOverlay().get()) {
