@@ -45,7 +45,7 @@ public class SpringBootUtils {
     public static void excludeDependenciesStarters(CopySpec copySpec) {
         copySpec.eachFile(fileCopyDetails -> {
             if (fileCopyDetails.getPath().contains("lib") && isDependenciesStarter(fileCopyDetails.getFile())) {
-                log.warn("Exclude {}", fileCopyDetails.getPath());
+                log.info("Exclude {}", fileCopyDetails.getPath());
                 fileCopyDetails.exclude();
             }
         });
