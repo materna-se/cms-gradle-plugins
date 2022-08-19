@@ -32,7 +32,7 @@ public class SpringBootUtils {
             Object jarType = mainAttributes.getValue("Spring-Boot-Jar-Type");
 
             return "dependencies-starter".equals(jarType);
-        } catch (IOException e) {
+        } catch (Exception e) {
             log.warn(e.getLocalizedMessage(), e);
             return false;
         }
