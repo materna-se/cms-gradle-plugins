@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 /**
  * @see https://github.com/spring-projects/spring-boot/issues/22036
@@ -27,9 +28,13 @@ public class SpringBootUtils {
         }
 
         try (JarFile jarFile = new JarFile(file, false)) {
-            Attributes mainAttributes = jarFile.getManifest().getMainAttributes();
+            Manifest manifest = jarFile.getManifest();
 
-            Object jarType = mainAttributes.getValue("Spring-Boot-Jar-Type");
+            if (manifest == null) {
+                return false;
+            }
+
+            Object jarType = manifest.getMainAttributes().getValue("Spring-Boot-Jar-Type");
 
             return "dependencies-starter".equals(jarType);
         } catch (Exception e) {
