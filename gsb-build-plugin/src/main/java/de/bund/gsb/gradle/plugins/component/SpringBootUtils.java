@@ -33,7 +33,7 @@ public class SpringBootUtils {
 
             return "dependencies-starter".equals(jarType);
         } catch (Exception e) {
-            log.warn(e.getLocalizedMessage(), e);
+            log.warn("Fehler beim Lesen der Datei {}", file, e);
             return false;
         }
 
