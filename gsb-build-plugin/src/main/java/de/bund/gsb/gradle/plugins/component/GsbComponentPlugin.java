@@ -15,6 +15,7 @@ import org.gradle.api.distribution.plugins.DistributionPlugin;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.*;
 import org.gradle.api.provider.Property;
+import org.gradle.api.publish.PublicationContainer;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
@@ -91,6 +92,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
         createStartScriptsTaskProvider.configure(startScripts -> {
             startScripts.setUnixStartScriptGenerator(new GsbApplicationStartScriptGenerator());
             StartScriptUtil.disableWindowsScript(startScripts);
+            startScripts.setEnabled(!extension.getOverlay().get());
         });
 
         SpringBootUtils.excludeDependenciesStarters(mainDistribution.getContents());
@@ -116,18 +118,21 @@ public class GsbComponentPlugin implements Plugin<Project> {
                 startScripts.getMainClass().set(bootWar.flatMap(BootWar::getMainClass));
                 startScripts.setOutputDir(project.getLayout().getBuildDirectory().dir("gsbScripts").get().getAsFile());
                 startScripts.setApplicationName(extension.getName().get());
+                startScripts.setEnabled(!extension.getOverlay().getOrElse(false));
 
                 startScripts.setUnixStartScriptGenerator(new GsbBootWarStartScriptGenerator());
                 StartScriptUtil.disableWindowsScript(startScripts);
             });
 
-            mainDistribution.contents(dist -> {
-                dist.into("bin", binSpec -> {
-                    binSpec.from(createStartScriptsTaskProvider);
-                    //noinspection OctalInteger
-                    binSpec.setFileMode(0755);
+            if (!extension.getOverlay().getOrElse(false)) {
+                mainDistribution.contents(dist -> {
+                    dist.into("bin", binSpec -> {
+                        binSpec.from(createStartScriptsTaskProvider);
+                        //noinspection OctalInteger
+                        binSpec.setFileMode(0755);
+                    });
                 });
-            });
+            }
 
         });
 
@@ -136,10 +141,14 @@ public class GsbComponentPlugin implements Plugin<Project> {
             p.getTasks().getByName("distZip").dependsOn(warTask);
             p.getTasks().getByName("distTar").dependsOn(warTask);
             mainDistribution.contents(distContent -> {
-                distContent.from(p.zipTree(warTask.flatMap(War::getArchiveFile)), spec -> {
-                    spec.exclude("org/springframework/boot/loader/**");
-                    spec.setIncludeEmptyDirs(false);
-                });
+                if (!extension.getOverlay().getOrElse(false)) {
+                    distContent.from(p.zipTree(warTask.flatMap(War::getArchiveFile)), spec -> {
+                        spec.exclude("org/springframework/boot/loader/**");
+                        spec.setIncludeEmptyDirs(false);
+                    });
+                } else {
+                    distContent.with(project.getTasks().named("war", War.class).get());
+                }
             });
         });
     }
@@ -151,10 +160,11 @@ public class GsbComponentPlugin implements Plugin<Project> {
         javaComponent.addVariantsFromConfiguration(gsbComponents, details -> {
         });
 
-        project.getExtensions().getByType(PublishingExtension.class)
-                .getPublications().register("mavenJava", MavenPublication.class, publication -> {
-                    publication.from(javaComponent);
-                });
+        PublishingExtension publishingExtension = project.getExtensions().getByType(PublishingExtension.class);
+        PublicationContainer publications = publishingExtension.getPublications();
+        MavenPublication mavenJava = publications.maybeCreate("mavenJava", MavenPublication.class);
+
+        mavenJava.from(javaComponent);
     }
 
     private void configureJib(Plugin<?> plugin) {

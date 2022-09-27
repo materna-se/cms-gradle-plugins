@@ -8,9 +8,7 @@ plugins {
     id "com.google.cloud.tools.jib"
 }
 
-war {
-
-}
+gsbComponent.overlay = true
 
 dependencies {
     implementation platform(SpringBootPlugin.BOM_COORDINATES)
