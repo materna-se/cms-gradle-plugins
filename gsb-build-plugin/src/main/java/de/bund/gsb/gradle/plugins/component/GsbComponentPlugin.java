@@ -8,12 +8,16 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
+import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.distribution.plugins.DistributionPlugin;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.*;
 import org.gradle.api.provider.Property;
+import org.gradle.api.publish.PublishingExtension;
+import org.gradle.api.publish.maven.MavenPublication;
+import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.application.CreateStartScripts;
 import org.gradle.api.tasks.bundling.Jar;
@@ -32,6 +36,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
     private GsbComponentExtension extension;
 
     private TaskProvider<CreateStartScripts> createStartScriptsTaskProvider;
+    private Configuration gsbComponents;
 
     @Override
     public void apply(Project project) {
@@ -51,14 +56,16 @@ public class GsbComponentPlugin implements Plugin<Project> {
 
         mainDistribution.getDistributionBaseName().set(extension.getName());
 
-        Configuration configuration = project.getConfigurations().create("gsbComponents");
-        configuration.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, objectFactory.named(Bundling.class, Bundling.EXTERNAL));
-        configuration.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "gsb-component"));
+        gsbComponents = project.getConfigurations().create("gsbComponents");
+        gsbComponents.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, objectFactory.named(Bundling.class, Bundling.EXTERNAL));
+        gsbComponents.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "gsb-component"));
 
-        project.getArtifacts().add(configuration.getName(), project.getTasks().named("distZip"));
+        project.getArtifacts().add(gsbComponents.getName(), project.getTasks().named("distZip"));
 
+        project.getPlugins().withType(MavenPublishPlugin.class, this::configureMavenPublish);
         project.getPlugins().withType(WarPlugin.class, this::configureWarComponent);
         project.getPlugins().withType(ApplicationPlugin.class, this::configureApplicationComponent);
+        project.getPlugins().withId("org.springframework.boot", this::configureSpringBoot);
 
         project.getPlugins().withId("com.google.cloud.tools.jib", this::configureJib);
 
@@ -68,6 +75,11 @@ public class GsbComponentPlugin implements Plugin<Project> {
             }
         });
 
+    }
+
+    private void configureSpringBoot(Plugin<Project> plugin) {
+        project.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class, jar -> jar.getArchiveClassifier().set(""));
+        project.getTasks().named(SpringBootPlugin.BOOT_JAR_TASK_NAME, Jar.class, jar -> jar.getArchiveClassifier().set("boot"));
     }
 
     void configureApplicationComponent(ApplicationPlugin applicationPlugin) {
@@ -130,6 +142,19 @@ public class GsbComponentPlugin implements Plugin<Project> {
                 });
             });
         });
+    }
+
+    private void configureMavenPublish(MavenPublishPlugin mavenPublishPlugin) {
+        project.getPlugins().apply(JavaPlugin.class);
+
+        AdhocComponentWithVariants javaComponent = (AdhocComponentWithVariants) project.getComponents().getByName("java");
+        javaComponent.addVariantsFromConfiguration(gsbComponents, details -> {
+        });
+
+        project.getExtensions().getByType(PublishingExtension.class)
+                .getPublications().register("mavenJava", MavenPublication.class, publication -> {
+                    publication.from(javaComponent);
+                });
     }
 
     private void configureJib(Plugin<?> plugin) {
