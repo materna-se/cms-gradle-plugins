@@ -8,6 +8,8 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
+import org.gradle.api.attributes.LibraryElements;
+import org.gradle.api.attributes.Usage;
 import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
@@ -15,10 +17,6 @@ import org.gradle.api.distribution.plugins.DistributionPlugin;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.*;
 import org.gradle.api.provider.Property;
-import org.gradle.api.publish.PublicationContainer;
-import org.gradle.api.publish.PublishingExtension;
-import org.gradle.api.publish.maven.MavenPublication;
-import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.application.CreateStartScripts;
 import org.gradle.api.tasks.bundling.Jar;
@@ -38,6 +36,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
 
     private TaskProvider<CreateStartScripts> createStartScriptsTaskProvider;
     private Configuration gsbComponents;
+    private AdhocComponentWithVariants javaComponent;
 
     @Override
     public void apply(Project project) {
@@ -63,7 +62,12 @@ public class GsbComponentPlugin implements Plugin<Project> {
 
         project.getArtifacts().add(gsbComponents.getName(), project.getTasks().named("distZip"));
 
-        project.getPlugins().withType(MavenPublishPlugin.class, this::configureMavenPublish);
+        project.getPlugins().withType(JavaPlugin.class, jp -> {
+            javaComponent = (AdhocComponentWithVariants) project.getComponents().getByName("java");
+            javaComponent.addVariantsFromConfiguration(gsbComponents, details -> {
+            });
+        });
+
         project.getPlugins().withType(WarPlugin.class, this::configureWarComponent);
         project.getPlugins().withType(ApplicationPlugin.class, this::configureApplicationComponent);
         project.getPlugins().withId("org.springframework.boot", this::configureSpringBoot);
@@ -136,6 +140,18 @@ public class GsbComponentPlugin implements Plugin<Project> {
 
         });
 
+        Configuration gsbWar = project.getConfigurations().create("gsbWar");
+        gsbWar.getAttributes().attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.JAVA_RUNTIME));
+        gsbWar.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EMBEDDED));
+        gsbWar.getAttributes().attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.getObjects().named(LibraryElements.class, "war"));
+        if (extension.getOverlay().get()) {
+            gsbWar.getOutgoing().artifact(project.getTasks().named("war"));
+        } else {
+            gsbWar.getOutgoing().artifact(warTask);
+        }
+        javaComponent.addVariantsFromConfiguration(gsbWar, details -> {
+        });
+
         project.afterEvaluate(p -> {
             p.getTasks().getByName("installDist").dependsOn(warTask);
             p.getTasks().getByName("distZip").dependsOn(warTask);
@@ -151,20 +167,6 @@ public class GsbComponentPlugin implements Plugin<Project> {
                 }
             });
         });
-    }
-
-    private void configureMavenPublish(MavenPublishPlugin mavenPublishPlugin) {
-        project.getPlugins().apply(JavaPlugin.class);
-
-        AdhocComponentWithVariants javaComponent = (AdhocComponentWithVariants) project.getComponents().getByName("java");
-        javaComponent.addVariantsFromConfiguration(gsbComponents, details -> {
-        });
-
-        PublishingExtension publishingExtension = project.getExtensions().getByType(PublishingExtension.class);
-        PublicationContainer publications = publishingExtension.getPublications();
-        MavenPublication mavenJava = publications.maybeCreate("mavenJava", MavenPublication.class);
-
-        mavenJava.from(javaComponent);
     }
 
     private void configureJib(Plugin<?> plugin) {
