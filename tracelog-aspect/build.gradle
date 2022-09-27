@@ -1,7 +1,7 @@
 plugins {
     id "java-library"
-    id "io.freefair.aspectj" version "6.4.3"
-    id "io.freefair.maven-publish-java" version "6.4.3"
+    id "io.freefair.aspectj" version "6.5.1"
+    id "io.freefair.maven-publish-java" version "6.5.1"
     id "de.materna.gsb.gsb-publishing"
     id 'io.freefair.lombok'
 }
