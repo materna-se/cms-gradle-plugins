@@ -20,7 +20,9 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.application.CreateStartScripts;
 import org.gradle.api.tasks.bundling.Jar;
+import org.gradle.api.tasks.bundling.Tar;
 import org.gradle.api.tasks.bundling.War;
+import org.gradle.api.tasks.bundling.Zip;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
@@ -37,6 +39,9 @@ public class GsbComponentPlugin implements Plugin<Project> {
     private TaskProvider<CreateStartScripts> createStartScriptsTaskProvider;
     private Configuration gsbComponents;
     private AdhocComponentWithVariants javaComponent;
+
+    private TaskProvider<Zip> distZip;
+    private TaskProvider<Tar> distTar;
 
     @Override
     public void apply(Project project) {
@@ -56,11 +61,17 @@ public class GsbComponentPlugin implements Plugin<Project> {
 
         mainDistribution.getDistributionBaseName().set(extension.getName());
 
+        distZip = project.getTasks().named("distZip", Zip.class);
+        distTar = project.getTasks().named("distTar", Tar.class);
+
+        distZip.configure(task -> task.getArchiveVersion().set(""));
+        distTar.configure(task -> task.getArchiveVersion().set(""));
+
         gsbComponents = project.getConfigurations().create("gsbComponents");
         gsbComponents.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, objectFactory.named(Bundling.class, Bundling.EXTERNAL));
         gsbComponents.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "gsb-component"));
 
-        project.getArtifacts().add(gsbComponents.getName(), project.getTasks().named("distZip"));
+        project.getArtifacts().add(gsbComponents.getName(), distZip);
 
         project.getPlugins().withType(JavaPlugin.class, jp -> {
             javaComponent = (AdhocComponentWithVariants) project.getComponents().getByName("java");
@@ -154,8 +165,8 @@ public class GsbComponentPlugin implements Plugin<Project> {
 
         project.afterEvaluate(p -> {
             p.getTasks().getByName("installDist").dependsOn(warTask);
-            p.getTasks().getByName("distZip").dependsOn(warTask);
-            p.getTasks().getByName("distTar").dependsOn(warTask);
+            distZip.configure(task -> task.dependsOn(warTask));
+            distTar.configure(task -> task.dependsOn(warTask));
             mainDistribution.contents(distContent -> {
                 if (!extension.getOverlay().getOrElse(false)) {
                     distContent.from(p.zipTree(warTask.flatMap(War::getArchiveFile)), spec -> {
