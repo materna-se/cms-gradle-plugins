@@ -4,10 +4,8 @@ import com.google.cloud.tools.jib.gradle.ContainerParameters;
 import com.google.cloud.tools.jib.gradle.JibExtension;
 import de.bund.gsb.gradle.plugins.Util;
 import org.codehaus.groovy.runtime.ProcessGroovyMethods;
-import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
@@ -264,13 +262,10 @@ public class GsbComponentPlugin implements Plugin<Project> {
                     childSpec.from(extractComponents);
                     childSpec.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
 
-                    //noinspection Convert2Lambda
-                    war.doFirst(new Action<Task>() {
-                        @Override
-                        public void execute(Task t) {
-                            childSpec.exclude(element -> true);
-                        }
-                    });
+                    boolean isIntelliJSync = project.getGradle().getStartParameter().getAllInitScripts().stream()
+                            .anyMatch(initScript -> initScript.getName().equals("ijinit.gradle"));
+
+                    childSpec.exclude(element -> !isIntelliJSync);
                 });
 
             }
