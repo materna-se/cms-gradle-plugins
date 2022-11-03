@@ -2,9 +2,12 @@ package de.bund.gsb.gradle.plugins.component;
 
 import com.google.cloud.tools.jib.gradle.ContainerParameters;
 import com.google.cloud.tools.jib.gradle.JibExtension;
+import de.bund.gsb.gradle.plugins.Util;
 import org.codehaus.groovy.runtime.ProcessGroovyMethods;
+import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
@@ -14,9 +17,15 @@ import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.distribution.plugins.DistributionPlugin;
+import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.DuplicatesStrategy;
+import org.gradle.api.internal.file.copy.CopySpecInternal;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.*;
 import org.gradle.api.provider.Property;
+import org.gradle.api.tasks.Exec;
+import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.application.CreateStartScripts;
 import org.gradle.api.tasks.bundling.Jar;
@@ -26,9 +35,13 @@ import org.gradle.api.tasks.bundling.Zip;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.List;
+import java.util.jar.Manifest;
 
 public class GsbComponentPlugin implements Plugin<Project> {
 
@@ -37,11 +50,16 @@ public class GsbComponentPlugin implements Plugin<Project> {
     private GsbComponentExtension extension;
 
     private TaskProvider<CreateStartScripts> createStartScriptsTaskProvider;
-    private Configuration gsbComponents;
+    private Configuration gsbComponent;
     private AdhocComponentWithVariants javaComponent;
 
     private TaskProvider<Zip> distZip;
     private TaskProvider<Tar> distTar;
+    private TaskProvider<Sync> extractComponents;
+
+    private TaskProvider<Sync> installFullDist;
+    private TaskProvider<Exec> execFull;
+    private TaskProvider<JavaExec> javaExecFull;
 
     @Override
     public void apply(Project project) {
@@ -67,15 +85,44 @@ public class GsbComponentPlugin implements Plugin<Project> {
         distZip.configure(task -> task.getArchiveVersion().set(""));
         distTar.configure(task -> task.getArchiveVersion().set(""));
 
-        gsbComponents = project.getConfigurations().create("gsbComponents");
-        gsbComponents.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, objectFactory.named(Bundling.class, Bundling.EXTERNAL));
-        gsbComponents.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "gsb-component"));
+        gsbComponent = project.getConfigurations().create("gsbComponent");
+        gsbComponent.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, objectFactory.named(Bundling.class, Bundling.EXTERNAL));
+        gsbComponent.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "gsb-component"));
 
-        project.getArtifacts().add(gsbComponents.getName(), distZip);
+        project.getArtifacts().add(gsbComponent.getName(), distZip);
+
+        extractComponents = project.getTasks().register("extractComponents", Sync.class, task -> {
+            task.setGroup("gsb");
+            task.into(project.getLayout().getBuildDirectory().dir("gsb/components"));
+
+            for (File gsbComponent : gsbComponent) {
+                task.from(project.zipTree(gsbComponent), Util::stripFirstPathSegment);
+            }
+        });
+
+        Distribution fullDistribution = distributions.create("full");
+
+        fullDistribution.getContents().from(extractComponents);
+        fullDistribution.getContents().setDuplicatesStrategy(DuplicatesStrategy.WARN);
+        fullDistribution.getContents().with(mainDistribution.getContents());
+
+        installFullDist = project.getTasks().named("installFullDist", Sync.class);
+
+        execFull = project.getTasks().register("gsbRunFull", Exec.class, exec -> {
+            exec.setGroup("gsb");
+            exec.dependsOn(installFullDist);
+
+            File binDir = new File(installFullDist.get().getDestinationDir(), "bin");
+            exec.setExecutable(new File(binDir, extension.getName().get()));
+        });
+        javaExecFull = project.getTasks().register("gsbRunFullJava", JavaExec.class, exec -> {
+            exec.setGroup("gsb");
+            exec.dependsOn(installFullDist);
+        });
 
         project.getPlugins().withType(JavaPlugin.class, jp -> {
             javaComponent = (AdhocComponentWithVariants) project.getComponents().getByName("java");
-            javaComponent.addVariantsFromConfiguration(gsbComponents, details -> {
+            javaComponent.addVariantsFromConfiguration(gsbComponent, details -> {
             });
         });
 
@@ -111,6 +158,14 @@ public class GsbComponentPlugin implements Plugin<Project> {
         });
 
         SpringBootUtils.excludeDependenciesStarters(mainDistribution.getContents());
+
+        javaExecFull.configure(run -> {
+            ConfigurableFileCollection classpath = project.files();
+            classpath.from(new File(installFullDist.get().getDestinationDir(), "lib/*"));
+            run.setClasspath(classpath);
+
+            run.getMainClass().convention(javaApplication.getMainClass());
+        });
 
         project.afterEvaluate(p -> {
             javaApplication.setApplicationName(extension.getName().get());
@@ -151,6 +206,8 @@ public class GsbComponentPlugin implements Plugin<Project> {
 
         });
 
+        project.getConfigurations().getByName(WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME).extendsFrom(gsbComponent);
+
         Configuration gsbWar = project.getConfigurations().create("gsbWar");
         gsbWar.getAttributes().attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.JAVA_RUNTIME));
         gsbWar.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EMBEDDED));
@@ -161,6 +218,26 @@ public class GsbComponentPlugin implements Plugin<Project> {
             gsbWar.getOutgoing().artifact(warTask);
         }
         javaComponent.addVariantsFromConfiguration(gsbWar, details -> {
+        });
+
+        javaExecFull.configure(run -> {
+            ConfigurableFileCollection classpath = project.files();
+
+            classpath.from(new File(installFullDist.get().getDestinationDir(), "WEB-INF/lib-provided/*"));
+            classpath.from(new File(installFullDist.get().getDestinationDir(), "WEB-INF/lib/*"));
+            classpath.from(new File(installFullDist.get().getDestinationDir(), "WEB-INF/classes"));
+
+            run.setClasspath(classpath);
+
+            run.getMainClass().convention(project.provider(() -> {
+                File manifestFile = new File(installFullDist.get().getDestinationDir(), "META-INF/MANIFEST.MF");
+                if (manifestFile.exists()) {
+                    try (InputStream in = new FileInputStream(manifestFile)) {
+                        return new Manifest(in).getMainAttributes().getValue("Start-Class");
+                    }
+                }
+                return null;
+            }));
         });
 
         project.afterEvaluate(p -> {
@@ -177,6 +254,26 @@ public class GsbComponentPlugin implements Plugin<Project> {
                     distContent.with(project.getTasks().named("war", War.class).get());
                 }
             });
+
+            if (extension.getOverlay().get()) {
+
+                //IntelliJ verarschen, damit es die Pfade aus war-overlays auflöst.
+                project.getTasks().withType(War.class, war -> {
+                    CopySpecInternal childSpec = war.getRootSpec().addChild();
+
+                    childSpec.from(extractComponents);
+                    childSpec.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
+
+                    //noinspection Convert2Lambda
+                    war.doFirst(new Action<Task>() {
+                        @Override
+                        public void execute(Task t) {
+                            childSpec.exclude(element -> true);
+                        }
+                    });
+                });
+
+            }
         });
     }
 
