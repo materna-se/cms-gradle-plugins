@@ -3,6 +3,7 @@ package de.bund.gsb.gradle.plugins.component;
 import com.google.cloud.tools.jib.gradle.ContainerParameters;
 import com.google.cloud.tools.jib.gradle.JibExtension;
 import de.bund.gsb.gradle.plugins.Util;
+import de.bund.gsb.gradle.plugins.WarLibraryPlugin;
 import org.codehaus.groovy.runtime.ProcessGroovyMethods;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -12,6 +13,7 @@ import org.gradle.api.attributes.Category;
 import org.gradle.api.attributes.LibraryElements;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.component.AdhocComponentWithVariants;
+import org.gradle.api.component.SoftwareComponentFactory;
 import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.distribution.plugins.DistributionPlugin;
@@ -33,6 +35,7 @@ import org.gradle.api.tasks.bundling.Zip;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
@@ -42,6 +45,9 @@ import java.util.List;
 import java.util.jar.Manifest;
 
 public class GsbComponentPlugin implements Plugin<Project> {
+
+
+    private final SoftwareComponentFactory softwareComponentFactory;
 
     private Project project;
     private Distribution mainDistribution;
@@ -58,6 +64,11 @@ public class GsbComponentPlugin implements Plugin<Project> {
     private TaskProvider<Sync> installFullDist;
     private TaskProvider<Exec> execFull;
     private TaskProvider<JavaExec> javaExecFull;
+
+    @Inject
+    public GsbComponentPlugin(SoftwareComponentFactory softwareComponentFactory) {
+        this.softwareComponentFactory = softwareComponentFactory;
+    }
 
     @Override
     public void apply(Project project) {
@@ -124,6 +135,11 @@ public class GsbComponentPlugin implements Plugin<Project> {
             });
         });
 
+        AdhocComponentWithVariants gsbComponentSc = softwareComponentFactory.adhoc("gsbComponent");
+        project.getComponents().add(gsbComponentSc);
+        gsbComponentSc.addVariantsFromConfiguration(gsbComponent, details -> {
+        });
+
         project.getPlugins().withType(WarPlugin.class, this::configureWarComponent);
         project.getPlugins().withType(ApplicationPlugin.class, this::configureApplicationComponent);
         project.getPlugins().withId("org.springframework.boot", this::configureSpringBoot);
@@ -177,6 +193,10 @@ public class GsbComponentPlugin implements Plugin<Project> {
         Property<War> warTask = project.getObjects().property(War.class);
 
         warTask.convention(project.getTasks().named("war", War.class));
+
+        project.getPlugins().withId("java-library", jlp -> {
+            project.getPlugins().apply(WarLibraryPlugin.class);
+        });
 
         project.getPlugins().withId("org.springframework.boot", sbp -> {
             TaskProvider<BootWar> bootWar = project.getTasks().named("bootWar", BootWar.class);
@@ -243,14 +263,14 @@ public class GsbComponentPlugin implements Plugin<Project> {
             distZip.configure(task -> task.dependsOn(warTask));
             distTar.configure(task -> task.dependsOn(warTask));
             mainDistribution.contents(distContent -> {
-                if (!extension.getOverlay().getOrElse(false)) {
-                    distContent.from(p.zipTree(warTask.flatMap(War::getArchiveFile)), spec -> {
-                        spec.exclude("org/springframework/boot/loader/**");
-                        spec.setIncludeEmptyDirs(false);
-                    });
-                } else {
-                    distContent.with(project.getTasks().named("war", War.class).get());
-                }
+                distContent.from(p.zipTree(warTask.flatMap(War::getArchiveFile)), spec -> {
+                    spec.exclude("org/springframework/boot/loader/**");
+
+                    if (extension.getOverlay().getOrElse(false)) {
+                        spec.exclude("META-INF/MANIFEST.MF");
+                    }
+                    spec.setIncludeEmptyDirs(false);
+                });
             });
 
             if (extension.getOverlay().get()) {

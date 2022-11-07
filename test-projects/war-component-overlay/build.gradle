@@ -11,11 +11,8 @@ gsbComponent.overlay = true
 gsbComponent.name = "cae"
 
 dependencies {
-    implementation platform(SpringBootPlugin.BOM_COORDINATES)
-
     gsbComponent "de.bund.gsb.cm:cae:7.3.x-SNAPSHOT"
 
-    compileOnly 'org.springframework.boot:spring-boot-starter-web'
     implementation 'io.github.classgraph:classgraph:4.8.147'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
