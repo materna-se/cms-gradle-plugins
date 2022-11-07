@@ -20,6 +20,10 @@ gradlePlugin {
             id = 'de.materna.gsb.component'
             implementationClass = 'de.bund.gsb.gradle.plugins.component.GsbComponentPlugin'
         }
+        warLibrary {
+            id = 'de.materna.gsb.war-library'
+            implementationClass = 'de.bund.gsb.gradle.plugins.WarLibraryPlugin'
+        }
         mavenRepo {
             id = 'de.materna.gsb.maven-publish-repo'
             implementationClass = 'de.bund.gsb.gradle.plugins.maven.MavenRepositoryPlugin'
