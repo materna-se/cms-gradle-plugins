@@ -254,7 +254,12 @@ public class GsbComponentPlugin implements Plugin<Project> {
                 File manifestFile = new File(installFullDist.get().getDestinationDir(), "META-INF/MANIFEST.MF");
                 if (manifestFile.exists()) {
                     try (InputStream in = new FileInputStream(manifestFile)) {
-                        return new Manifest(in).getMainAttributes().getValue("Start-Class");
+                        String startClass = new Manifest(in).getMainAttributes().getValue("Start-Class");
+                        if (startClass == null) {
+                            run.getLogger().warn("Kein Start-Class in {} gefunden", manifestFile);
+                        } else {
+                            return startClass;
+                        }
                     }
                 }
                 return null;
