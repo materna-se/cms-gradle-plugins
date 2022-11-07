@@ -55,7 +55,6 @@ public class GsbComponentPlugin implements Plugin<Project> {
 
     private TaskProvider<CreateStartScripts> createStartScriptsTaskProvider;
     private Configuration gsbComponent;
-    private AdhocComponentWithVariants javaComponent;
 
     private TaskProvider<Zip> distZip;
     private TaskProvider<Tar> distTar;
@@ -129,16 +128,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
             exec.dependsOn(installFullDist);
         });
 
-        project.getPlugins().withType(JavaPlugin.class, jp -> {
-            javaComponent = (AdhocComponentWithVariants) project.getComponents().getByName("java");
-            javaComponent.addVariantsFromConfiguration(gsbComponent, details -> {
-            });
-        });
-
-        AdhocComponentWithVariants gsbComponentSc = softwareComponentFactory.adhoc("gsbComponent");
-        project.getComponents().add(gsbComponentSc);
-        gsbComponentSc.addVariantsFromConfiguration(gsbComponent, details -> {
-        });
+        configureSoftwareComponents();
 
         project.getPlugins().withType(WarPlugin.class, this::configureWarComponent);
         project.getPlugins().withType(ApplicationPlugin.class, this::configureApplicationComponent);
@@ -152,6 +142,18 @@ public class GsbComponentPlugin implements Plugin<Project> {
             }
         });
 
+    }
+
+    private void configureSoftwareComponents() {
+        project.getPlugins().withType(JavaPlugin.class, jp -> {
+            Util.getJavaSoftwareComponent(project).addVariantsFromConfiguration(gsbComponent, details -> {
+            });
+        });
+
+        AdhocComponentWithVariants gsbComponentSc = softwareComponentFactory.adhoc("gsbComponent");
+        project.getComponents().add(gsbComponentSc);
+        gsbComponentSc.addVariantsFromConfiguration(gsbComponent, details -> {
+        });
     }
 
     private void configureSpringBoot(Plugin<Project> plugin) {
@@ -235,7 +237,8 @@ public class GsbComponentPlugin implements Plugin<Project> {
         } else {
             gsbWar.getOutgoing().artifact(warTask);
         }
-        javaComponent.addVariantsFromConfiguration(gsbWar, details -> {
+
+        Util.getJavaSoftwareComponent(project).addVariantsFromConfiguration(gsbWar, details -> {
         });
 
         javaExecFull.configure(run -> {

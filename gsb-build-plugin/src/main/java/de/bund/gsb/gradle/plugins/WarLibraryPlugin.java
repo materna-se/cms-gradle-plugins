@@ -8,6 +8,10 @@ import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 
+/**
+ * War-Variante des {@link JavaLibraryPlugin java-library} Plugins.
+ * Fügt dem Projekt die "providedApi" Configuration hinzu.
+ */
 public class WarLibraryPlugin implements Plugin<Project> {
 
     @Override

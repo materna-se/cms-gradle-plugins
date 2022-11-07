@@ -81,7 +81,7 @@ public class MavenRepositoryPlugin implements Plugin<Project> {
 
     private void configureProject(Project project) {
         project.getPlugins().withType(MavenPublishPlugin.class, mpp -> {
-            PublishingExtension publishingExtension = project.getExtensions().findByType(PublishingExtension.class);
+            PublishingExtension publishingExtension = project.getExtensions().getByType(PublishingExtension.class);
 
             publishingExtension.getRepositories().add(mavenRepository);
 
