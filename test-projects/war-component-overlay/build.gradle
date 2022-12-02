@@ -11,7 +11,7 @@ gsbComponent.overlay = true
 gsbComponent.name = "cae"
 
 dependencies {
-    gsbComponent "de.bund.gsb.cm:cae:7.3.x-SNAPSHOT"
+    gsbComponent "de.bund.gsb.cm:cae:7.5.x-SNAPSHOT"
 
     implementation 'io.github.classgraph:classgraph:4.8.147'
 
