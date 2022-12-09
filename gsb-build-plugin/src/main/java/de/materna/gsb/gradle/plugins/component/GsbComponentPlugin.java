@@ -1,9 +1,9 @@
-package de.bund.gsb.gradle.plugins.component;
+package de.materna.gsb.gradle.plugins.component;
 
 import com.google.cloud.tools.jib.gradle.ContainerParameters;
 import com.google.cloud.tools.jib.gradle.JibExtension;
-import de.bund.gsb.gradle.plugins.Util;
-import de.bund.gsb.gradle.plugins.WarLibraryPlugin;
+import de.materna.gsb.gradle.plugins.Util;
+import de.materna.gsb.gradle.plugins.WarLibraryPlugin;
 import org.codehaus.groovy.runtime.ProcessGroovyMethods;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;

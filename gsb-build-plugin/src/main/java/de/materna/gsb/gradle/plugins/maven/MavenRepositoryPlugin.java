@@ -1,4 +1,4 @@
-package de.bund.gsb.gradle.plugins.maven;
+package de.materna.gsb.gradle.plugins.maven;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;

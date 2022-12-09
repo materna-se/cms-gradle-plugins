@@ -1,4 +1,4 @@
-package de.bund.gsb.gradle.plugins.component;
+package de.materna.gsb.gradle.plugins.component;
 
 import lombok.experimental.UtilityClass;
 import org.gradle.api.Project;

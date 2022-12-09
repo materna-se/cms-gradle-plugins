@@ -1,4 +1,4 @@
-package de.bund.gsb.gradle.plugins.component;
+package de.materna.gsb.gradle.plugins.component;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

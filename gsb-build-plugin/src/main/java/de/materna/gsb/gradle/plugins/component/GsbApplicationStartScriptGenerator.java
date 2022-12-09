@@ -1,4 +1,4 @@
-package de.bund.gsb.gradle.plugins.component;
+package de.materna.gsb.gradle.plugins.component;
 
 import org.gradle.api.internal.plugins.DefaultTemplateBasedStartScriptGenerator;
 import org.gradle.api.internal.plugins.UnixStartScriptGenerator;
