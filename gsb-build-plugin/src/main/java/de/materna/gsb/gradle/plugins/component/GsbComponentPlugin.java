@@ -173,6 +173,9 @@ public class GsbComponentPlugin implements Plugin<Project> {
             startScripts.setEnabled(!extension.getOverlay().get());
         });
 
+        project.getConfigurations().getByName(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).extendsFrom(gsbComponent);
+        project.getConfigurations().getByName(JavaPlugin.TEST_IMPLEMENTATION_CONFIGURATION_NAME).extendsFrom(gsbComponent);
+
         SpringBootUtils.excludeDependenciesStarters(mainDistribution.getContents());
 
         javaExecFull.configure(run -> {
