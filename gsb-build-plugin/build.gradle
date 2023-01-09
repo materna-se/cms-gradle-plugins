@@ -20,6 +20,10 @@ gradlePlugin {
             id = 'de.materna.gsb.component'
             implementationClass = 'de.materna.gsb.gradle.plugins.component.GsbComponentPlugin'
         }
+        componentBundle {
+            id = 'de.materna.gsb.component-bundle'
+            implementationClass = 'de.materna.gsb.gradle.plugins.component.GsbComponentBundlePlugin'
+        }
         warLibrary {
             id = 'de.materna.gsb.war-library'
             implementationClass = 'de.materna.gsb.gradle.plugins.WarLibraryPlugin'

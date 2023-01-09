@@ -9,7 +9,6 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.attributes.Bundling;
-import org.gradle.api.attributes.Category;
 import org.gradle.api.attributes.LibraryElements;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.component.AdhocComponentWithVariants;
@@ -20,7 +19,6 @@ import org.gradle.api.distribution.plugins.DistributionPlugin;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DuplicatesStrategy;
 import org.gradle.api.internal.file.copy.CopySpecInternal;
-import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.*;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Exec;
@@ -73,7 +71,6 @@ public class GsbComponentPlugin implements Plugin<Project> {
     public void apply(Project project) {
         this.project = project;
         project.getPlugins().apply(BasePlugin.class);
-        ObjectFactory objectFactory = project.getObjects();
         extension = project.getExtensions().create("gsbComponent", GsbComponentExtension.class);
 
         BasePluginExtension basePluginExtension = project.getExtensions().getByType(BasePluginExtension.class);
@@ -93,9 +90,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
         distZip.configure(task -> task.getArchiveVersion().set(""));
         distTar.configure(task -> task.getArchiveVersion().set(""));
 
-        gsbComponent = project.getConfigurations().create("gsbComponent");
-        gsbComponent.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, objectFactory.named(Bundling.class, Bundling.EXTERNAL));
-        gsbComponent.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "gsb-component"));
+        gsbComponent = GsbComponentUtil.maybeCreateGsbComponentConfiguration(project);
 
         project.getArtifacts().add(gsbComponent.getName(), distZip);
 
