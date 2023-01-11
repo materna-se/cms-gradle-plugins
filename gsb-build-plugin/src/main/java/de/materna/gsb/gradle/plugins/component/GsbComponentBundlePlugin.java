@@ -35,6 +35,8 @@ public class GsbComponentBundlePlugin implements Plugin<Project> {
         Configuration gsbComponent = GsbComponentUtil.maybeCreateGsbComponentConfiguration(project);
         Configuration gsbComponentBundle = GsbComponentUtil.maybeCreateGsbComponentBundleConfiguration(project);
 
+        gsbComponent.setTransitive(false);
+
         NamedDomainObjectProvider<Distribution> mainDistribution = project.getExtensions().getByType(DistributionContainer.class).named(DistributionPlugin.MAIN_DISTRIBUTION_NAME);
 
         mainDistribution.configure(main -> {
