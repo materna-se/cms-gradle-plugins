@@ -40,11 +40,14 @@ public class GsbComponentBundlePlugin implements Plugin<Project> {
         NamedDomainObjectProvider<Distribution> mainDistribution = project.getExtensions().getByType(DistributionContainer.class).named(DistributionPlugin.MAIN_DISTRIBUTION_NAME);
 
         mainDistribution.configure(main -> {
-            main.getContents().from(gsbComponent);
+            main.getContents().into(project.getVersion(), versionFolder -> versionFolder.from(gsbComponent));
         });
 
         TaskProvider<Zip> distZip = project.getTasks().named("distZip", Zip.class);
         TaskProvider<Tar> distTar = project.getTasks().named("distTar", Tar.class, tar -> tar.setEnabled(false));
+
+        distZip.configure(task -> task.getArchiveVersion().set(""));
+        distTar.configure(task -> task.getArchiveVersion().set(""));
 
         project.getArtifacts().add(gsbComponentBundle.getName(), distZip);
 
