@@ -21,6 +21,7 @@ import org.gradle.api.file.DuplicatesStrategy;
 import org.gradle.api.internal.file.copy.CopySpecInternal;
 import org.gradle.api.plugins.*;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Exec;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.Sync;
@@ -30,6 +31,9 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.bundling.Tar;
 import org.gradle.api.tasks.bundling.War;
 import org.gradle.api.tasks.bundling.Zip;
+import org.gradle.jvm.toolchain.JavaLauncher;
+import org.gradle.jvm.toolchain.JavaToolchainService;
+import org.gradle.jvm.toolchain.JavaToolchainSpec;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
@@ -121,6 +125,13 @@ public class GsbComponentPlugin implements Plugin<Project> {
         javaExecFull = project.getTasks().register("gsbRunFullJava", JavaExec.class, exec -> {
             exec.setGroup("gsb");
             exec.dependsOn(installFullDist);
+
+            JavaToolchainSpec defaultToolchain = project.getExtensions().getByType(JavaPluginExtension.class).getToolchain();
+
+            JavaToolchainService javaToolchainService = project.getExtensions().getByType(JavaToolchainService.class);
+            Provider<JavaLauncher> defaultJavaLauncher = javaToolchainService.launcherFor(defaultToolchain);
+
+            exec.getJavaLauncher().convention(defaultJavaLauncher);
         });
 
         configureSoftwareComponents();
