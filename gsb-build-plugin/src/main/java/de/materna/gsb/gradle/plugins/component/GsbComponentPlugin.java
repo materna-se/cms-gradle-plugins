@@ -85,7 +85,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
         mainDistribution.getDistributionBaseName().set(extension.getName());
 
         distZip = project.getTasks().named("distZip", Zip.class);
-        distTar = project.getTasks().named("distTar", Tar.class);
+        distTar = project.getTasks().named("distTar", Tar.class, tar -> tar.setEnabled(false));
 
         distZip.configure(task -> task.getArchiveVersion().set(""));
         distTar.configure(task -> task.getArchiveVersion().set(""));
