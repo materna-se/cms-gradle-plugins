@@ -167,7 +167,6 @@ public class GsbComponentPlugin implements Plugin<Project> {
     private void configureSpringBoot(Plugin<Project> plugin) {
         project.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class, jar -> jar.getArchiveClassifier().set(""));
         project.getTasks().named(SpringBootPlugin.BOOT_JAR_TASK_NAME, Jar.class, jar -> jar.getArchiveClassifier().set("boot"));
-        project.getTasks().named("bootDistTar", Tar.class, tar -> tar.setEnabled(false));
     }
 
     void configureApplicationComponent(ApplicationPlugin applicationPlugin) {
@@ -186,6 +185,10 @@ public class GsbComponentPlugin implements Plugin<Project> {
         project.getConfigurations().getByName(JavaPlugin.TEST_IMPLEMENTATION_CONFIGURATION_NAME).extendsFrom(gsbComponent);
 
         SpringBootUtils.excludeDependenciesStarters(mainDistribution.getContents());
+
+        project.getPlugins().withId("org.springframework.boot", sbp -> {
+            project.getTasks().named("bootDistTar", Tar.class, tar -> tar.setEnabled(false));
+        });
 
         javaExecFull.configure(run -> {
             ConfigurableFileCollection classpath = project.files();
