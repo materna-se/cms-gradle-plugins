@@ -1,5 +1,6 @@
 package de.materna.gsb.gradle.plugins.maven;
 
+import lombok.Getter;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -17,6 +18,7 @@ import org.gradle.api.tasks.bundling.Zip;
 
 import javax.inject.Inject;
 
+@Getter
 public class MavenRepositoryPlugin implements Plugin<Project> {
 
     private final BaseRepositoryFactory repositoryFactory;
