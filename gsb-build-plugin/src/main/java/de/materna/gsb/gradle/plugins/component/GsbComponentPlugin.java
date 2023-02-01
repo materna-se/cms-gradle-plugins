@@ -101,6 +101,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
         extractComponents = project.getTasks().register("extractComponents", Sync.class, task -> {
             task.setGroup("gsb");
             task.into(project.getLayout().getBuildDirectory().dir("gsb/components"));
+            task.getInputs().files(gsbComponent);
 
             for (File gsbComponent : gsbComponent) {
                 task.from(project.zipTree(gsbComponent), Util::stripFirstPathSegment);
