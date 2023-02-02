@@ -128,13 +128,20 @@ public class GsbComponentPlugin implements Plugin<Project> {
         javaExecFull = project.getTasks().register("gsbRunFullJava", JavaExec.class, exec -> {
             exec.setGroup("gsb");
             exec.dependsOn(installFullDist);
+            exec.setEnabled(false);
+        });
 
-            JavaToolchainSpec defaultToolchain = project.getExtensions().getByType(JavaPluginExtension.class).getToolchain();
+        project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
+            javaExecFull.configure(exec -> {
+                exec.setEnabled(true);
 
-            JavaToolchainService javaToolchainService = project.getExtensions().getByType(JavaToolchainService.class);
-            Provider<JavaLauncher> defaultJavaLauncher = javaToolchainService.launcherFor(defaultToolchain);
+                JavaToolchainSpec defaultToolchain = project.getExtensions().getByType(JavaPluginExtension.class).getToolchain();
 
-            exec.getJavaLauncher().convention(defaultJavaLauncher);
+                JavaToolchainService javaToolchainService = project.getExtensions().getByType(JavaToolchainService.class);
+                Provider<JavaLauncher> defaultJavaLauncher = javaToolchainService.launcherFor(defaultToolchain);
+
+                exec.getJavaLauncher().convention(defaultJavaLauncher);
+            });
         });
 
         configureSoftwareComponents();
