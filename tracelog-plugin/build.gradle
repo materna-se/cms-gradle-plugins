@@ -1,12 +1,10 @@
 plugins {
     id 'java-gradle-plugin'
-    id "maven-publish"
+    id "de.materna.gsb.gsb-publishing"
 }
 
-group = "de.materna.gsb.tools"
-
 dependencies {
-    implementation "io.freefair.gradle:aspectj-plugin:5.3.3.3"
+    implementation 'io.freefair.gradle:aspectj-plugin:6.6'
 }
 
 gradlePlugin {

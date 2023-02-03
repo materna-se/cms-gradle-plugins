@@ -1,12 +1,25 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
 plugins {
     id "de.materna.gsb.component"
     id "application"
-    id "maven-publish"
+    id "io.freefair.maven-publish-java"
+    id "com.google.cloud.tools.jib"
+    id 'org.springframework.boot'
 }
-publishing {
-    publications {
-        myLibrary(MavenPublication) {
-            from components.java
-        }
-    }
+
+application.mainClass = "de.materna.gsb.gradle.app.DemoApplication"
+
+dependencies {
+    implementation platform(SpringBootPlugin.BOM_COORDINATES)
+
+    implementation 'io.github.classgraph:classgraph:4.8.149'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+jib {
+    from.image = "eclipse-temurin:17-jre-focal"
+    to.image = "docker-gsbos.materna.de/gsb/test/app-component:$version"
 }

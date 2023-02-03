@@ -1,5 +1,8 @@
 plugins {
-    id "io.freefair.git-version" version "5.3.3.3"
+    id "io.freefair.git-version" version "6.6"
+    id 'io.freefair.lombok' version "6.6" apply false
+    id "de.materna.gsb.gsb-publishing" version "0.6.2" apply false
+    id 'de.materna.gsb.maven-publish-repo' version 'develop-SNAPSHOT'
 }
 
 allprojects {
@@ -8,15 +11,17 @@ allprojects {
         gradlePluginPortal()
     }
 
+    group = "de.materna.gsb.tools"
+
     project.plugins.withId("java") {
         java {
             toolchain {
-                languageVersion.set(JavaLanguageVersion.of(8))
+                languageVersion.set(JavaLanguageVersion.of(11))
             }
         }
 
         dependencies {
-            implementation platform("org.springframework.boot:spring-boot-dependencies:2.6.7")
+            implementation platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
         }
 
         tasks.withType(Jar).configureEach {
@@ -27,5 +32,34 @@ allprojects {
                     "X-Gradle-Version": gradle.gradleVersion
             )
         }
+    }
+
+    plugins.withId("maven-publish") {
+        publishing {
+            publications.withType(MavenPublication) {
+                pom {
+                    description = project.description
+                    inceptionYear = '2022'
+                    organization {
+                        name = 'Materna Information & Communications SE'
+                        url = 'https://materna.de'
+                    }
+                    developers {
+                        developer {
+                            id = 'lgrefer'
+                            name = 'Lars Grefer'
+                            email = 'lars.grefer@materna.de'
+                            timezone = 'Europe/Berlin'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:https://bitbucket.materna.de/scm/gsb/gsb-gradle-plugin.git'
+                        developerConnection = 'scm:git:ssh://git@bitbucket.materna.de/gsb/gsb-gradle-plugin.git'
+                        url = 'https://bitbucket.materna.de/projects/GSB/repos/gsb-gradle-plugin'
+                    }
+                }
+            }
+        }
+
     }
 }

@@ -1,11 +1,27 @@
 buildscript {
     dependencies {
-        classpath "de.bund.gsb.gradle:gsb-build-plugin"
+        classpath "de.materna.gsb.tools:gsb-build-plugin"
     }
 }
 
+plugins {
+    id "io.freefair.git-version" version "6.6"
+    id "io.freefair.maven-publish-java" version "6.6" apply false
+    id "de.materna.gsb.component-bundle"
+}
+
+apply plugin: "de.materna.gsb.maven-publish-repo"
+
 allprojects {
+    group = "de.materna.gsb.gradle.test"
+
     repositories {
         mavenCentral()
+        maven { url 'https://repository.coremedia.com/nexus/content/groups/cms/' }
     }
+}
+
+dependencies {
+    gsbComponent project("app-component")
+    gsbComponent project("war-component")
 }

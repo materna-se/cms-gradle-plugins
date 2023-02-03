@@ -1,0 +1,24 @@
+import org.springframework.boot.gradle.plugin.SpringBootPlugin
+
+plugins {
+    id "war"
+    id "de.materna.gsb.component"
+    id "io.freefair.maven-publish-java"
+    id "com.google.cloud.tools.jib"
+}
+
+gsbComponent.overlay = true
+gsbComponent.name = "cae"
+
+dependencies {
+    gsbComponent "de.bund.gsb.cm:cae:7.5.x-SNAPSHOT"
+
+    implementation 'io.github.classgraph:classgraph:4.8.147'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+jib {
+    from.image = "docker-gsbos.materna.de/gsb/test/war-component:$version"
+    to.image = "docker-gsbos.materna.de/gsb/test/war-component-overlay:$version"
+}

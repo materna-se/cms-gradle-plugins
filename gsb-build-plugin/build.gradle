@@ -1,23 +1,40 @@
 plugins {
     id 'java-gradle-plugin'
-    id 'io.freefair.lombok' version "5.3.3.3"
+    id "de.materna.gsb.gsb-publishing"
+    id 'io.freefair.lombok'
 }
-
-group = "de.bund.gsb.gradle"
 
 dependencies {
 
-    implementation "org.springframework.boot:spring-boot-gradle-plugin:2.6.7"
+    implementation 'io.freefair.gradle:git-plugin:6.6'
+    implementation "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
+    implementation "gradle.plugin.com.google.cloud.tools:jib-gradle-plugin:3.2.1"
 
-    testImplementation 'junit:junit:4.12'
+    testImplementation 'junit:junit:4.13.2'
 }
 
 gradlePlugin {
     // Define the plugin
     plugins {
-        greeting {
+        component {
             id = 'de.materna.gsb.component'
-            implementationClass = 'de.bund.gsb.gradle.plugins.component.GsbComponentPlugin'
+            implementationClass = 'de.materna.gsb.gradle.plugins.component.GsbComponentPlugin'
+        }
+        componentBundle {
+            id = 'de.materna.gsb.component-bundle'
+            implementationClass = 'de.materna.gsb.gradle.plugins.component.GsbComponentBundlePlugin'
+        }
+        warLibrary {
+            id = 'de.materna.gsb.war-library'
+            implementationClass = 'de.materna.gsb.gradle.plugins.WarLibraryPlugin'
+        }
+        mavenRepo {
+            id = 'de.materna.gsb.maven-publish-repo'
+            implementationClass = 'de.materna.gsb.gradle.plugins.maven.MavenRepositoryPlugin'
+        }
+        ideaDownloadJavadocs {
+            id = 'de.materna.gsb.idea-download-javadocs'
+            implementationClass = 'de.materna.gsb.gradle.plugins.idea.IdeaDownloadJavadocsPlugin'
         }
     }
 }
