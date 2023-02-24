@@ -36,5 +36,9 @@ gradlePlugin {
             id = 'de.materna.gsb.idea-download-javadocs'
             implementationClass = 'de.materna.gsb.gradle.plugins.idea.IdeaDownloadJavadocsPlugin'
         }
+        gitArchive {
+            id = 'de.materna.gsb.git-archive'
+            implementationClass = 'de.materna.gsb.gradle.plugins.git.GitArchivePlugin'
+        }
     }
 }
