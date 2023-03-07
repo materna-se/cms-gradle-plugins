@@ -328,7 +328,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
         ContainerParameters container = jibExtension.getContainer();
 
         jibExtension.getFrom().setImage(JibUtil.getBaseImage(project));
-        container.setCreationTime("USE_CURRENT_TIMESTAMP");
+        container.getCreationTime().convention("USE_CURRENT_TIMESTAMP");
 
         container.getLabels().put("org.label-schema.schema-version", "1.0");
 
