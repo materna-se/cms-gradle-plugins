@@ -11,7 +11,13 @@ public class JibUtil {
 
     Provider<String> getBaseImage(Project project) {
 
-        return project.getExtensions().getByType(JavaPluginExtension.class).getToolchain().getLanguageVersion()
+        JavaPluginExtension javaPluginExtension = project.getExtensions().findByType(JavaPluginExtension.class);
+
+        if (javaPluginExtension == null) {
+            return project.provider(() -> null);
+        }
+
+        return javaPluginExtension.getToolchain().getLanguageVersion()
                 .map(javaLanguageVersion -> {
                     if (javaLanguageVersion.asInt() <= 8) {
                         return "eclipse-temurin:8-jre";
