@@ -357,8 +357,8 @@ public class GsbComponentPlugin implements Plugin<Project> {
                 container.setEntrypoint(Arrays.asList(
                         "java",
                         "-cp",
-                        "/app",
-                        "org.springframework.boot.loader.WarLauncher"
+                        "/app/WEB-INF/classes:/app/WEB-INF/lib-provided/*:/app/WEB-INF/lib/*",
+                        "@/app/jib-main-class-file"
                 ));
 
             });
