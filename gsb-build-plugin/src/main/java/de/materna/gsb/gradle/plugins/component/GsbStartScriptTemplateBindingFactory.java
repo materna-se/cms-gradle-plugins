@@ -30,7 +30,7 @@ public class GsbStartScriptTemplateBindingFactory implements Transformer<Map<Str
         base.put("classpath", this.classpath);
 
         String mainClassName = base.get("mainClassName");
-        if (mainClassName == null || mainClassName.isEmpty() || mainClassName.isBlank()) {
+        if (mainClassName == null || mainClassName.isEmpty()) {
             log.warn("Keine Main-Klasse gesetzt.");
         }
 
