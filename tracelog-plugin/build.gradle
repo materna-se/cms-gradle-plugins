@@ -11,7 +11,7 @@ gradlePlugin {
     plugins {
         tracelog {
             id = 'de.materna.cms.tracelog'
-            implementationClass = 'de.materna.gsb.gradle.tracelog.TracelogPlugin'
+            implementationClass = 'de.materna.cms.gradle.tracelog.TracelogPlugin'
         }
     }
 }

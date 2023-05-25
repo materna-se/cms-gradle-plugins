@@ -18,27 +18,27 @@ gradlePlugin {
     plugins {
         component {
             id = 'de.materna.cms.component'
-            implementationClass = 'de.materna.gsb.gradle.plugins.component.GsbComponentPlugin'
+            implementationClass = 'de.materna.cms.gradle.plugins.component.GsbComponentPlugin'
         }
         componentBundle {
             id = 'de.materna.cms.component-bundle'
-            implementationClass = 'de.materna.gsb.gradle.plugins.component.GsbComponentBundlePlugin'
+            implementationClass = 'de.materna.cms.gradle.plugins.component.GsbComponentBundlePlugin'
         }
         warLibrary {
             id = 'de.materna.cms.war-library'
-            implementationClass = 'de.materna.gsb.gradle.plugins.WarLibraryPlugin'
+            implementationClass = 'de.materna.cms.gradle.plugins.WarLibraryPlugin'
         }
         mavenRepo {
             id = 'de.materna.cms.maven-publish-repo'
-            implementationClass = 'de.materna.gsb.gradle.plugins.maven.MavenRepositoryPlugin'
+            implementationClass = 'de.materna.cms.gradle.plugins.maven.MavenRepositoryPlugin'
         }
         ideaDownloadJavadocs {
             id = 'de.materna.cms.idea-download-javadocs'
-            implementationClass = 'de.materna.gsb.gradle.plugins.idea.IdeaDownloadJavadocsPlugin'
+            implementationClass = 'de.materna.cms.gradle.plugins.idea.IdeaDownloadJavadocsPlugin'
         }
         gitArchive {
             id = 'de.materna.cms.git-archive'
-            implementationClass = 'de.materna.gsb.gradle.plugins.git.GitArchivePlugin'
+            implementationClass = 'de.materna.cms.gradle.plugins.git.GitArchivePlugin'
         }
     }
 }

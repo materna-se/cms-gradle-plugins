@@ -53,9 +53,9 @@ allprojects {
                         }
                     }
                     scm {
-                        connection = 'scm:git:https://bitbucket.materna.de/scm/gsb/gsb-gradle-plugin.git'
-                        developerConnection = 'scm:git:ssh://git@bitbucket.materna.de/gsb/gsb-gradle-plugin.git'
-                        url = 'https://bitbucket.materna.de/projects/GSB/repos/gsb-gradle-plugin'
+                        connection = 'scm:git:https://bitbucket.materna.net/scm/gsb/cms-gradle-plugins.git'
+                        developerConnection = 'scm:git:ssh://git@bitbucket.materna.net:7999/gsb/cms-gradle-plugins.git'
+                        url = 'https://bitbucket.materna.net/projects/GSB/repos/cms-gradle-plugins'
                     }
                 }
             }

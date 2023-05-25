@@ -7,7 +7,7 @@
  * in the user manual at https://docs.gradle.org/5.6.4/userguide/multi_project_builds.html
  */
 
-rootProject.name = 'gsb-gradle-plugins'
+rootProject.name = 'cms-gradle-plugins'
 
 include "gsb-build-plugin"
 include "tracelog-aspect"
