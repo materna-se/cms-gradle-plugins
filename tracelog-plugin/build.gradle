@@ -1,6 +1,6 @@
 plugins {
     id 'java-gradle-plugin'
-    id "de.materna.gsb.gsb-publishing"
+    id "de.materna.cms.internal.gsb-publishing"
 }
 
 dependencies {
@@ -10,7 +10,7 @@ dependencies {
 gradlePlugin {
     plugins {
         tracelog {
-            id = 'de.materna.gsb.tracelog'
+            id = 'de.materna.cms.tracelog'
             implementationClass = 'de.materna.gsb.gradle.tracelog.TracelogPlugin'
         }
     }

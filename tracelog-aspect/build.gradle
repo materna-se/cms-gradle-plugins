@@ -2,7 +2,7 @@ plugins {
     id "java-library"
     id "io.freefair.aspectj" version "6.6.3"
     id "io.freefair.maven-publish-java" version "6.6.3"
-    id "de.materna.gsb.gsb-publishing"
+    id "de.materna.cms.internal.gsb-publishing"
 }
 
 dependencies {

@@ -1,7 +1,7 @@
 plugins {
     id "io.freefair.git-version" version "6.6.3"
     id 'io.freefair.lombok' version "6.6.3" apply false
-    id "de.materna.gsb.gsb-publishing" version "1.0.0-m2" apply false
+    id "de.materna.cms.internal.gsb-publishing" version "1.0.0-rc2" apply false
     id 'de.materna.gsb.maven-publish-repo' version 'develop-SNAPSHOT'
 }
 
@@ -11,7 +11,7 @@ allprojects {
         gradlePluginPortal()
     }
 
-    group = "de.materna.gsb.tools"
+    group = "de.materna.cms.tools"
 
     project.plugins.withId("java") {
         java {
@@ -48,7 +48,7 @@ allprojects {
                         developer {
                             id = 'lgrefer'
                             name = 'Lars Grefer'
-                            email = 'lars.grefer@materna.de'
+                            email = 'lars.grefer@materna.group'
                             timezone = 'Europe/Berlin'
                         }
                     }

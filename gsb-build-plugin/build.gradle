@@ -1,6 +1,6 @@
 plugins {
     id 'java-gradle-plugin'
-    id "de.materna.gsb.gsb-publishing"
+    id "de.materna.cms.internal.gsb-publishing"
     id 'io.freefair.lombok'
 }
 
@@ -17,27 +17,27 @@ gradlePlugin {
     // Define the plugin
     plugins {
         component {
-            id = 'de.materna.gsb.component'
+            id = 'de.materna.cms.component'
             implementationClass = 'de.materna.gsb.gradle.plugins.component.GsbComponentPlugin'
         }
         componentBundle {
-            id = 'de.materna.gsb.component-bundle'
+            id = 'de.materna.cms.component-bundle'
             implementationClass = 'de.materna.gsb.gradle.plugins.component.GsbComponentBundlePlugin'
         }
         warLibrary {
-            id = 'de.materna.gsb.war-library'
+            id = 'de.materna.cms.war-library'
             implementationClass = 'de.materna.gsb.gradle.plugins.WarLibraryPlugin'
         }
         mavenRepo {
-            id = 'de.materna.gsb.maven-publish-repo'
+            id = 'de.materna.cms.maven-publish-repo'
             implementationClass = 'de.materna.gsb.gradle.plugins.maven.MavenRepositoryPlugin'
         }
         ideaDownloadJavadocs {
-            id = 'de.materna.gsb.idea-download-javadocs'
+            id = 'de.materna.cms.idea-download-javadocs'
             implementationClass = 'de.materna.gsb.gradle.plugins.idea.IdeaDownloadJavadocsPlugin'
         }
         gitArchive {
-            id = 'de.materna.gsb.git-archive'
+            id = 'de.materna.cms.git-archive'
             implementationClass = 'de.materna.gsb.gradle.plugins.git.GitArchivePlugin'
         }
     }
