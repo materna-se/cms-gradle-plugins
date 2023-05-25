@@ -2,7 +2,7 @@ plugins {
     id "io.freefair.git-version"
     id 'io.freefair.lombok' apply false
     id "de.materna.cms.internal.gsb-publishing" version "1.0.0" apply false
-    id 'de.materna.gsb.maven-publish-repo' version 'develop-SNAPSHOT'
+    id 'de.materna.cms.maven-publish-repo' version '2.0.0'
 }
 
 allprojects {
