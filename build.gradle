@@ -1,7 +1,7 @@
 plugins {
-    id "io.freefair.git-version" version "6.6.3"
-    id 'io.freefair.lombok' version "6.6.3" apply false
-    id "de.materna.cms.internal.gsb-publishing" version "1.0.0-rc2" apply false
+    id "io.freefair.git-version" version "8.2.2"
+    id 'io.freefair.lombok' version "8.2.2" apply false
+    id "de.materna.cms.internal.gsb-publishing" version "1.2.2" apply false
     id 'de.materna.gsb.maven-publish-repo' version 'develop-SNAPSHOT'
 }
 
