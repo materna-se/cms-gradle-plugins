@@ -103,6 +103,8 @@ public class GsbComponentPlugin implements Plugin<Project> {
             task.into(project.getLayout().getBuildDirectory().dir("gsb/components"));
             task.getInputs().files(gsbComponent);
 
+            task.setDuplicatesStrategy(DuplicatesStrategy.WARN);
+
             for (File gsbComponent : gsbComponent) {
                 task.from(project.zipTree(gsbComponent), Util::stripFirstPathSegment);
             }
