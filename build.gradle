@@ -1,5 +1,8 @@
 plugins {
     id "io.freefair.git-version"
+    id "io.freefair.aggregate-javadoc"
+    id "io.freefair.javadocs"
+    id "io.freefair.okhttp"
     id 'io.freefair.lombok' apply false
     id "de.materna.cms.internal.gsb-publishing" version "1.0.0" apply false
     id 'de.materna.cms.maven-publish-repo' version '2.0.0'
@@ -62,4 +65,18 @@ allprojects {
         }
 
     }
+}
+
+dependencies {
+    javadoc project(":gsb-build-plugin")
+    javadoc project(":tracelog-aspect")
+    javadoc project(":tracelog-plugin")
+}
+
+task uploadDocumentation(type: io.freefair.gradle.plugins.okhttp.tasks.UploadFile) {
+    dependsOn "javadocJar"
+    username = "user"
+    password = "pGVte3FZm6HfbJ"
+    file = javadocJar.archiveFile
+    url = "http://docs.gsb.dev.materna.net/api/$project.version?path=cms-gradle-plugin"
 }
