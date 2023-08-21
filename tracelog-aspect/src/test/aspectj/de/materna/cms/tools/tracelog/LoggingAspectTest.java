@@ -6,8 +6,12 @@ package de.materna.cms.tools.tracelog;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoggingAspectTest {
+
+  private static final Logger log = LoggerFactory.getLogger(LoggingAspectTest.class);
 
   @Test
   public void testReturn() {
@@ -28,6 +32,7 @@ public class LoggingAspectTest {
     if (i > 0) {
       return returnObj(i - 1, object);
     } else {
+      log.debug("returning");
       return object;
     }
   }
