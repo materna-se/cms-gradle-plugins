@@ -2,6 +2,7 @@ package de.materna.cms.gradle.plugins.component;
 
 import com.google.cloud.tools.jib.gradle.ContainerParameters;
 import com.google.cloud.tools.jib.gradle.JibExtension;
+import com.google.cloud.tools.jib.gradle.PlatformParameters;
 import de.materna.cms.gradle.plugins.Util;
 import de.materna.cms.gradle.plugins.WarLibraryPlugin;
 import org.codehaus.groovy.runtime.ProcessGroovyMethods;
@@ -43,6 +44,7 @@ import java.io.FileInputStream;
 import java.io.InputStream;
 import java.time.Instant;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.jar.Manifest;
 
@@ -329,7 +331,15 @@ public class GsbComponentPlugin implements Plugin<Project> {
         JibExtension jibExtension = project.getExtensions().getByType(JibExtension.class);
         ContainerParameters container = jibExtension.getContainer();
 
-        jibExtension.getFrom().setImage(JibUtil.getBaseImage(project));
+        if (jibExtension.getFrom().getImage() == null) {
+            jibExtension.getFrom().setImage(JibUtil.getBaseImage(project));
+        }
+
+        PlatformParameters platformParameters = new PlatformParameters();
+        platformParameters.setArchitecture("amd64");
+        platformParameters.setOs("linux");
+        jibExtension.getFrom().getPlatforms().convention(Collections.singletonList(platformParameters));
+
         container.getCreationTime().convention("USE_CURRENT_TIMESTAMP");
 
         container.getLabels().put("org.label-schema.schema-version", "1.0");
