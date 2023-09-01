@@ -35,8 +35,6 @@ import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.jvm.toolchain.JavaLauncher;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
-import org.gradle.plugins.ide.idea.IdeaPlugin;
-import org.gradle.plugins.ide.idea.model.IdeaModel;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
@@ -50,14 +48,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.jar.Manifest;
 
-public class GsbComponentPlugin implements Plugin<Project> {
+public class CmsComponentPlugin implements Plugin<Project> {
 
 
     private final SoftwareComponentFactory softwareComponentFactory;
 
     private Project project;
     private Distribution mainDistribution;
-    private GsbComponentExtension extension;
+    private CmsComponentExtension extension;
 
     private TaskProvider<CreateStartScripts> createStartScriptsTaskProvider;
     private Configuration gsbComponent;
@@ -71,7 +69,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
     private TaskProvider<JavaExec> javaExecFull;
 
     @Inject
-    public GsbComponentPlugin(SoftwareComponentFactory softwareComponentFactory) {
+    public CmsComponentPlugin(SoftwareComponentFactory softwareComponentFactory) {
         this.softwareComponentFactory = softwareComponentFactory;
     }
 
@@ -79,7 +77,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
     public void apply(Project project) {
         this.project = project;
         project.getPlugins().apply(BasePlugin.class);
-        extension = project.getExtensions().create("gsbComponent", GsbComponentExtension.class);
+        extension = project.getExtensions().create("gsbComponent", CmsComponentExtension.class);
 
         BasePluginExtension basePluginExtension = project.getExtensions().getByType(BasePluginExtension.class);
 
@@ -98,7 +96,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
         distZip.configure(task -> task.getArchiveVersion().set(""));
         distTar.configure(task -> task.getArchiveVersion().set(""));
 
-        gsbComponent = GsbComponentUtil.maybeCreateGsbComponentConfiguration(project);
+        gsbComponent = CmsComponentUtil.maybeCreateGsbComponentConfiguration(project);
 
         project.getArtifacts().add(gsbComponent.getName(), distZip);
 
@@ -190,7 +188,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
         createStartScriptsTaskProvider = project.getTasks().named(ApplicationPlugin.TASK_START_SCRIPTS_NAME, CreateStartScripts.class);
 
         createStartScriptsTaskProvider.configure(startScripts -> {
-            startScripts.setUnixStartScriptGenerator(new GsbApplicationStartScriptGenerator());
+            startScripts.setUnixStartScriptGenerator(new CmsApplicationStartScriptGenerator());
             StartScriptUtil.disableWindowsScript(startScripts);
             startScripts.setEnabled(!extension.getOverlay().get());
         });
@@ -239,7 +237,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
                 startScripts.setApplicationName(extension.getName().get());
                 startScripts.setEnabled(!extension.getOverlay().getOrElse(false));
 
-                startScripts.setUnixStartScriptGenerator(new GsbBootWarStartScriptGenerator());
+                startScripts.setUnixStartScriptGenerator(new CmsBootWarStartScriptGenerator());
                 StartScriptUtil.disableWindowsScript(startScripts);
             });
 

@@ -21,13 +21,13 @@ import org.gradle.api.tasks.bundling.Zip;
 
 import javax.inject.Inject;
 
-public class GsbComponentBundlePlugin implements Plugin<Project> {
+public class CmsComponentBundlePlugin implements Plugin<Project> {
 
     public static final String GSB_COMPONENT_BUNDLE_PUBLICATION = "gsbComponentBundle";
     private final SoftwareComponentFactory softwareComponentFactory;
 
     @Inject
-    public GsbComponentBundlePlugin(SoftwareComponentFactory softwareComponentFactory) {
+    public CmsComponentBundlePlugin(SoftwareComponentFactory softwareComponentFactory) {
         this.softwareComponentFactory = softwareComponentFactory;
     }
 
@@ -35,8 +35,8 @@ public class GsbComponentBundlePlugin implements Plugin<Project> {
     public void apply(Project project) {
         project.getPlugins().apply(DistributionPlugin.class);
 
-        Configuration gsbComponent = GsbComponentUtil.maybeCreateGsbComponentConfiguration(project);
-        Configuration gsbComponentBundle = GsbComponentUtil.maybeCreateGsbComponentBundleConfiguration(project);
+        Configuration gsbComponent = CmsComponentUtil.maybeCreateGsbComponentConfiguration(project);
+        Configuration gsbComponentBundle = CmsComponentUtil.maybeCreateGsbComponentBundleConfiguration(project);
 
         gsbComponent.setTransitive(false);
 

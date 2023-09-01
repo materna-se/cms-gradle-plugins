@@ -8,13 +8,13 @@ import org.gradle.api.provider.Property;
 import javax.inject.Inject;
 
 @Getter
-public class GsbComponentExtension {
+public class CmsComponentExtension {
 
     private Property<String> name;
 
     private Property<Boolean> overlay;
     @Inject
-    public GsbComponentExtension(ObjectFactory objectFactory) {
+    public CmsComponentExtension(ObjectFactory objectFactory) {
         name = objectFactory.property(String.class);
         overlay = objectFactory.property(Boolean.class).convention(false);
     }

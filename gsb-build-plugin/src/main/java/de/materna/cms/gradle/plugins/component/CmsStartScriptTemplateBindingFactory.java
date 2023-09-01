@@ -11,16 +11,16 @@ import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
-public class GsbStartScriptTemplateBindingFactory implements Transformer<Map<String, String>, JavaAppStartScriptGenerationDetails> {
+public class CmsStartScriptTemplateBindingFactory implements Transformer<Map<String, String>, JavaAppStartScriptGenerationDetails> {
 
     private final String classpath;
 
-    public static GsbStartScriptTemplateBindingFactory application() {
-        return new GsbStartScriptTemplateBindingFactory("${GSB_LIB_DIR:-/opt/gsb/lib}/*:$APP_HOME/lib/*");
+    public static CmsStartScriptTemplateBindingFactory application() {
+        return new CmsStartScriptTemplateBindingFactory("${GSB_LIB_DIR:-/opt/gsb/lib}/*:$APP_HOME/lib/*");
     }
 
-    public static GsbStartScriptTemplateBindingFactory bootWar() {
-        return new GsbStartScriptTemplateBindingFactory("${GSB_LIB_DIR:-/opt/gsb/lib}/*:$APP_HOME/WEB-INF/classes:$APP_HOME/WEB-INF/lib-provided/*:$APP_HOME/WEB-INF/lib/*");
+    public static CmsStartScriptTemplateBindingFactory bootWar() {
+        return new CmsStartScriptTemplateBindingFactory("${GSB_LIB_DIR:-/opt/gsb/lib}/*:$APP_HOME/WEB-INF/classes:$APP_HOME/WEB-INF/lib-provided/*:$APP_HOME/WEB-INF/lib/*");
     }
 
     @Override

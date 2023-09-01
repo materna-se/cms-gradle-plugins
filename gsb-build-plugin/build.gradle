@@ -18,11 +18,11 @@ gradlePlugin {
     plugins {
         component {
             id = 'de.materna.cms.component'
-            implementationClass = 'de.materna.cms.gradle.plugins.component.GsbComponentPlugin'
+            implementationClass = 'de.materna.cms.gradle.plugins.component.CmsComponentPlugin'
         }
         componentBundle {
             id = 'de.materna.cms.component-bundle'
-            implementationClass = 'de.materna.cms.gradle.plugins.component.GsbComponentBundlePlugin'
+            implementationClass = 'de.materna.cms.gradle.plugins.component.CmsComponentBundlePlugin'
         }
         warLibrary {
             id = 'de.materna.cms.war-library'

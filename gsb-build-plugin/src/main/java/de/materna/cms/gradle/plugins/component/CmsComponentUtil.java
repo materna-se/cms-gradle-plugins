@@ -8,7 +8,7 @@ import org.gradle.api.attributes.Category;
 import org.gradle.api.model.ObjectFactory;
 
 @UtilityClass
-public class GsbComponentUtil {
+public class CmsComponentUtil {
 
     public static Configuration maybeCreateGsbComponentConfiguration(Project project) {
         Configuration gsbComponent = project.getConfigurations().maybeCreate("gsbComponent");
