@@ -35,6 +35,8 @@ import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.jvm.toolchain.JavaLauncher;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
+import org.gradle.plugins.ide.idea.IdeaPlugin;
+import org.gradle.plugins.ide.idea.model.IdeaModel;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
@@ -318,7 +320,7 @@ public class GsbComponentPlugin implements Plugin<Project> {
                     childSpec.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
 
                     boolean isIntelliJSync = project.getGradle().getStartParameter().getAllInitScripts().stream()
-                            .anyMatch(initScript -> initScript.getName().equals("ijinit.gradle"));
+                            .anyMatch(initScript -> initScript.getName().equals("ijMapper1.gradle"));
 
                     childSpec.exclude(element -> !isIntelliJSync);
                 });
