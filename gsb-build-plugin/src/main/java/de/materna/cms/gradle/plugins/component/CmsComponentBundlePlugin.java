@@ -23,7 +23,7 @@ import javax.inject.Inject;
 
 public class CmsComponentBundlePlugin implements Plugin<Project> {
 
-    public static final String GSB_COMPONENT_BUNDLE_PUBLICATION = "gsbComponentBundle";
+    public static final String CMS_COMPONENT_BUNDLE_PUBLICATION = "cmsComponentBundle";
     private final SoftwareComponentFactory softwareComponentFactory;
 
     @Inject
@@ -35,15 +35,15 @@ public class CmsComponentBundlePlugin implements Plugin<Project> {
     public void apply(Project project) {
         project.getPlugins().apply(DistributionPlugin.class);
 
-        Configuration gsbComponent = CmsComponentUtil.maybeCreateGsbComponentConfiguration(project);
-        Configuration gsbComponentBundle = CmsComponentUtil.maybeCreateGsbComponentBundleConfiguration(project);
+        Configuration cmsComponent = CmsComponentUtil.maybeCreateCmsComponentConfiguration(project);
+        Configuration cmsComponentBundle = CmsComponentUtil.maybeCreateCmsComponentBundleConfiguration(project);
 
-        gsbComponent.setTransitive(false);
+        cmsComponent.setTransitive(false);
 
         NamedDomainObjectProvider<Distribution> mainDistribution = project.getExtensions().getByType(DistributionContainer.class).named(DistributionPlugin.MAIN_DISTRIBUTION_NAME);
 
         mainDistribution.configure(main -> {
-            main.getContents().into(project.getVersion(), versionFolder -> versionFolder.from(gsbComponent));
+            main.getContents().into(project.getVersion(), versionFolder -> versionFolder.from(cmsComponent));
         });
 
         TaskProvider<Zip> distZip = project.getTasks().named("distZip", Zip.class);
@@ -52,26 +52,26 @@ public class CmsComponentBundlePlugin implements Plugin<Project> {
         distZip.configure(task -> task.getArchiveVersion().set(""));
         distTar.configure(task -> task.getArchiveVersion().set(""));
 
-        project.getArtifacts().add(gsbComponentBundle.getName(), distZip);
+        project.getArtifacts().add(cmsComponentBundle.getName(), distZip);
 
-        AdhocComponentWithVariants gsbComponentSc = softwareComponentFactory.adhoc("gsbComponentBundle");
-        project.getComponents().add(gsbComponentSc);
-        gsbComponentSc.addVariantsFromConfiguration(gsbComponentBundle, details -> {
+        AdhocComponentWithVariants cmsComponentSc = softwareComponentFactory.adhoc("cmsComponentBundle");
+        project.getComponents().add(cmsComponentSc);
+        cmsComponentSc.addVariantsFromConfiguration(cmsComponentBundle, details -> {
         });
 
         project.getPlugins().withType(MavenPublishPlugin.class, mpp -> {
 
             PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
 
-            publishing.getPublications().register(GSB_COMPONENT_BUNDLE_PUBLICATION, MavenPublication.class, mavenPublication -> {
-                mavenPublication.from(gsbComponentSc);
+            publishing.getPublications().register(CMS_COMPONENT_BUNDLE_PUBLICATION, MavenPublication.class, mavenPublication -> {
+                mavenPublication.from(cmsComponentSc);
             });
 
         });
 
         project.getPlugins().withType(MavenRepositoryPlugin.class, mavenRepositoryPlugin -> {
             project.getTasks().withType(PublishToMavenRepository.class, publish -> {
-                publish.onlyIf(t -> !(publish.getRepository() == mavenRepositoryPlugin.getMavenRepository() && publish.getPublication().getName().equals(GSB_COMPONENT_BUNDLE_PUBLICATION)));
+                publish.onlyIf(t -> !(publish.getRepository() == mavenRepositoryPlugin.getMavenRepository() && publish.getPublication().getName().equals(CMS_COMPONENT_BUNDLE_PUBLICATION)));
             });
         });
 

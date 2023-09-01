@@ -10,24 +10,24 @@ import org.gradle.api.model.ObjectFactory;
 @UtilityClass
 public class CmsComponentUtil {
 
-    public static Configuration maybeCreateGsbComponentConfiguration(Project project) {
-        Configuration gsbComponent = project.getConfigurations().maybeCreate("gsbComponent");
+    public static Configuration maybeCreateCmsComponentConfiguration(Project project) {
+        Configuration gsbComponent = project.getConfigurations().maybeCreate("cmsComponent");
 
         ObjectFactory objectFactory = project.getObjects();
 
         gsbComponent.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, objectFactory.named(Bundling.class, Bundling.EXTERNAL));
-        gsbComponent.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "gsb-component"));
+        gsbComponent.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "cms-component"));
 
         return gsbComponent;
     }
 
-    public static Configuration maybeCreateGsbComponentBundleConfiguration(Project project) {
-        Configuration gsbComponent = project.getConfigurations().maybeCreate("gsbComponentBundle");
+    public static Configuration maybeCreateCmsComponentBundleConfiguration(Project project) {
+        Configuration gsbComponent = project.getConfigurations().maybeCreate("cmsComponentBundle");
 
         ObjectFactory objectFactory = project.getObjects();
 
         gsbComponent.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, objectFactory.named(Bundling.class, Bundling.EMBEDDED));
-        gsbComponent.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "gsb-component-bundle"));
+        gsbComponent.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "cms-component-bundle"));
 
         return gsbComponent;
     }

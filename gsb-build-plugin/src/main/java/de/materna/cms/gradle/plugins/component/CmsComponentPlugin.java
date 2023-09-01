@@ -58,7 +58,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
     private CmsComponentExtension extension;
 
     private TaskProvider<CreateStartScripts> createStartScriptsTaskProvider;
-    private Configuration gsbComponent;
+    private Configuration cmsComponent;
 
     private TaskProvider<Zip> distZip;
     private TaskProvider<Tar> distTar;
@@ -77,7 +77,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
     public void apply(Project project) {
         this.project = project;
         project.getPlugins().apply(BasePlugin.class);
-        extension = project.getExtensions().create("gsbComponent", CmsComponentExtension.class);
+        extension = project.getExtensions().create("cmsComponent", CmsComponentExtension.class);
 
         BasePluginExtension basePluginExtension = project.getExtensions().getByType(BasePluginExtension.class);
 
@@ -96,19 +96,19 @@ public class CmsComponentPlugin implements Plugin<Project> {
         distZip.configure(task -> task.getArchiveVersion().set(""));
         distTar.configure(task -> task.getArchiveVersion().set(""));
 
-        gsbComponent = CmsComponentUtil.maybeCreateGsbComponentConfiguration(project);
+        cmsComponent = CmsComponentUtil.maybeCreateCmsComponentConfiguration(project);
 
-        project.getArtifacts().add(gsbComponent.getName(), distZip);
+        project.getArtifacts().add(cmsComponent.getName(), distZip);
 
         extractComponents = project.getTasks().register("extractComponents", Sync.class, task -> {
-            task.setGroup("gsb");
-            task.into(project.getLayout().getBuildDirectory().dir("gsb/components"));
-            task.getInputs().files(gsbComponent);
+            task.setGroup("cms");
+            task.into(project.getLayout().getBuildDirectory().dir("cms/components"));
+            task.getInputs().files(cmsComponent);
 
             task.setDuplicatesStrategy(DuplicatesStrategy.WARN);
 
-            for (File gsbComponent : gsbComponent) {
-                task.from(project.zipTree(gsbComponent), Util::stripFirstPathSegment);
+            for (File cmsComponent : cmsComponent) {
+                task.from(project.zipTree(cmsComponent), Util::stripFirstPathSegment);
             }
         });
 
@@ -122,15 +122,15 @@ public class CmsComponentPlugin implements Plugin<Project> {
 
         installFullDist = project.getTasks().named("installFullDist", Sync.class);
 
-        execFull = project.getTasks().register("gsbRunFull", Exec.class, exec -> {
-            exec.setGroup("gsb");
+        execFull = project.getTasks().register("cmsRunFull", Exec.class, exec -> {
+            exec.setGroup("cms");
             exec.dependsOn(installFullDist);
 
             File binDir = new File(installFullDist.get().getDestinationDir(), "bin");
             exec.setExecutable(new File(binDir, extension.getName().get()));
         });
-        javaExecFull = project.getTasks().register("gsbRunFullJava", JavaExec.class, exec -> {
-            exec.setGroup("gsb");
+        javaExecFull = project.getTasks().register("cmsRunFullJava", JavaExec.class, exec -> {
+            exec.setGroup("cms");
             exec.dependsOn(installFullDist);
             exec.setEnabled(false);
         });
@@ -166,13 +166,13 @@ public class CmsComponentPlugin implements Plugin<Project> {
 
     private void configureSoftwareComponents() {
         project.getPlugins().withType(JavaPlugin.class, jp -> {
-            Util.getJavaSoftwareComponent(project).addVariantsFromConfiguration(gsbComponent, details -> {
+            Util.getJavaSoftwareComponent(project).addVariantsFromConfiguration(cmsComponent, details -> {
             });
         });
 
-        AdhocComponentWithVariants gsbComponentSc = softwareComponentFactory.adhoc("gsbComponent");
-        project.getComponents().add(gsbComponentSc);
-        gsbComponentSc.addVariantsFromConfiguration(gsbComponent, details -> {
+        AdhocComponentWithVariants cmsComponentSc = softwareComponentFactory.adhoc("cmsComponent");
+        project.getComponents().add(cmsComponentSc);
+        cmsComponentSc.addVariantsFromConfiguration(cmsComponent, details -> {
         });
     }
 
@@ -193,8 +193,8 @@ public class CmsComponentPlugin implements Plugin<Project> {
             startScripts.setEnabled(!extension.getOverlay().get());
         });
 
-        project.getConfigurations().getByName(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).extendsFrom(gsbComponent);
-        project.getConfigurations().getByName(JavaPlugin.TEST_IMPLEMENTATION_CONFIGURATION_NAME).extendsFrom(gsbComponent);
+        project.getConfigurations().getByName(JavaPlugin.COMPILE_ONLY_CONFIGURATION_NAME).extendsFrom(cmsComponent);
+        project.getConfigurations().getByName(JavaPlugin.TEST_IMPLEMENTATION_CONFIGURATION_NAME).extendsFrom(cmsComponent);
 
         SpringBootUtils.excludeDependenciesStarters(mainDistribution.getContents());
 
@@ -233,7 +233,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
 
             createStartScriptsTaskProvider = project.getTasks().register(ApplicationPlugin.TASK_START_SCRIPTS_NAME, CreateStartScripts.class, startScripts -> {
                 startScripts.getMainClass().set(bootWar.flatMap(BootWar::getMainClass));
-                startScripts.setOutputDir(project.getLayout().getBuildDirectory().dir("gsbScripts").get().getAsFile());
+                startScripts.setOutputDir(project.getLayout().getBuildDirectory().dir("cmsScripts").get().getAsFile());
                 startScripts.setApplicationName(extension.getName().get());
                 startScripts.setEnabled(!extension.getOverlay().getOrElse(false));
 
@@ -253,19 +253,19 @@ public class CmsComponentPlugin implements Plugin<Project> {
 
         });
 
-        project.getConfigurations().getByName(WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME).extendsFrom(gsbComponent);
+        project.getConfigurations().getByName(WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME).extendsFrom(cmsComponent);
 
-        Configuration gsbWar = project.getConfigurations().create("gsbWar");
-        gsbWar.getAttributes().attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.JAVA_RUNTIME));
-        gsbWar.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EMBEDDED));
-        gsbWar.getAttributes().attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.getObjects().named(LibraryElements.class, "war"));
+        Configuration cmsWar = project.getConfigurations().create("cmsWar");
+        cmsWar.getAttributes().attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.JAVA_RUNTIME));
+        cmsWar.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EMBEDDED));
+        cmsWar.getAttributes().attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.getObjects().named(LibraryElements.class, "war"));
         if (extension.getOverlay().get()) {
-            gsbWar.getOutgoing().artifact(project.getTasks().named("war"));
+            cmsWar.getOutgoing().artifact(project.getTasks().named("war"));
         } else {
-            gsbWar.getOutgoing().artifact(warTask);
+            cmsWar.getOutgoing().artifact(warTask);
         }
 
-        Util.getJavaSoftwareComponent(project).addVariantsFromConfiguration(gsbWar, details -> {
+        Util.getJavaSoftwareComponent(project).addVariantsFromConfiguration(cmsWar, details -> {
         });
 
         javaExecFull.configure(run -> {
