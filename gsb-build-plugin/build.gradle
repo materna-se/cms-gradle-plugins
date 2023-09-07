@@ -40,17 +40,5 @@ gradlePlugin {
             id = 'de.materna.cms.git-archive'
             implementationClass = 'de.materna.cms.gradle.plugins.git.GitArchivePlugin'
         }
-        ciJavaLogs {
-            id = 'de.materna.cms.ci.java-logs'
-            implementationClass = 'de.materna.cms.gradle.plugins.ci.JavaLogsPlugin'
-        }
-        ciJavaLogsSettings {
-            id = 'de.materna.cms.ci.java-logs-settings'
-            implementationClass = 'de.materna.cms.gradle.plugins.ci.JavaLogsSettingsPlugin'
-        }
-        ciJavaLogsInit {
-            id = 'de.materna.cms.ci.java-logs-init'
-            implementationClass = 'de.materna.cms.gradle.plugins.ci.JavaLogsInitPlugin'
-        }
     }
 }
