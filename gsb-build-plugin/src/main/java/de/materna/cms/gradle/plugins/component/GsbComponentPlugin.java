@@ -5,6 +5,7 @@ import com.google.cloud.tools.jib.gradle.JibExtension;
 import com.google.cloud.tools.jib.gradle.PlatformParameters;
 import de.materna.cms.gradle.plugins.Util;
 import de.materna.cms.gradle.plugins.WarLibraryPlugin;
+import de.materna.cms.gradle.plugins.idea.IdeaUtils;
 import org.codehaus.groovy.runtime.ProcessGroovyMethods;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -19,7 +20,6 @@ import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.distribution.plugins.DistributionPlugin;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.DuplicatesStrategy;
-import org.gradle.api.internal.file.copy.CopySpecInternal;
 import org.gradle.api.plugins.*;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
@@ -35,8 +35,6 @@ import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.jvm.toolchain.JavaLauncher;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
-import org.gradle.plugins.ide.idea.IdeaPlugin;
-import org.gradle.plugins.ide.idea.model.IdeaModel;
 import org.springframework.boot.gradle.plugin.SpringBootPlugin;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
@@ -310,21 +308,12 @@ public class GsbComponentPlugin implements Plugin<Project> {
                 });
             });
 
-            if (extension.getOverlay().get()) {
+            //IntelliJ verarschen, damit es die Pfade aus war-overlays auflöst.
+            if (extension.getOverlay().get() && IdeaUtils.isIntellJSync(project)) {
 
-                //IntelliJ verarschen, damit es die Pfade aus war-overlays auflöst.
                 project.getTasks().withType(War.class, war -> {
-                    CopySpecInternal childSpec = war.getRootSpec().addChild();
-
-                    childSpec.from(extractComponents);
-                    childSpec.setDuplicatesStrategy(DuplicatesStrategy.INCLUDE);
-
-                    boolean isIntelliJSync = project.getGradle().getStartParameter().getAllInitScripts().stream()
-                            .anyMatch(initScript -> initScript.getName().equals("ijMapper1.gradle"));
-
-                    childSpec.exclude(element -> !isIntelliJSync);
+                    war.from(extractComponents);
                 });
-
             }
         });
     }
