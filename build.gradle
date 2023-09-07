@@ -19,12 +19,8 @@ allprojects {
     project.plugins.withId("java") {
         java {
             toolchain {
-                languageVersion.set(JavaLanguageVersion.of(8))
+                languageVersion.set(JavaLanguageVersion.of(11))
             }
-        }
-
-        dependencies {
-            implementation platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
         }
 
         tasks.withType(Jar).configureEach {
