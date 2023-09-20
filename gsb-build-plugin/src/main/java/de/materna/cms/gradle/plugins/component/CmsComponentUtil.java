@@ -11,24 +11,24 @@ import org.gradle.api.model.ObjectFactory;
 public class CmsComponentUtil {
 
     public static Configuration maybeCreateCmsComponentConfiguration(Project project) {
-        Configuration gsbComponent = project.getConfigurations().maybeCreate("cmsComponent");
+        Configuration cmsComponent = project.getConfigurations().maybeCreate("cmsComponent");
 
         ObjectFactory objectFactory = project.getObjects();
 
-        gsbComponent.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, objectFactory.named(Bundling.class, Bundling.EXTERNAL));
-        gsbComponent.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "cms-component"));
+        cmsComponent.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, objectFactory.named(Bundling.class, Bundling.EXTERNAL));
+        cmsComponent.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "cms-component"));
 
-        return gsbComponent;
+        return cmsComponent;
     }
 
     public static Configuration maybeCreateCmsComponentBundleConfiguration(Project project) {
-        Configuration gsbComponent = project.getConfigurations().maybeCreate("cmsComponentBundle");
+        Configuration cmsComponentBundle = project.getConfigurations().maybeCreate("cmsComponentBundle");
 
         ObjectFactory objectFactory = project.getObjects();
 
-        gsbComponent.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, objectFactory.named(Bundling.class, Bundling.EMBEDDED));
-        gsbComponent.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "cms-component-bundle"));
+        cmsComponentBundle.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, objectFactory.named(Bundling.class, Bundling.EMBEDDED));
+        cmsComponentBundle.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "cms-component-bundle"));
 
-        return gsbComponent;
+        return cmsComponentBundle;
     }
 }
