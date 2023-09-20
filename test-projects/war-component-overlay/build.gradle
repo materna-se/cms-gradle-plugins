@@ -19,6 +19,6 @@ dependencies {
 }
 
 jib {
-    from.image = "docker-gsbos.materna.de/gsb/test/war-component:$version"
-    to.image = "docker-gsbos.materna.de/gsb/test/war-component-overlay:$version"
+    from.image = "docker-gsbos.materna.de/cms/test/war-component:$version"
+    to.image = "docker-gsbos.materna.de/cms/test/war-component-overlay:$version"
 }

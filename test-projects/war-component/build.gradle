@@ -22,5 +22,5 @@ dependencies {
 
 jib {
     from.image = "eclipse-temurin:17-jre-focal"
-    to.image = "docker-gsbos.materna.de/gsb/test/war-component:$version"
+    to.image = "docker-gsbos.materna.de/cms/test/war-component:$version"
 }
