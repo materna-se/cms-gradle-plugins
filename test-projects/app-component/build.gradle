@@ -8,7 +8,7 @@ plugins {
     id 'org.springframework.boot'
 }
 
-application.mainClass = "de.materna.gsb.gradle.app.DemoApplication"
+application.mainClass = "de.materna.cms.gradle.app.DemoApplication"
 
 dependencies {
     implementation platform(SpringBootPlugin.BOM_COORDINATES)

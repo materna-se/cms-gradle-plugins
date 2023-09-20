@@ -1,4 +1,4 @@
-package de.materna.gsb.gradle.war;
+package de.materna.cms.gradle.war;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

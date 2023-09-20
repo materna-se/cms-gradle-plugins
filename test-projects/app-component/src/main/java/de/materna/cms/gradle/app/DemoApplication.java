@@ -1,4 +1,4 @@
-package de.materna.gsb.gradle.app;
+package de.materna.cms.gradle.app;
 
 import io.github.classgraph.ScanResult;
 

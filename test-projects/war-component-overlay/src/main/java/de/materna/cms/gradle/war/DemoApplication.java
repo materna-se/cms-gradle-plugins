@@ -1,4 +1,4 @@
-package de.materna.gsb.gradle.war;
+package de.materna.cms.gradle.war;
 
 import de.materna.cms.cae.util.CMUtil;
 import org.springframework.boot.SpringApplication;
