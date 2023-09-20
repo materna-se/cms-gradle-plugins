@@ -1,4 +1,7 @@
 pipeline {
+    agent {
+        label 'gsb'
+    }
 
     options {
         disableConcurrentBuilds() //Maximal ein Build pro Branch zur gleichen Zeit
