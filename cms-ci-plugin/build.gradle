@@ -1,0 +1,31 @@
+plugins {
+    id 'java-gradle-plugin'
+    id "de.materna.cms.internal.gsb-publishing"
+    id 'io.freefair.lombok'
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+}
+
+gradlePlugin {
+    // Define the plugin
+    plugins {
+        ciInit {
+            id = 'de.materna.cms.ci.init'
+            implementationClass = 'de.materna.cms.gradle.plugins.ci.CiInitPlugin'
+        }
+        ciJavaLogs {
+            id = 'de.materna.cms.ci.java-logs'
+            implementationClass = 'de.materna.cms.gradle.plugins.ci.JavaLogsPlugin'
+        }
+        ciJavaLogsSettings {
+            id = 'de.materna.cms.ci.java-logs-settings'
+            implementationClass = 'de.materna.cms.gradle.plugins.ci.JavaLogsSettingsPlugin'
+        }
+        ciJavaLogsInit {
+            id = 'de.materna.cms.ci.java-logs-init'
+            implementationClass = 'de.materna.cms.gradle.plugins.ci.JavaLogsInitPlugin'
+        }
+    }
+}
