@@ -26,10 +26,10 @@ public class LoggingAspect {
   @Pointcut("execution(* *(..))"
       + " && !within(de.materna.cms.tools.tracelog.LoggingAspect)"
       + " && !@annotation(lombok.Generated)")
-  public void gsbMethod() {
+  public void cmsMethod() {
   }
 
-  @Before("gsbMethod()")
+  @Before("cmsMethod()")
   public void logEnter(JoinPoint joinPoint) {
     Logger logger = LoggerFactory.getLogger(joinPoint.getSignature().getDeclaringTypeName());
 
@@ -45,7 +45,7 @@ public class LoggingAspect {
     }
   }
 
-  @AfterReturning(value = "gsbMethod()", returning = "retVal")
+  @AfterReturning(value = "cmsMethod()", returning = "retVal")
   public void logExit(JoinPoint joinPoint, Object retVal) {
     Logger logger = LoggerFactory.getLogger(joinPoint.getSignature().getDeclaringTypeName());
 
@@ -62,7 +62,7 @@ public class LoggingAspect {
     }
   }
 
-  @AfterThrowing(value = "gsbMethod()", throwing = "exception")
+  @AfterThrowing(value = "cmsMethod()", throwing = "exception")
   public void logThrowing(JoinPoint joinPoint, Exception exception) {
     Logger logger = LoggerFactory.getLogger(joinPoint.getSignature().getDeclaringTypeName());
 

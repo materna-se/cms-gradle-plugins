@@ -13,7 +13,7 @@ plugins {
 apply plugin: "de.materna.cms.maven-publish-repo"
 
 allprojects {
-    group = "de.materna.gsb.gradle.test"
+    group = "de.materna.cms.gradle.test"
 
     repositories {
         mavenCentral()
