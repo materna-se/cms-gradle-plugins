@@ -9,16 +9,15 @@ pipeline {
     }
 
     stages {
-        stage("Publish") {
-            when {
-                anyOf {
-                    branch "master"
-                    branch "develop"
-                    branch "release-*"
-                    branch "support-*/develop"
-                    branch "support-*/master"
+        stage("Assemble") {
+            steps {
+                sh "./gradlew assemble"
+                dir('test-projects') {
+                    sh "./gradlew assemble"
                 }
             }
+        }
+        stage("Publish") {
             steps {
                 sh "./gradlew publish"
             }
