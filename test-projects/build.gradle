@@ -5,8 +5,8 @@ buildscript {
 }
 
 plugins {
-    id "io.freefair.git-version" version "6.6"
-    id "io.freefair.maven-publish-java" version "6.6" apply false
+    id "io.freefair.git-version"
+    id "io.freefair.maven-publish-java" apply false
     id "de.materna.cms.component-bundle"
 }
 

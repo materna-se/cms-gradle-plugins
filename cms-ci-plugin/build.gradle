@@ -4,10 +4,6 @@ plugins {
     id 'io.freefair.lombok'
 }
 
-dependencies {
-    testImplementation 'junit:junit:4.13.2'
-}
-
 gradlePlugin {
     // Define the plugin
     plugins {

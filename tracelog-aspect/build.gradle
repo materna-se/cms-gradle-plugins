@@ -9,9 +9,10 @@ dependencies {
     implementation 'org.aspectj:aspectjrt:1.9.20.1'
     implementation 'org.slf4j:slf4j-api:1.7.36'
 
+    testImplementation platform("org.junit:junit-bom:5.10.0")
     testImplementation 'org.junit.jupiter:junit-jupiter-api'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
-    testRuntimeOnly 'ch.qos.logback:logback-classic'
+    testRuntimeOnly 'ch.qos.logback:logback-classic:1.4.11'
     testAspect sourceSets.main.output
 }
 

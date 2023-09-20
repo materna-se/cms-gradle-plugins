@@ -1,3 +1,7 @@
+plugins {
+    id "io.freefair.settings.plugin-versions" version "8.3"
+}
+
 includeBuild "../"
 
 include "app-component"
