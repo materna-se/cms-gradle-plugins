@@ -1,7 +1,4 @@
 pipeline {
-    agent {
-        label 'gsb'
-    }
 
     options {
         disableConcurrentBuilds() //Maximal ein Build pro Branch zur gleichen Zeit
@@ -10,15 +7,6 @@ pipeline {
 
     stages {
         stage("Publish") {
-            when {
-                anyOf {
-                    branch "master"
-                    branch "develop"
-                    branch "release-*"
-                    branch "support-*/develop"
-                    branch "support-*/master"
-                }
-            }
             steps {
                 sh "./gradlew publish"
             }
