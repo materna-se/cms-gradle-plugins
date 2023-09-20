@@ -1,6 +1,6 @@
 buildscript {
     dependencies {
-        classpath "de.materna.cms.tools:gsb-build-plugin"
+        classpath "de.materna.cms.tools:cms-build-plugin"
     }
 }
 

@@ -4,7 +4,7 @@ plugins {
 
 rootProject.name = 'cms-gradle-plugins'
 
-include "gsb-build-plugin"
+include "cms-build-plugin"
 include "cms-ci-plugin"
 include "tracelog-aspect"
 include "tracelog-plugin"

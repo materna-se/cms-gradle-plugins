@@ -64,7 +64,7 @@ allprojects {
 }
 
 dependencies {
-    javadoc project(":gsb-build-plugin")
+    javadoc project(":cms-build-plugin")
     javadoc project(":tracelog-aspect")
     javadoc project(":tracelog-plugin")
 }
