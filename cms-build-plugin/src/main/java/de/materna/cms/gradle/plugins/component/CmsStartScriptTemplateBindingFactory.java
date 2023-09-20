@@ -16,11 +16,11 @@ public class CmsStartScriptTemplateBindingFactory implements Transformer<Map<Str
     private final String classpath;
 
     public static CmsStartScriptTemplateBindingFactory application() {
-        return new CmsStartScriptTemplateBindingFactory("${GSB_LIB_DIR:-/opt/gsb/lib}/*:$APP_HOME/lib/*");
+        return new CmsStartScriptTemplateBindingFactory("${CMS_LIB_DIR:-/opt/cms/lib}/*:$APP_HOME/lib/*");
     }
 
     public static CmsStartScriptTemplateBindingFactory bootWar() {
-        return new CmsStartScriptTemplateBindingFactory("${GSB_LIB_DIR:-/opt/gsb/lib}/*:$APP_HOME/WEB-INF/classes:$APP_HOME/WEB-INF/lib-provided/*:$APP_HOME/WEB-INF/lib/*");
+        return new CmsStartScriptTemplateBindingFactory("${CMS_LIB_DIR:-/opt/cms/lib}/*:$APP_HOME/WEB-INF/classes:$APP_HOME/WEB-INF/lib-provided/*:$APP_HOME/WEB-INF/lib/*");
     }
 
     @Override
