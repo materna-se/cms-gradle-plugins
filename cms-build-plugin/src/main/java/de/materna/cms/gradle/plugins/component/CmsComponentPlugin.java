@@ -124,6 +124,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
 
         execFull = project.getTasks().register("cmsRunFull", Exec.class, exec -> {
             exec.setGroup("cms");
+            exec.setDescription("Startet die '" + extension.getName().getOrElse(project.getName()) + "' Komponente als Exec task.");
             exec.dependsOn(installFullDist);
 
             File binDir = new File(installFullDist.get().getDestinationDir(), "bin");
@@ -131,6 +132,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
         });
         javaExecFull = project.getTasks().register("cmsRunFullJava", JavaExec.class, exec -> {
             exec.setGroup("cms");
+            exec.setDescription("Startet die '" + extension.getName().getOrElse(project.getName()) + "' Komponente als JavaExec task.");
             exec.dependsOn(installFullDist);
             exec.setEnabled(false);
         });
