@@ -2,6 +2,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     id "de.materna.cms.component"
+    id "de.materna.cms.selenium-test"
     id "application"
     id "io.freefair.maven-publish-java"
     id "com.google.cloud.tools.jib"
@@ -12,6 +13,7 @@ application.mainClass = "de.materna.cms.gradle.app.DemoApplication"
 
 dependencies {
     implementation platform(SpringBootPlugin.BOM_COORDINATES)
+    integrationTestImplementation platform(SpringBootPlugin.BOM_COORDINATES)
 
     implementation 'io.github.classgraph:classgraph:4.8.149'
     implementation 'org.springframework.boot:spring-boot-starter-web'

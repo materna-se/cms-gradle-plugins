@@ -7,6 +7,7 @@ plugins {
 dependencies {
 
     implementation 'io.freefair.gradle:git-plugin:8.3'
+    implementation 'io.freefair.gradle:okhttp-plugin:8.3'
     implementation "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
     implementation "com.google.cloud.tools:jib-gradle-plugin:3.3.2"
 
@@ -39,6 +40,14 @@ gradlePlugin {
         gitArchive {
             id = 'de.materna.cms.git-archive'
             implementationClass = 'de.materna.cms.gradle.plugins.git.GitArchivePlugin'
+        }
+        integrationTest {
+            id = 'de.materna.cms.integration-test'
+            implementationClass = 'de.materna.cms.gradle.plugins.test.IntegrationTestPlugin'
+        }
+        seleniumTest {
+            id = 'de.materna.cms.selenium-test'
+            implementationClass = 'de.materna.cms.gradle.plugins.test.SeleniumTestPlugin'
         }
     }
 }
