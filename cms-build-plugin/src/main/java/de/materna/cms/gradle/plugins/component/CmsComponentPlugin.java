@@ -2,6 +2,7 @@ package de.materna.cms.gradle.plugins.component;
 
 import com.google.cloud.tools.jib.gradle.ContainerParameters;
 import com.google.cloud.tools.jib.gradle.JibExtension;
+import com.google.cloud.tools.jib.gradle.JibTask;
 import com.google.cloud.tools.jib.gradle.PlatformParameters;
 import de.materna.cms.gradle.plugins.Util;
 import de.materna.cms.gradle.plugins.WarLibraryPlugin;
@@ -9,6 +10,7 @@ import de.materna.cms.gradle.plugins.idea.IdeaUtils;
 import org.codehaus.groovy.runtime.ProcessGroovyMethods;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.LibraryElements;
@@ -359,12 +361,28 @@ public class CmsComponentPlugin implements Plugin<Project> {
             project.getPlugins().withType(SpringBootPlugin.class, sbp -> {
 
                 container.setAppRoot("/app");
-                container.setEntrypoint(Arrays.asList(
-                        "java",
-                        "-cp",
-                        "/app/WEB-INF/classes:/app/WEB-INF/lib-provided/*:/app/WEB-INF/lib/*",
-                        "@/app/jib-main-class-file"
-                ));
+
+                project.afterEvaluate(p -> {
+
+                    if (container.getEntrypoint() == null) {
+
+                        TaskProvider<BootWar> bootWar = project.getTasks().named(SpringBootPlugin.BOOT_WAR_TASK_NAME, BootWar.class);
+
+                        TaskProvider<Task> configureEntryPoint = project.getTasks().register("configureJibBootWarEntrypoint", conf -> {
+                            conf.mustRunAfter(bootWar);
+                            conf.doLast(t -> {
+                                container.setEntrypoint(Arrays.asList(
+                                        "java",
+                                        "-cp",
+                                        "/app/WEB-INF/classes:/app/WEB-INF/lib-provided/*:/app/WEB-INF/lib/*",
+                                        bootWar.get().getMainClass().get()
+                                ));
+                            });
+                        });
+
+                        project.getTasks().withType(JibTask.class).configureEach(jibTask -> jibTask.dependsOn(configureEntryPoint));
+                    }
+                });
 
             });
         });
