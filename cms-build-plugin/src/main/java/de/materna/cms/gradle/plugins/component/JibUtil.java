@@ -25,7 +25,10 @@ public class JibUtil {
                     if (javaLanguageVersion.asInt() <= 11) {
                         return "eclipse-temurin:11-jre";
                     }
-                    return "eclipse-temurin:17-jre";
+                    if (javaLanguageVersion.asInt() <= 17) {
+                        return "eclipse-temurin:17-jre";
+                    }
+                    return "eclipse-temurin:21-jre";
                 });
 
     }
