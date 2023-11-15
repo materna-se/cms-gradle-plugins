@@ -375,7 +375,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
 
         project.afterEvaluate(p -> {
 
-            if (container.getEntrypoint() == null) {
+            if (container.getEntrypoint() == null || container.getEntrypoint().isEmpty()) {
 
                 if (extension.getOverlay().getOrElse(false)) {
                     container.setEntrypoint("INHERIT");
@@ -417,7 +417,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
                 container.setMainClass(javaApplication.getMainClass().get());
             }
 
-            if (container.getEntrypoint() == null)
+            if (container.getEntrypoint() == null || container.getEntrypoint().isEmpty())
                 if (extension.getOverlay().getOrElse(false)) {
                     container.setEntrypoint("INHERIT");
                 } else {
