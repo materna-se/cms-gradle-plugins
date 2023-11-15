@@ -347,6 +347,8 @@ public class CmsComponentPlugin implements Plugin<Project> {
         container.getLabels().put("org.label-schema.version", project.getVersion().toString());
         container.getLabels().put("org.opencontainers.image.version", project.getVersion().toString());
 
+        container.getLabels().put("de.materna.cms.from-image", project.provider(() -> jibExtension.getFrom().getImage()));
+
         try {
             Process execute = ProcessGroovyMethods.execute("git rev-parse HEAD");
             String gitSha = ProcessGroovyMethods.getText(execute).trim();
