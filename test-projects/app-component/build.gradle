@@ -4,6 +4,7 @@ plugins {
     id "de.materna.cms.component"
     id "de.materna.cms.selenium-test"
     id "application"
+    id "java-library"
     id "io.freefair.maven-publish-java"
     id "com.google.cloud.tools.jib"
     id 'org.springframework.boot'
@@ -13,7 +14,7 @@ application.mainClass = "de.materna.cms.gradle.app.DemoApplication"
 application.applicationDefaultJvmArgs = ["-server"]
 
 dependencies {
-    implementation platform(SpringBootPlugin.BOM_COORDINATES)
+    api platform(SpringBootPlugin.BOM_COORDINATES)
     integrationTestImplementation platform(SpringBootPlugin.BOM_COORDINATES)
 
     implementation 'io.github.classgraph:classgraph:4.8.149'
