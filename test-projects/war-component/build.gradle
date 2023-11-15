@@ -22,5 +22,5 @@ dependencies {
 
 jib {
     from.image = "eclipse-temurin:17-jre-alpine"
-    to.image = "docker-gsbos.materna.de/cms/test/war-component:$version"
+    to.image = "artifact.materna.net:10009/cms/test/war-component:$version"
 }

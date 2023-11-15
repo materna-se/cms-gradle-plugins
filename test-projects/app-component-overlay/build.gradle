@@ -1,17 +1,15 @@
-import org.springframework.boot.gradle.plugin.SpringBootPlugin
-
 plugins {
-    id "war"
+    id "application"
     id "de.materna.cms.component"
     id "io.freefair.maven-publish-java"
     id "com.google.cloud.tools.jib"
 }
 
 cmsComponent.overlay = true
-cmsComponent.name = "cae"
+cmsComponent.name = "app-component"
 
 dependencies {
-    cmsComponent "de.bund.gsb.cm:cae:7.5.0"
+    cmsComponent project(":app-component")
 
     implementation 'io.github.classgraph:classgraph:4.8.147'
 
@@ -19,6 +17,6 @@ dependencies {
 }
 
 jib {
-    from.image = "artifact.materna.net:10009/cms/test/war-component:$version"
-    to.image = "artifact.materna.net:10009/cms/test/war-component-overlay:$version"
+    from.image = "artifact.materna.net:10009/cms/test/app-component:$version"
+    to.image = "artifact.materna.net:10009/cms/test/app-component-overlay:$version"
 }

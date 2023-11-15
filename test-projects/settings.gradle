@@ -5,5 +5,7 @@ plugins {
 includeBuild "../"
 
 include "app-component"
+include "app-component-overlay"
+
 include "war-component"
 include "war-component-overlay"

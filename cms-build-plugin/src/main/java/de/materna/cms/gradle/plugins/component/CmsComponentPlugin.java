@@ -45,8 +45,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.time.Instant;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.jar.Manifest;
 
@@ -358,45 +359,91 @@ public class CmsComponentPlugin implements Plugin<Project> {
         }
 
         project.getPlugins().withType(WarPlugin.class, wp -> {
-            project.getPlugins().withType(SpringBootPlugin.class, sbp -> {
-
-                container.setAppRoot("/app");
-
-                project.afterEvaluate(p -> {
-
-                    if (container.getEntrypoint() == null) {
-
-                        TaskProvider<BootWar> bootWar = project.getTasks().named(SpringBootPlugin.BOOT_WAR_TASK_NAME, BootWar.class);
-
-                        TaskProvider<Task> configureEntryPoint = project.getTasks().register("configureJibBootWarEntrypoint", conf -> {
-                            conf.mustRunAfter(bootWar);
-                            conf.doLast(t -> {
-                                container.setEntrypoint(Arrays.asList(
-                                        "java",
-                                        "-cp",
-                                        "/app/WEB-INF/classes:/app/WEB-INF/lib-provided/*:/app/WEB-INF/lib/*",
-                                        bootWar.get().getMainClass().get()
-                                ));
-                            });
-                        });
-
-                        project.getTasks().withType(JibTask.class).configureEach(jibTask -> jibTask.dependsOn(configureEntryPoint));
-                    }
-                });
-
+            project.getPlugins().withId("org.springframework.boot", sbp -> {
+                configureJibForSpringBootWar(container);
             });
         });
 
+        project.getPlugins().withType(ApplicationPlugin.class, applicationPlugin -> configureJibForApplication(jibExtension));
+
+    }
+
+    private void configureJibForSpringBootWar(ContainerParameters container) {
+        container.setAppRoot("/app");
 
         project.afterEvaluate(p -> {
-            JavaApplication javaApplication = project.getExtensions().findByType(JavaApplication.class);
 
-            if (javaApplication != null) {
-                if (container.getJvmFlags() == null || container.getJvmFlags().isEmpty()) {
-                    container.setJvmFlags((List<String>) javaApplication.getApplicationDefaultJvmArgs());
+            if (container.getEntrypoint() == null) {
+
+                if (extension.getOverlay().getOrElse(false)) {
+                    container.setEntrypoint("INHERIT");
+                } else {
+                    TaskProvider<BootWar> bootWar = project.getTasks().named(SpringBootPlugin.BOOT_WAR_TASK_NAME, BootWar.class);
+
+                    TaskProvider<Task> configureEntryPoint = project.getTasks().register("configureJibBootWarEntrypoint", conf -> {
+                        conf.mustRunAfter(bootWar);
+                        conf.doLast(t -> {
+                            List<String> entrypoint = new ArrayList<>();
+                            entrypoint.add("java");
+
+                            if (container.getJvmFlags() != null) {
+                                entrypoint.addAll(container.getJvmFlags());
+                            }
+
+                            entrypoint.add("-cp");
+                            entrypoint.add("/app/WEB-INF/classes:/app/WEB-INF/lib-provided/*:/app/WEB-INF/lib/*");
+
+                            entrypoint.add(bootWar.get().getMainClass().get());
+
+                            container.setEntrypoint(entrypoint);
+                        });
+                    });
+
+                    project.getTasks().withType(JibTask.class).configureEach(jibTask -> jibTask.dependsOn(configureEntryPoint));
                 }
-                if (container.getMainClass() == null) {
-                    container.setMainClass(javaApplication.getMainClass().get());
+            }
+        });
+    }
+
+    private void configureJibForApplication(JibExtension jibExtension) {
+        project.afterEvaluate(p -> {
+            JavaApplication javaApplication = project.getExtensions().getByType(JavaApplication.class);
+
+            ContainerParameters container = jibExtension.getContainer();
+
+            if (container.getMainClass() == null && javaApplication.getMainClass().isPresent()) {
+                container.setMainClass(javaApplication.getMainClass().get());
+            }
+
+            if (container.getEntrypoint() == null)
+                if (extension.getOverlay().getOrElse(false)) {
+                    container.setEntrypoint("INHERIT");
+                } else {
+                    List<String> entrypoint = new ArrayList<>();
+                    entrypoint.add("java");
+
+                    if (container.getJvmFlags() != null) {
+                        entrypoint.addAll(container.getJvmFlags());
+                    }
+
+                    entrypoint.add("-cp");
+                    entrypoint.add("/app/resources:/app/classes:/app/libs/*");
+
+                    entrypoint.add("@/app/jib-main-class-file");
+
+                    container.setEntrypoint(entrypoint);
+                }
+
+            container.setExpandClasspathDependencies(false);
+
+            if (!container.getEnvironment().containsKey("JAVA_TOOL_OPTIONS")) {
+                String javaOpts = String.join(" ", javaApplication.getApplicationDefaultJvmArgs());
+
+                if (!javaOpts.isEmpty() && !javaOpts.isBlank()) {
+                    if (container.getEnvironment().isEmpty()) {
+                        container.setEnvironment(new HashMap<>());
+                    }
+                    container.getEnvironment().put("JAVA_TOOL_OPTIONS", javaOpts);
                 }
             }
 
