@@ -1,16 +1,20 @@
 buildscript {
     dependencies {
-        classpath "de.materna.gsb.tools:gsb-build-plugin"
+        classpath "de.materna.cms.tools:gsb-build-plugin"
+    }
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
     }
 }
 
 plugins {
-    id "io.freefair.git-version" version "6.6"
-    id "io.freefair.maven-publish-java" version "6.6" apply false
-    id "de.materna.gsb.component-bundle"
+    id "io.freefair.git-version" version "8.4"
+    id "io.freefair.maven-publish-java" version "8.4" apply false
+    id "de.materna.cms.component-bundle"
 }
 
-apply plugin: "de.materna.gsb.maven-publish-repo"
+apply plugin: "de.materna.cms.maven-publish-repo"
 
 allprojects {
     group = "de.materna.gsb.gradle.test"

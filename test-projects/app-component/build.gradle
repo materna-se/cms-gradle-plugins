@@ -1,7 +1,7 @@
 import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
-    id "de.materna.gsb.component"
+    id "de.materna.cms.component"
     id "application"
     id "io.freefair.maven-publish-java"
     id "com.google.cloud.tools.jib"

@@ -1,4 +1,4 @@
-includeBuild "../"
+includeBuild ".."
 
 include "app-component"
 include "war-component"

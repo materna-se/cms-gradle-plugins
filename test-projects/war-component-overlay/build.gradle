@@ -2,7 +2,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     id "war"
-    id "de.materna.gsb.component"
+    id "de.materna.cms.component"
     id "io.freefair.maven-publish-java"
     id "com.google.cloud.tools.jib"
 }
@@ -11,7 +11,7 @@ gsbComponent.overlay = true
 gsbComponent.name = "cae"
 
 dependencies {
-    gsbComponent "de.bund.gsb.cm:cae:7.5.x-SNAPSHOT"
+    gsbComponent "de.bund.gsb.cm:cae:7.5.1"
 
     implementation 'io.github.classgraph:classgraph:4.8.147'
 
