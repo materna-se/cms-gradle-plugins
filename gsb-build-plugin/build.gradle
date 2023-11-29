@@ -9,8 +9,6 @@ dependencies {
     implementation 'io.freefair.gradle:git-plugin:8.3'
     implementation "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
     implementation "com.google.cloud.tools:jib-gradle-plugin:3.3.2"
-
-    testImplementation 'junit:junit:4.13.2'
 }
 
 gradlePlugin {
