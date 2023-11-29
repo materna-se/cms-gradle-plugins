@@ -5,7 +5,7 @@ plugins {
     id "io.freefair.okhttp"
     id 'io.freefair.lombok' apply false
     id "de.materna.cms.internal.gsb-publishing" version "1.0.0" apply false
-    id 'de.materna.cms.maven-publish-repo' version '2.0.0'
+    id 'de.materna.cms.maven-publish-repo' version '2.0.7'
 }
 
 allprojects {
