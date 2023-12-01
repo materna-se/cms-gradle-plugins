@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import org.codehaus.groovy.runtime.ResourceGroovyMethods;
 import org.gradle.api.*;
 import org.gradle.api.logging.StandardOutputListener;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 
@@ -12,10 +13,15 @@ import java.io.File;
 import java.io.IOException;
 
 public class JavaLogsPlugin implements Plugin<Project> {
+
+    private String rootDir;
+
     @Override
     public void apply(Project project) {
 
         File buildDir = project.getBuildDir();
+
+        rootDir = project.getRootDir().toString() + "/";
 
         project.getTasks().withType(Javadoc.class).configureEach(javadocTask -> {
             File errFile = new File(buildDir, "reports/javadoc/" + javadocTask.getName() + ".err");
@@ -33,7 +39,7 @@ public class JavaLogsPlugin implements Plugin<Project> {
     }
 
     @SuppressWarnings("Convert2Lambda")
-    public static void configureFileLogging(Task task, File stdErrorFile) {
+    public void configureFileLogging(Task task, File stdErrorFile) {
         task.getOutputs().files(stdErrorFile);
         task.getLogging().addStandardErrorListener(new FileStandardOutputListener(stdErrorFile));
         task.doFirst(new Action<Task>() {
@@ -58,13 +64,16 @@ public class JavaLogsPlugin implements Plugin<Project> {
     }
 
     @RequiredArgsConstructor
-    public static class FileStandardOutputListener implements StandardOutputListener {
+    public class FileStandardOutputListener implements StandardOutputListener {
 
         private final File file;
 
         @Override
         @SneakyThrows
         public void onOutput(CharSequence charSequence) {
+            if (charSequence != null && rootDir != null) {
+                charSequence = charSequence.toString().replace(rootDir, "");
+            }
             ResourceGroovyMethods.append(file, charSequence);
         }
     }
