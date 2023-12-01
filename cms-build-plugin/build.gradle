@@ -2,6 +2,7 @@ plugins {
     id 'java-gradle-plugin'
     id "de.materna.cms.internal.gsb-publishing"
     id 'io.freefair.lombok'
+    id 'jacoco'
 }
 
 dependencies {

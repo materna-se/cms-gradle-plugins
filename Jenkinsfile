@@ -35,8 +35,7 @@ pipeline {
                     jacoco classPattern: '**/build/classes/*/main', execPattern: '**/build/jacoco/*.exec'
                     recordIssues(tools: [
                         java(pattern: '**/build/reports/javac/compileJava.err'),
-                        javaDoc(pattern: '**/build/reports/javadoc/*'),
-                        cpd(pattern: '**/build/reports/cpd/*.xml')
+                        javaDoc(pattern: '**/build/reports/javadoc/*')
                     ])
                 }
             }
