@@ -23,6 +23,14 @@ public class JavaLogsPlugin implements Plugin<Project> {
 
         rootDir = project.getRootDir().toString() + "/";
 
+        Provider<String> workspace = project.getProviders().environmentVariable("WORKSPACE");
+        if (workspace.isPresent()) {
+            rootDir = workspace.get() + "/";
+        }
+
+        project.getLogger().warn("project.rootDir {}", project.getRootDir());
+        project.getLogger().warn("gradle.rootDir {}", project.getGradle().getRootProject().getRootDir());
+
         project.getTasks().withType(Javadoc.class).configureEach(javadocTask -> {
             File errFile = new File(buildDir, "reports/javadoc/" + javadocTask.getName() + ".err");
 
