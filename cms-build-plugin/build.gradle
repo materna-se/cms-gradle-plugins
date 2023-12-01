@@ -46,5 +46,9 @@ gradlePlugin {
             id = 'de.materna.cms.selenium-test'
             implementationClass = 'de.materna.cms.gradle.plugins.test.SeleniumTestPlugin'
         }
+        ciJavaLogs {
+            id = 'de.materna.cms.ci.java-logs'
+            implementationClass = 'de.materna.cms.gradle.plugins.ci.JavaLogsPlugin'
+        }
     }
 }
