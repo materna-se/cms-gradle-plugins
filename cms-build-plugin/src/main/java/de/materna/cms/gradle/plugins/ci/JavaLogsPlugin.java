@@ -7,6 +7,7 @@ import org.gradle.api.*;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.logging.StandardOutputListener;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.compile.GroovyCompile;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 
@@ -47,6 +48,14 @@ public class JavaLogsPlugin implements Plugin<Project> {
 
                 javaCompile.getOptions().getCompilerArgs().add("-Xlint");
             });
+
+            subproject.getTasks().withType(GroovyCompile.class).configureEach(groovyCompile -> {
+                Provider<RegularFile> errFile = groovyCompile.getProject().getLayout().getBuildDirectory().file("reports/groovyc/" + groovyCompile.getName() + ".err");
+
+                configureFileLogging(groovyCompile, errFile.get());
+
+                groovyCompile.getOptions().getCompilerArgs().add("-Xlint");
+            });
         });
     }
 
@@ -73,7 +82,7 @@ public class JavaLogsPlugin implements Plugin<Project> {
 
     @SuppressWarnings("Convert2Lambda")
     public void configureFileLogging(Task task, RegularFile stdErrorFile) {
-        task.getOutputs().files(stdErrorFile);
+        task.getOutputs().files(stdErrorFile).withPropertyName("errFile").optional(false);
         task.getLogging().addStandardErrorListener(new FileStandardOutputListener(stdErrorFile.getAsFile()));
         task.doFirst(new Action<Task>() {
             @Override
