@@ -5,6 +5,7 @@ import lombok.SneakyThrows;
 import org.codehaus.groovy.runtime.ResourceGroovyMethods;
 import org.gradle.api.*;
 import org.gradle.api.logging.StandardOutputListener;
+import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
@@ -14,15 +15,13 @@ import java.io.IOException;
 
 public class JavaLogsPlugin implements Plugin<Project> {
 
-    private String rootDir;
+    private Property<String> baseDir;
 
     @Override
     public void apply(Project project) {
+        resolveBaseDir(project);
 
         File buildDir = project.getLayout().getBuildDirectory().get().getAsFile();
-
-        rootDir = project.getRootDir().toString();
-
         project.getTasks().withType(Javadoc.class).configureEach(javadocTask -> {
             File errFile = new File(buildDir, "reports/javadoc/" + javadocTask.getName() + ".err");
 
@@ -36,6 +35,29 @@ public class JavaLogsPlugin implements Plugin<Project> {
 
             javaCompile.getOptions().getCompilerArgs().add("-Xlint");
         });
+    }
+
+    private void resolveBaseDir(Project project) {
+        this.baseDir = project.getObjects().property(String.class);
+
+        Provider<String> workspace = project.getProviders().environmentVariable("WORKSPACE");
+
+        Provider<String> gitToplevel = project.getProviders()
+                .exec(execSpec -> {
+                    execSpec.commandLine("git", "rev-parse", "--show-toplevel");
+                    execSpec.setIgnoreExitValue(true);
+                })
+                .getStandardOutput()
+                .getAsText()
+                .map(String::trim);
+
+        if (workspace.isPresent()) {
+            baseDir.set(workspace);
+        } else if(gitToplevel.isPresent()) {
+            baseDir.set(gitToplevel);
+        } else {
+            project.getLogger().warn("Konnte Workspace nicht bestimmen");
+        }
     }
 
     @SuppressWarnings("Convert2Lambda")
@@ -71,8 +93,8 @@ public class JavaLogsPlugin implements Plugin<Project> {
         @Override
         @SneakyThrows
         public void onOutput(CharSequence charSequence) {
-            if (charSequence != null && rootDir != null) {
-                charSequence = charSequence.toString().replace(rootDir, ".");
+            if (charSequence != null && baseDir.isPresent()) {
+                charSequence = charSequence.toString().replace(baseDir.get(), ".");
             }
             ResourceGroovyMethods.append(file, charSequence);
         }
