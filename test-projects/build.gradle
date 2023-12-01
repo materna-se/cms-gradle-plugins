@@ -12,6 +12,7 @@ plugins {
     id "io.freefair.git-version"
     id "io.freefair.maven-publish-java" apply false
     id "de.materna.cms.component-bundle"
+    id 'de.materna.cms.ci.java-logs'
 }
 
 apply plugin: "de.materna.cms.maven-publish-repo"
