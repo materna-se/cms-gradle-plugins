@@ -19,17 +19,14 @@ public class JavaLogsPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
 
-        File buildDir = project.getBuildDir();
+        File buildDir = project.getLayout().getBuildDirectory().get().getAsFile();
 
-        rootDir = project.getRootDir().toString() + "/";
+        rootDir = project.getRootDir().toString();
 
         Provider<String> workspace = project.getProviders().environmentVariable("WORKSPACE");
         if (workspace.isPresent()) {
-            rootDir = workspace.get() + "/";
+            rootDir = workspace.get();
         }
-
-        project.getLogger().warn("project.rootDir {}", project.getRootDir());
-        project.getLogger().warn("gradle.rootDir {}", project.getGradle().getRootProject().getRootDir());
 
         project.getTasks().withType(Javadoc.class).configureEach(javadocTask -> {
             File errFile = new File(buildDir, "reports/javadoc/" + javadocTask.getName() + ".err");
@@ -80,7 +77,7 @@ public class JavaLogsPlugin implements Plugin<Project> {
         @SneakyThrows
         public void onOutput(CharSequence charSequence) {
             if (charSequence != null && rootDir != null) {
-                charSequence = charSequence.toString().replace(rootDir, "");
+                charSequence = charSequence.toString().replace(rootDir, ".");
             }
             ResourceGroovyMethods.append(file, charSequence);
         }
