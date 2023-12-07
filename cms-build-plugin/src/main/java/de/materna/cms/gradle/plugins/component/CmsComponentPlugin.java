@@ -7,6 +7,8 @@ import com.google.cloud.tools.jib.gradle.PlatformParameters;
 import de.materna.cms.gradle.plugins.Util;
 import de.materna.cms.gradle.plugins.WarLibraryPlugin;
 import de.materna.cms.gradle.plugins.idea.IdeaUtils;
+import de.materna.cms.gradle.plugins.jib.JibSemanticTagsPlugin;
+import de.materna.cms.gradle.plugins.jib.JibUtil;
 import org.codehaus.groovy.runtime.ProcessGroovyMethods;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -330,6 +332,8 @@ public class CmsComponentPlugin implements Plugin<Project> {
         if (jibExtension.getFrom().getImage() == null) {
             jibExtension.getFrom().setImage(JibUtil.getBaseImage(project));
         }
+
+        project.getPlugins().apply(JibSemanticTagsPlugin.class);
 
         PlatformParameters platformParameters = new PlatformParameters();
         platformParameters.setArchitecture("amd64");

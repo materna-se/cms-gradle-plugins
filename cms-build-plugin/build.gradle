@@ -39,6 +39,10 @@ gradlePlugin {
             id = 'de.materna.cms.git-archive'
             implementationClass = 'de.materna.cms.gradle.plugins.git.GitArchivePlugin'
         }
+        jibSemanticReleaseTags {
+            id = 'de.materna.cms.jib.semantic-tags'
+            implementationClass = "de.materna.cms.gradle.plugins.jib.JibSemanticTagsPlugin"
+        }
         integrationTest {
             id = 'de.materna.cms.integration-test'
             implementationClass = 'de.materna.cms.gradle.plugins.test.IntegrationTestPlugin'
