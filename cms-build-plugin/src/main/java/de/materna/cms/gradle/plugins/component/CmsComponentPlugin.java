@@ -10,6 +10,7 @@ import de.materna.cms.gradle.plugins.idea.IdeaUtils;
 import de.materna.cms.gradle.plugins.jib.JibSemanticTagsPlugin;
 import de.materna.cms.gradle.plugins.jib.JibUtil;
 import org.codehaus.groovy.runtime.ProcessGroovyMethods;
+import org.cyclonedx.gradle.CycloneDxTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -162,6 +163,8 @@ public class CmsComponentPlugin implements Plugin<Project> {
         project.getPlugins().withId("org.springframework.boot", this::configureSpringBoot);
 
         project.getPlugins().withId("com.google.cloud.tools.jib", this::configureJib);
+
+        project.getPlugins().withId("org.cyclonedx.bom", this::configureCycloneDx);
 
         project.afterEvaluate(p -> {
             if (extension.getOverlay().get() && createStartScriptsTaskProvider != null) {
@@ -453,6 +456,14 @@ public class CmsComponentPlugin implements Plugin<Project> {
                 }
             }
 
+        });
+    }
+
+    private void configureCycloneDx(Plugin<?> plugin) {
+
+        project.getTasks().named("cyclonedxBom", CycloneDxTask.class).configure(cyclonedxBom -> {
+            cyclonedxBom.getIncludeConfigs().convention(List.of(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
+            cyclonedxBom.getSkipConfigs().convention(List.of(WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME, WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME));
         });
     }
 }
