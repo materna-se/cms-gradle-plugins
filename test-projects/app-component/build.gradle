@@ -8,6 +8,7 @@ plugins {
     id "io.freefair.maven-publish-java"
     id "com.google.cloud.tools.jib"
     id 'org.springframework.boot'
+    id 'org.cyclonedx.bom'
 }
 
 application.mainClass = "de.materna.cms.gradle.app.DemoApplication"

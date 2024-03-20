@@ -461,9 +461,28 @@ public class CmsComponentPlugin implements Plugin<Project> {
 
     private void configureCycloneDx(Plugin<?> plugin) {
 
-        project.getTasks().named("cyclonedxBom", CycloneDxTask.class).configure(cyclonedxBom -> {
-            cyclonedxBom.getIncludeConfigs().convention(List.of(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
-            cyclonedxBom.getSkipConfigs().convention(List.of(WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME, WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME));
+        TaskProvider<CycloneDxTask> cyclonedxBomTask = project.getTasks().named("cyclonedxBom", CycloneDxTask.class);
+
+        //Erst aus machen, und dann für War und Application wieder an machen.
+        cyclonedxBomTask.configure(cyclonedxBom -> {
+            cyclonedxBom.setEnabled(false);
+        });
+
+        project.getPlugins().withType(WarPlugin.class, warPlugin -> {
+            cyclonedxBomTask.configure(cyclonedxBom -> {
+                cyclonedxBom.setEnabled(true);
+                cyclonedxBom.getProjectType().convention("application");
+                cyclonedxBom.getIncludeConfigs().convention(List.of(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
+                cyclonedxBom.getSkipConfigs().convention(List.of(WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME, WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME));
+            });
+        });
+
+        project.getPlugins().withType(ApplicationPlugin.class, applicationPlugin -> {
+            cyclonedxBomTask.configure(cyclonedxBom -> {
+                cyclonedxBom.setEnabled(true);
+                cyclonedxBom.getProjectType().convention("application");
+                cyclonedxBom.getIncludeConfigs().convention(List.of(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
+            });
         });
     }
 }

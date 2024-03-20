@@ -5,6 +5,7 @@ plugins {
     id "de.materna.cms.component"
     id "io.freefair.maven-publish-java"
     id "com.google.cloud.tools.jib"
+    id 'org.cyclonedx.bom'
 }
 
 cmsComponent.overlay = true
