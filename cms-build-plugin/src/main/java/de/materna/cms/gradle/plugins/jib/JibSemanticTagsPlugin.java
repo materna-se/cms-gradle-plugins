@@ -4,6 +4,7 @@ import com.google.cloud.tools.jib.gradle.JibExtension;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
+import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -22,7 +23,7 @@ public class JibSemanticTagsPlugin implements Plugin<Project> {
 
     public static Set<String> resolveTags(String version) {
         if (version.endsWith("-SNAPSHOT")) {
-            return Set.of(version);
+            return Collections.singleton(version);
         }
 
         Set<String> tags = new LinkedHashSet<>();

@@ -48,10 +48,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.jar.Manifest;
 
 public class CmsComponentPlugin implements Plugin<Project> {
@@ -448,7 +445,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
             if (!container.getEnvironment().containsKey("JAVA_TOOL_OPTIONS")) {
                 String javaOpts = String.join(" ", javaApplication.getApplicationDefaultJvmArgs());
 
-                if (!javaOpts.isEmpty() && !javaOpts.isBlank()) {
+                if (!javaOpts.isEmpty()) {
                     if (container.getEnvironment().isEmpty()) {
                         container.setEnvironment(new HashMap<>());
                     }
@@ -472,8 +469,8 @@ public class CmsComponentPlugin implements Plugin<Project> {
             cyclonedxBomTask.configure(cyclonedxBom -> {
                 cyclonedxBom.setEnabled(true);
                 cyclonedxBom.getProjectType().convention("application");
-                cyclonedxBom.getIncludeConfigs().convention(List.of(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
-                cyclonedxBom.getSkipConfigs().convention(List.of(WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME, WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME));
+                cyclonedxBom.getIncludeConfigs().convention(Collections.singletonList(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
+                cyclonedxBom.getSkipConfigs().convention(Arrays.asList(WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME, WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME));
             });
         });
 
@@ -481,7 +478,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
             cyclonedxBomTask.configure(cyclonedxBom -> {
                 cyclonedxBom.setEnabled(true);
                 cyclonedxBom.getProjectType().convention("application");
-                cyclonedxBom.getIncludeConfigs().convention(List.of(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
+                cyclonedxBom.getIncludeConfigs().convention(Collections.singletonList(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
             });
         });
     }
