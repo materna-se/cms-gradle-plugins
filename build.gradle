@@ -88,3 +88,7 @@ task uploadDocumentation(type: io.freefair.gradle.plugins.okhttp.tasks.UploadFil
     file = javadocJar.archiveFile
     url = "http://docs.gsb.dev.materna.net/api/$project.version?path=cms-gradle-plugin"
 }
+
+tasks.named('wrapper') {
+    distributionType = Wrapper.DistributionType.ALL
+}
