@@ -2,6 +2,7 @@ package de.materna.cms.gradle.plugins.component;
 
 
 import de.materna.cms.gradle.plugins.maven.MavenRepositoryPlugin;
+import org.cyclonedx.gradle.CycloneDxTask;
 import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -11,6 +12,8 @@ import org.gradle.api.component.SoftwareComponentFactory;
 import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.distribution.plugins.DistributionPlugin;
+import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
@@ -20,6 +23,8 @@ import org.gradle.api.tasks.bundling.Tar;
 import org.gradle.api.tasks.bundling.Zip;
 
 import javax.inject.Inject;
+import java.util.Arrays;
+import java.util.Collections;
 
 public class CmsComponentBundlePlugin implements Plugin<Project> {
 
@@ -31,8 +36,11 @@ public class CmsComponentBundlePlugin implements Plugin<Project> {
         this.softwareComponentFactory = softwareComponentFactory;
     }
 
+    private Project project;
+
     @Override
     public void apply(Project project) {
+        this.project = project;
         project.getPlugins().apply(DistributionPlugin.class);
 
         Configuration cmsComponent = CmsComponentUtil.maybeCreateCmsComponentConfiguration(project);
@@ -75,6 +83,17 @@ public class CmsComponentBundlePlugin implements Plugin<Project> {
             });
         });
 
+        project.getPlugins().withId("org.cyclonedx.bom", this::configureCycloneDx);
+    }
+
+    private void configureCycloneDx(Plugin<?> plugin) {
+        TaskProvider<CycloneDxTask> cyclonedxBomTask = project.getTasks().named("cyclonedxBom", CycloneDxTask.class);
+
+        //Erst aus machen, und dann für War und Application wieder an machen.
+        cyclonedxBomTask.configure(cyclonedxBom -> {
+            cyclonedxBom.getIncludeConfigs().convention(Collections.singletonList("cmsComponent"));
+            cyclonedxBom.getProjectType().convention("application");
+        });
     }
 
 }
