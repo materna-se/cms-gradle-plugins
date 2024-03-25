@@ -6,8 +6,8 @@ plugins {
     id 'io.freefair.lombok' apply false
     id "de.materna.cms.internal.gsb-publishing" version "1.4.2"
     id "de.materna.cms.internal.materna-metadata" version "1.4.2"
-    id 'de.materna.cms.maven-publish-repo' version '3.3.0'
-    id 'de.materna.cms.ci.java-logs' version '3.3.0'
+    id 'de.materna.cms.maven-publish-repo' version '3.4.2'
+    id 'de.materna.cms.ci.java-logs' version '3.4.2'
 }
 
 allprojects {
