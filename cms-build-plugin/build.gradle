@@ -56,5 +56,9 @@ gradlePlugin {
             id = 'de.materna.cms.ci.java-logs'
             implementationClass = 'de.materna.cms.gradle.plugins.ci.JavaLogsPlugin'
         }
+        sbom {
+            id = 'de.materna.cms.sbom'
+            implementationClass = 'de.materna.cms.gradle.plugins.sbom.SbomPlugin'
+        }
     }
 }

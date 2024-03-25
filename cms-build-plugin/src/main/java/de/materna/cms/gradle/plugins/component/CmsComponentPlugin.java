@@ -9,6 +9,7 @@ import de.materna.cms.gradle.plugins.WarLibraryPlugin;
 import de.materna.cms.gradle.plugins.idea.IdeaUtils;
 import de.materna.cms.gradle.plugins.jib.JibSemanticTagsPlugin;
 import de.materna.cms.gradle.plugins.jib.JibUtil;
+import de.materna.cms.gradle.plugins.sbom.SbomPlugin;
 import org.codehaus.groovy.runtime.ProcessGroovyMethods;
 import org.cyclonedx.gradle.CycloneDxTask;
 import org.gradle.api.Plugin;
@@ -70,6 +71,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
     private TaskProvider<Sync> installFullDist;
     private TaskProvider<Exec> execFull;
     private TaskProvider<JavaExec> javaExecFull;
+    private AdhocComponentWithVariants cmsComponentSc;
 
     @Inject
     public CmsComponentPlugin(SoftwareComponentFactory softwareComponentFactory) {
@@ -177,7 +179,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
             });
         });
 
-        AdhocComponentWithVariants cmsComponentSc = softwareComponentFactory.adhoc("cmsComponent");
+        cmsComponentSc = softwareComponentFactory.adhoc("cmsComponent");
         project.getComponents().add(cmsComponentSc);
         cmsComponentSc.addVariantsFromConfiguration(cmsComponent, details -> {
         });
@@ -458,11 +460,15 @@ public class CmsComponentPlugin implements Plugin<Project> {
 
     private void configureCycloneDx(Plugin<?> plugin) {
 
+        project.getPlugins().apply(SbomPlugin.class);
+
         TaskProvider<CycloneDxTask> cyclonedxBomTask = project.getTasks().named("cyclonedxBom", CycloneDxTask.class);
 
         //Erst aus machen, und dann für War und Application wieder an machen.
         cyclonedxBomTask.configure(cyclonedxBom -> {
             cyclonedxBom.setEnabled(false);
+
+            cyclonedxBom.getOutputName().convention(extension.getName().map(name -> String.format("%s-%s.cdx", name, project.getVersion())));
         });
 
         project.getPlugins().withType(WarPlugin.class, warPlugin -> {
@@ -480,6 +486,9 @@ public class CmsComponentPlugin implements Plugin<Project> {
                 cyclonedxBom.getProjectType().convention("application");
                 cyclonedxBom.getIncludeConfigs().convention(Collections.singletonList(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
             });
+        });
+
+        cmsComponentSc.addVariantsFromConfiguration(project.getConfigurations().getByName(SbomPlugin.SBOM_CONFIGURATION), details -> {
         });
     }
 }
