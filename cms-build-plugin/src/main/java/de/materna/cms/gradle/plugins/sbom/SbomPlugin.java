@@ -25,6 +25,7 @@ public class SbomPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
+        project.getPlugins().apply(ReportingBasePlugin.class);
         project.getPlugins().apply(CycloneDxPlugin.class);
 
         Configuration sbomConfiguration = project.getConfigurations().maybeCreate(SBOM_CONFIGURATION);
@@ -45,12 +46,10 @@ public class SbomPlugin implements Plugin<Project> {
             });
         });
 
-        project.getPlugins().withType(ReportingBasePlugin.class, reportingBasePlugin -> {
-            ReportingExtension reporting = project.getExtensions().getByType(ReportingExtension.class);
+        ReportingExtension reporting = project.getExtensions().getByType(ReportingExtension.class);
 
-            cyclonedxBom.configure(cdxBom -> {
-                cdxBom.getDestination().convention(reporting.getBaseDirectory().getAsFile().map(baseDir -> new File(baseDir, "sbom")));
-            });
+        cyclonedxBom.configure(cdxBom -> {
+            cdxBom.getDestination().convention(reporting.getBaseDirectory().getAsFile().map(baseDir -> new File(baseDir, "sbom")));
         });
 
         Provider<File> jsonFile = cyclonedxBom.flatMap(CycloneDxTask::getDestination)
