@@ -280,9 +280,9 @@ public class CmsComponentPlugin implements Plugin<Project> {
         javaExecFull.configure(run -> {
             ConfigurableFileCollection classpath = project.files();
 
+            classpath.from(new File(installFullDist.get().getDestinationDir(), "WEB-INF/classes"));
             classpath.from(new File(installFullDist.get().getDestinationDir(), "WEB-INF/lib-provided/*"));
             classpath.from(new File(installFullDist.get().getDestinationDir(), "WEB-INF/lib/*"));
-            classpath.from(new File(installFullDist.get().getDestinationDir(), "WEB-INF/classes"));
 
             run.setClasspath(classpath);
 
