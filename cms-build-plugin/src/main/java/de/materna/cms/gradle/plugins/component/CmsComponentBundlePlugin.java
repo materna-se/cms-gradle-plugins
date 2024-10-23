@@ -12,8 +12,6 @@ import org.gradle.api.component.SoftwareComponentFactory;
 import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.distribution.plugins.DistributionPlugin;
-import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
@@ -23,7 +21,6 @@ import org.gradle.api.tasks.bundling.Tar;
 import org.gradle.api.tasks.bundling.Zip;
 
 import javax.inject.Inject;
-import java.util.Arrays;
 import java.util.Collections;
 
 public class CmsComponentBundlePlugin implements Plugin<Project> {
