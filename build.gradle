@@ -70,8 +70,35 @@ allprojects {
                     }
                 }
             }
-        }
 
+            repositories {
+                maven {
+                    name = "artifactExtItz"
+                    url = "https://artifact-ext.materna.net/repository/gsb_itzbund_mixed/"
+                    credentials {
+                        username = project.findProperty("materna.artifact-ext.username")
+                        password = project.findProperty("materna.artifact-ext.password")
+                    }
+                }
+                maven {
+                    name = "artifactExtTremonia"
+                    url = "https://artifact-ext.materna.net/repository/tremonia_hosting_mixed/"
+                    credentials {
+                        username = project.findProperty("materna.artifact-ext.username")
+                        password = project.findProperty("materna.artifact-ext.password")
+                    }
+                }
+            }
+        }
+    }
+
+    tasks.withType(PublishToMavenRepository).configureEach {
+        onlyIf("Nur Releases nach artifact-ext deployen") {
+            def isArtifactExt = repository.name.contains("artifactExt") || repository.url.toString().contains("artifact-ext")
+            def isSnapshot = project.version.toString().endsWith("-SNAPSHOT")
+
+            return !isSnapshot || !isArtifactExt
+        }
     }
 }
 
