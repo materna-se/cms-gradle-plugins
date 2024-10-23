@@ -97,7 +97,7 @@ allprojects {
             def isArtifactExt = repository.name.contains("artifactExt") || repository.url.toString().contains("artifact-ext")
             def isSnapshot = project.version.toString().endsWith("-SNAPSHOT")
 
-            return !isSnapshot || !isArtifactExt
+            return !(isSnapshot && isArtifactExt)
         }
     }
 }
