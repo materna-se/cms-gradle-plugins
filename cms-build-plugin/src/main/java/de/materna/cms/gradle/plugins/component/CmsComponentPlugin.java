@@ -25,6 +25,7 @@ import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.distribution.plugins.DistributionPlugin;
 import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.DuplicatesStrategy;
 import org.gradle.api.plugins.*;
 import org.gradle.api.provider.Property;
@@ -69,6 +70,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
     private TaskProvider<Sync> extractComponents;
 
     private TaskProvider<Sync> installFullDist;
+    private TaskProvider<Sync> syncCoreResources;
     private TaskProvider<Exec> execFull;
     private TaskProvider<JavaExec> javaExecFull;
     private AdhocComponentWithVariants cmsComponentSc;
@@ -115,6 +117,19 @@ public class CmsComponentPlugin implements Plugin<Project> {
             for (File cmsComponent : cmsComponent) {
                 task.from(project.zipTree(cmsComponent), Util::stripFirstPathSegment);
             }
+        });
+
+        syncCoreResources = project.getTasks().register("syncCoreResources", Sync.class, task -> {
+            task.dependsOn(extractComponents);
+            task.setGroup("cms");
+            task.setDescription("Synchronisiert die Kerndateien aus dem WEB-INF Ordner der CAE/Site in den Mandanten.");
+            task.from(extractComponents.get().getDestinationDir() + "/WEB-INF", (CopySpec copySpec) -> {
+                copySpec.include("templates/");
+                copySpec.include("tld/");
+            });
+            task.preserve(filterable -> filterable.include("templates/customers/"));
+            TaskProvider<War> war = project.getTasks().named("war", War.class);
+            task.into(war.get().getWebAppDirectory().dir("WEB-INF"));
         });
 
         Distribution fullDistribution = distributions.create("full");
