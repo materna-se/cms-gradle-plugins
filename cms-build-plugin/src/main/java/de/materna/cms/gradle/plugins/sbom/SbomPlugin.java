@@ -36,7 +36,9 @@ public class SbomPlugin implements Plugin<Project> {
         sbomConfiguration.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EMBEDDED));
         sbomConfiguration.getAttributes().attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.VERSION_CATALOG));
 
-        TaskProvider<CycloneDxTask> cyclonedxBom = project.getTasks().named("cyclonedxBom", CycloneDxTask.class);
+        TaskProvider<CycloneDxTask> cyclonedxBom = project.getTasks().named("cyclonedxBom", CycloneDxTask.class, cycloneDxTask -> {
+            cycloneDxTask.getSchemaVersion().convention("1.6");
+        });
 
         project.getPlugins().withType(BasePlugin.class, basePlugin -> {
             BasePluginExtension base = project.getExtensions().getByType(BasePluginExtension.class);
