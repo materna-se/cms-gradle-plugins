@@ -82,7 +82,7 @@ allprojects {
                 }
                 maven {
                     name = "artifactExtTremonia"
-                    url = "https://artifact-ext.materna.net/repository/tremonia_hosting_mixed/"
+                    url = "https://artifact-ext.materna.net/repository/tremonia_mixed/"
                     credentials {
                         username = project.findProperty("materna.artifact-ext.username")
                         password = project.findProperty("materna.artifact-ext.password")
