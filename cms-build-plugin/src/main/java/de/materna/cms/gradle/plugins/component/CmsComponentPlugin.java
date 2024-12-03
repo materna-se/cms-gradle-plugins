@@ -180,6 +180,8 @@ public class CmsComponentPlugin implements Plugin<Project> {
 
         project.getPlugins().withId("org.cyclonedx.bom", this::configureCycloneDx);
 
+        project.getPlugins().apply(DuplicateStartScriptsPlugin.class);
+
         project.afterEvaluate(p -> {
             if (extension.getOverlay().get() && createStartScriptsTaskProvider != null) {
                 createStartScriptsTaskProvider.configure(css -> css.setEnabled(false));
