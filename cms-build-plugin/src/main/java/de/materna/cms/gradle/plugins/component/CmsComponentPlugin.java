@@ -270,7 +270,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
                     dist.into("bin", binSpec -> {
                         binSpec.from(createStartScriptsTaskProvider);
                         //noinspection OctalInteger
-                        binSpec.setFileMode(0755);
+                        binSpec.filePermissions(cfp -> cfp.unix(0755));
                     });
                 });
             }
