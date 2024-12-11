@@ -27,6 +27,7 @@ public class SbomPlugin implements Plugin<Project> {
     public void apply(Project project) {
         project.getPlugins().apply(ReportingBasePlugin.class);
         project.getPlugins().apply(CycloneDxPlugin.class);
+        project.getPlugins().apply(SbomCachingPlugin.class);
 
         Configuration sbomConfiguration = project.getConfigurations().maybeCreate(SBOM_CONFIGURATION);
         sbomConfiguration.setCanBeResolved(false);
