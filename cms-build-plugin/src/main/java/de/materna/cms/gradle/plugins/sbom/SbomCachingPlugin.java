@@ -16,7 +16,7 @@ public class SbomCachingPlugin implements Plugin<Project> {
 
         project.afterEvaluate(p -> {
             project.getTasks().withType(CycloneDxTask.class, task -> {
-                task.getLogger().warn("Making {} cacheable", task.getName());
+
                 task.getOutputs().cacheIf(s -> task.getIncludeConfigs().isPresent() && !task.getIncludeConfigs().get().isEmpty());
 
                 //Cache maximal für eine Woche gültig.
