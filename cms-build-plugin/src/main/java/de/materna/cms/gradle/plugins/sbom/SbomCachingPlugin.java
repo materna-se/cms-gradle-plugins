@@ -4,6 +4,7 @@ import org.cyclonedx.gradle.CycloneDxTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.tasks.ClasspathNormalizer;
 import org.gradle.api.tasks.PathSensitivity;
 
 import java.time.LocalDate;
@@ -32,6 +33,7 @@ public class SbomCachingPlugin implements Plugin<Project> {
                 }
                 task.getInputs().files(includeConfigs)
                         .withPathSensitivity(PathSensitivity.RELATIVE)
+                        .withNormalizer(ClasspathNormalizer.class)
                         .withPropertyName("_caching-fix_includeConfigs");
 
             });
