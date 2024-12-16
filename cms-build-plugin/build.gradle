@@ -7,7 +7,7 @@ plugins {
 
 dependencies {
 
-    implementation 'io.freefair.gradle:okhttp-plugin:8.10'
+    implementation 'io.freefair.gradle:okhttp-plugin:8.11'
     implementation "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
     implementation "com.google.cloud.tools:jib-gradle-plugin:3.4.4"
     implementation "org.cyclonedx:cyclonedx-gradle-plugin:1.10.0"
