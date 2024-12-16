@@ -13,6 +13,7 @@ plugins {
     id "io.freefair.maven-publish-java" apply false
     id "de.materna.cms.component-bundle"
     id 'de.materna.cms.ci.java-logs'
+    id 'de.materna.cms.duplicate-docker-images'
 }
 
 apply plugin: "de.materna.cms.maven-publish-repo"
@@ -29,4 +30,10 @@ allprojects {
 dependencies {
     cmsComponent project("app-component")
     cmsComponent project("war-component")
+}
+
+duplicateDockerImages {
+    imageNames = ["cms/test/app-component"]
+    sourceRegistry = "artifact.materna.net:10009"
+    targetRegistries = ["tremonia-hosting.artifact-ext.materna.net"]
 }

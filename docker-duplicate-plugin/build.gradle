@@ -1,0 +1,26 @@
+plugins {
+    id 'java-gradle-plugin'
+    id "de.materna.cms.internal.gsb-publishing"
+    id 'io.freefair.lombok'
+    id 'jacoco'
+}
+
+dependencies {
+    implementation "com.bmuschko:gradle-docker-plugin:9.4.0"
+}
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(11))
+    }
+}
+
+gradlePlugin {
+    // Define the plugin
+    plugins {
+        component {
+            id = 'de.materna.cms.duplicate-docker-images'
+            implementationClass = 'de.materna.cms.gradle.docker.DuplicateDockerImagesPlugin'
+        }
+    }
+}

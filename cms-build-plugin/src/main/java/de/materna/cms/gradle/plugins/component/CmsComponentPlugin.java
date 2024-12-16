@@ -119,19 +119,6 @@ public class CmsComponentPlugin implements Plugin<Project> {
             }
         });
 
-        syncCoreResources = project.getTasks().register("syncCoreResources", Sync.class, task -> {
-            task.dependsOn(extractComponents);
-            task.setGroup("cms");
-            task.setDescription("Synchronisiert die Kerndateien aus dem WEB-INF Ordner der CAE/Site in den Mandanten.");
-            task.from(extractComponents.get().getDestinationDir() + "/WEB-INF", (CopySpec copySpec) -> {
-                copySpec.include("templates/");
-                copySpec.include("tld/");
-            });
-            task.preserve(filterable -> filterable.include("templates/customers/"));
-            TaskProvider<War> war = project.getTasks().named("war", War.class);
-            task.into(war.get().getWebAppDirectory().dir("WEB-INF"));
-        });
-
         Distribution fullDistribution = distributions.create("full");
 
         fullDistribution.getContents().from(extractComponents);
@@ -251,6 +238,19 @@ public class CmsComponentPlugin implements Plugin<Project> {
 
         project.getPlugins().withId("java-library", jlp -> {
             project.getPlugins().apply(WarLibraryPlugin.class);
+        });
+
+        syncCoreResources = project.getTasks().register("syncCoreResources", Sync.class, task -> {
+            task.dependsOn(extractComponents);
+            task.setGroup("cms");
+            task.setDescription("Synchronisiert die Kerndateien aus dem WEB-INF Ordner der CAE/Site in den Mandanten.");
+            task.from(extractComponents.get().getDestinationDir() + "/WEB-INF", (CopySpec copySpec) -> {
+                copySpec.include("templates/");
+                copySpec.include("tld/");
+            });
+            task.preserve(filterable -> filterable.include("templates/customers/"));
+            TaskProvider<War> war = project.getTasks().named("war", War.class);
+            task.into(war.get().getWebAppDirectory().dir("WEB-INF"));
         });
 
         project.getPlugins().withId("org.springframework.boot", sbp -> {
