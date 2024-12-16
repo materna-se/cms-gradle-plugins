@@ -6,12 +6,12 @@ plugins {
 }
 
 dependencies {
-    implementation "com.bmuschko:gradle-docker-plugin:9.4.0"
+
 }
 
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
+        languageVersion.set(JavaLanguageVersion.of(8))
     }
 }
 

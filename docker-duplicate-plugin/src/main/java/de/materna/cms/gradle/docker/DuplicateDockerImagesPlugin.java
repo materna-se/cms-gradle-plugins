@@ -1,13 +1,10 @@
 package de.materna.cms.gradle.docker;
 
 
-import com.bmuschko.gradle.docker.DockerRemoteApiPlugin;
-import com.bmuschko.gradle.docker.tasks.image.DockerPullImage;
-import com.bmuschko.gradle.docker.tasks.image.DockerPushImage;
-import com.bmuschko.gradle.docker.tasks.image.DockerTagImage;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.tasks.Exec;
 import org.gradle.api.tasks.TaskProvider;
 
 import java.util.HashMap;
@@ -18,7 +15,6 @@ public class DuplicateDockerImagesPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
 
-        project.getPlugins().apply(DockerRemoteApiPlugin.class);
 
         DuplicateDockerImagesExtension extension = project.getExtensions().create("duplicateDockerImages", DuplicateDockerImagesExtension.class);
         extension.getVersion().convention(project.getVersion().toString());
@@ -34,38 +30,44 @@ public class DuplicateDockerImagesPlugin implements Plugin<Project> {
 
             for (String imageName : extension.getImageNames().get()) {
 
-                TaskProvider<DockerPullImage> pullTask = project.getTasks().register("dockerPull__" + cleanTaskName(imageName), DockerPullImage.class);
+                String fullSourceImage = getImageName(extension.getSourceRegistry().get(), imageName, extension.getVersion().get());
+                TaskProvider<Exec> pullTask = project.getTasks().register("dockerPull__" + cleanTaskName(imageName), Exec.class);
                 pullTask.configure(t -> {
                     t.setGroup("docker");
 
-                    String fullImageName = getImageName(extension.getSourceRegistry().get(), imageName, extension.getVersion().get());
-                    t.getImage().set(fullImageName);
-                    t.setDescription("Pull image " + fullImageName);
+                    t.setDescription("Pull image " + fullSourceImage);
+
+                    t.executable("docker");
+                    t.args("pull", fullSourceImage);
                 });
 
                 for (String targetRegistry : extension.getTargetRegistries().get()) {
 
                     String targetName = getImageName(targetRegistry, imageName, null);
+                    String fullTargetName = getImageName(targetRegistry, imageName, extension.getVersion().get());
 
-                    TaskProvider<DockerTagImage> tagTask = project.getTasks().register("dockerTag__" + cleanTaskName(targetName), DockerTagImage.class);
+                    TaskProvider<Exec> tagTask = project.getTasks().register("dockerTag__" + cleanTaskName(targetName), Exec.class);
                     tagTask.configure(t -> {
                         t.setGroup("docker");
-                        t.getImageId().convention(pullTask.flatMap(DockerPullImage::getImage));
                         t.dependsOn(pullTask);
-                        String targetImageName = getImageName(targetRegistry, imageName, extension.getVersion().get());
-                        t.setDescription("Tag image " + pullTask.get().getImage().get() + " as " + targetImageName);
+                        t.setDescription("Tag image " + fullSourceImage + " as " + fullTargetName);
 
-                        t.getTag().set(targetImageName);
-                        t.getRepository().set("");
+                        t.executable("docker");
+                        t.args("tag");
+                        t.args(fullSourceImage);
+                        t.args(fullTargetName);
+
                     });
 
-                    TaskProvider<DockerPushImage> pushTask = project.getTasks().register("dockerPush__" + cleanTaskName(targetName), DockerPushImage.class);
+                    TaskProvider<Exec> pushTask = project.getTasks().register("dockerPush__" + cleanTaskName(targetName), Exec.class);
                     pushTask.configure(t -> {
                         t.setGroup("docker");
                         t.dependsOn(tagTask);
-                        t.getImages().add(tagTask.flatMap(DockerTagImage::getTag));
+                        t.setDescription("Push image " + fullTargetName);
 
-                        t.setDescription("Push image " + tagTask.get().getTag().get());
+                        t.executable("docker");
+                        t.args("push");
+                        t.args(fullTargetName);
                     });
 
                     pushPerRegistry.computeIfAbsent(targetRegistry, tN -> {
