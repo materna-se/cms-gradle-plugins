@@ -3,6 +3,7 @@ package de.materna.cms.gradle.plugins.sbom;
 import org.cyclonedx.gradle.CycloneDxTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.tasks.ClasspathNormalizer;
 import org.gradle.api.tasks.PathSensitivity;
@@ -29,7 +30,8 @@ public class SbomCachingPlugin implements Plugin<Project> {
 
                 ConfigurableFileCollection includeConfigs = p.files();
                 for (String includeConfig : task.getIncludeConfigs().get()) {
-                    includeConfigs.from(project.getConfigurations().getByName(includeConfig));
+                    Configuration byName = project.getConfigurations().findByName(includeConfig);
+                    includeConfigs.from(byName);
                 }
                 task.getInputs().files(includeConfigs)
                         .withPathSensitivity(PathSensitivity.RELATIVE)

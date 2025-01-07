@@ -11,6 +11,8 @@ dependencies {
     implementation "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
     implementation "com.google.cloud.tools:jib-gradle-plugin:3.4.4"
     implementation "org.cyclonedx:cyclonedx-gradle-plugin:1.10.0"
+
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 gradlePlugin {
