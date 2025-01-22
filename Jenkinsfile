@@ -32,7 +32,6 @@ pipeline {
             post {
                 always {
                     junit "**/build/test-results/test/*.xml"
-                    recordCoverage(tools: [[parser: 'JACOCO', pattern: '**/build/jacoco/*.exec']])
                     recordIssues(tools: [
                         java(pattern: '**/build/reports/javac/compileJava.err'),
                         javaDoc(pattern: '**/build/reports/javadoc/*')
