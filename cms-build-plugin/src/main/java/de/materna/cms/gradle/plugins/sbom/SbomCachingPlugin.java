@@ -17,7 +17,7 @@ public class SbomCachingPlugin implements Plugin<Project> {
     public void apply(Project project) {
 
         project.afterEvaluate(p -> {
-            project.getTasks().withType(CycloneDxTask.class, task -> {
+            project.getTasks().withType(CycloneDxTask.class).configureEach(task -> {
 
                 task.getOutputs().cacheIf(s -> task.getIncludeConfigs().isPresent() && !task.getIncludeConfigs().get().isEmpty());
 
