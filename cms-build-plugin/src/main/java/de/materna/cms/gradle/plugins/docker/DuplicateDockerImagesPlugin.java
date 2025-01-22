@@ -1,4 +1,4 @@
-package de.materna.cms.gradle.docker;
+package de.materna.cms.gradle.plugins.docker;
 
 
 import org.gradle.api.Plugin;

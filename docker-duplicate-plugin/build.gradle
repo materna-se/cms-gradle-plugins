@@ -18,9 +18,6 @@ java {
 gradlePlugin {
     // Define the plugin
     plugins {
-        component {
-            id = 'de.materna.cms.duplicate-docker-images'
-            implementationClass = 'de.materna.cms.gradle.docker.DuplicateDockerImagesPlugin'
-        }
+
     }
 }

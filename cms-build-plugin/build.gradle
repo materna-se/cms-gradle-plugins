@@ -62,5 +62,9 @@ gradlePlugin {
             id = 'de.materna.cms.sbom'
             implementationClass = 'de.materna.cms.gradle.plugins.sbom.SbomPlugin'
         }
+        dockerDuplicateImages {
+            id = 'de.materna.cms.duplicate-docker-images'
+            implementationClass = 'de.materna.cms.gradle.plugins.docker.DuplicateDockerImagesPlugin'
+        }
     }
 }
