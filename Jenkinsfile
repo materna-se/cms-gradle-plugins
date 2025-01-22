@@ -32,7 +32,7 @@ pipeline {
             post {
                 always {
                     junit "**/build/test-results/test/*.xml"
-                    jacoco classPattern: '**/build/classes/*/main', execPattern: '**/build/jacoco/*.exec'
+                    recordCoverage(tools: [[parser: 'JACOCO']])
                     recordIssues(tools: [
                         java(pattern: '**/build/reports/javac/compileJava.err'),
                         javaDoc(pattern: '**/build/reports/javadoc/*')
