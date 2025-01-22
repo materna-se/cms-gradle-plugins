@@ -320,7 +320,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
         });
 
         project.afterEvaluate(p -> {
-            p.getTasks().getByName("installDist").dependsOn(warTask);
+            p.getTasks().named("installDist").configure(installDist -> installDist.dependsOn(warTask));
             distZip.configure(task -> task.dependsOn(warTask));
             distTar.configure(task -> task.dependsOn(warTask));
             mainDistribution.contents(distContent -> {
