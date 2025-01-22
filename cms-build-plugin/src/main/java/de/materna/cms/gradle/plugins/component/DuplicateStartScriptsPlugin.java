@@ -16,7 +16,7 @@ public abstract class DuplicateStartScriptsPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
 
-        project.getTasks().withType(CreateStartScripts.class, createStartScripts -> {
+        project.getTasks().withType(CreateStartScripts.class).configureEach(createStartScripts -> {
             createStartScripts.doLast(task -> {
                 File unixScript = createStartScripts.getUnixScript();
 
