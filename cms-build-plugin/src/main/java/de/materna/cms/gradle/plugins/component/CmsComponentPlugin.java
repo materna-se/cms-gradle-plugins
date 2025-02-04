@@ -154,6 +154,9 @@ public class CmsComponentPlugin implements Plugin<Project> {
                 Provider<JavaLauncher> defaultJavaLauncher = javaToolchainService.launcherFor(defaultToolchain);
 
                 exec.getJavaLauncher().convention(defaultJavaLauncher);
+
+                exec.systemProperty("java.io.tmpdir", exec.getTemporaryDir());
+                exec.doFirst(new CreateTempDirAction());
             });
         });
 
