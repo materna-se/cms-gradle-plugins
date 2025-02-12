@@ -28,6 +28,7 @@ import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.DuplicatesStrategy;
 import org.gradle.api.plugins.*;
+import org.gradle.api.plugins.jvm.internal.JvmPluginServices;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Exec;
@@ -53,10 +54,13 @@ import java.time.Instant;
 import java.util.*;
 import java.util.jar.Manifest;
 
-public class CmsComponentPlugin implements Plugin<Project> {
+public abstract class CmsComponentPlugin implements Plugin<Project> {
 
+    @Inject
+    protected abstract JvmPluginServices getJvmPluginServices();
 
-    private final SoftwareComponentFactory softwareComponentFactory;
+    @Inject
+    protected abstract SoftwareComponentFactory getSoftwareComponentFactory();
 
     private Project project;
     private Distribution mainDistribution;
@@ -74,11 +78,6 @@ public class CmsComponentPlugin implements Plugin<Project> {
     private TaskProvider<Exec> execFull;
     private TaskProvider<JavaExec> javaExecFull;
     private AdhocComponentWithVariants cmsComponentSc;
-
-    @Inject
-    public CmsComponentPlugin(SoftwareComponentFactory softwareComponentFactory) {
-        this.softwareComponentFactory = softwareComponentFactory;
-    }
 
     @Override
     public void apply(Project project) {
@@ -186,7 +185,7 @@ public class CmsComponentPlugin implements Plugin<Project> {
             });
         });
 
-        cmsComponentSc = softwareComponentFactory.adhoc("cmsComponent");
+        cmsComponentSc = getSoftwareComponentFactory().adhoc("cmsComponent");
         project.getComponents().add(cmsComponentSc);
         cmsComponentSc.addVariantsFromConfiguration(cmsComponent, details -> {
         });
@@ -214,6 +213,8 @@ public class CmsComponentPlugin implements Plugin<Project> {
 
         SpringBootUtils.excludeDependenciesStarters(mainDistribution.getContents());
 
+        excludeCmsComponentApiDependenciesFromOverlayLibs();
+
         project.getPlugins().withId("org.springframework.boot", sbp -> {
             project.getTasks().named("bootDistTar", Tar.class, tar -> tar.setEnabled(false));
         });
@@ -230,6 +231,20 @@ public class CmsComponentPlugin implements Plugin<Project> {
             javaApplication.setApplicationName(extension.getName().get());
             if (extension.getOverlay().get()) {
                 p.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class, jar -> jar.getArchiveAppendix().set(p.getRootProject().getName()));
+            }
+        });
+    }
+
+    private void excludeCmsComponentApiDependenciesFromOverlayLibs() {
+        Configuration cmsComponentJavaApi = project.getConfigurations().create("cmsComponentJavaApi");
+        cmsComponentJavaApi.extendsFrom(cmsComponent);
+        getJvmPluginServices().configureAsApiElements(cmsComponentJavaApi);
+
+        mainDistribution.getContents().eachFile(fileCopyDetails -> {
+            if (fileCopyDetails.getPath().startsWith("lib/") && cmsComponentJavaApi.contains(fileCopyDetails.getFile())) {
+                if (extension.getOverlay().getOrElse(false)) {
+                    fileCopyDetails.exclude();
+                }
             }
         });
     }
