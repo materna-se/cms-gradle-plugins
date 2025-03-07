@@ -48,8 +48,9 @@ import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.time.Instant;
 import java.util.*;
 import java.util.jar.Manifest;
@@ -321,20 +322,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
 
             run.setClasspath(classpath);
 
-            run.getMainClass().convention(project.provider(() -> {
-                File manifestFile = new File(installFullDist.get().getDestinationDir(), "META-INF/MANIFEST.MF");
-                if (manifestFile.exists()) {
-                    try (InputStream in = new FileInputStream(manifestFile)) {
-                        String startClass = new Manifest(in).getMainAttributes().getValue("Start-Class");
-                        if (startClass == null) {
-                            run.getLogger().warn("Kein Start-Class in {} gefunden", manifestFile);
-                        } else {
-                            return startClass;
-                        }
-                    }
-                }
-                return null;
-            }));
+            run.getMainClass().convention(findMainClassFromDist(installFullDist));
         });
 
         project.afterEvaluate(p -> {
@@ -352,13 +340,43 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
                 });
             });
 
-            //IntelliJ verarschen, damit es die Pfade aus war-overlays auflöst.
-            if (extension.getOverlay().get() && IdeaUtils.isIntellJSync(project)) {
-
-                project.getTasks().withType(War.class, war -> {
-                    war.from(extractComponents);
+            if (extension.getOverlay().get()) {
+                p.getPlugins().withId("org.springframework.boot", plugin -> {
+                    p.getTasks().named("bootWar", BootWar.class).configure(task -> {
+                        task.dependsOn(extractComponents);
+                        task.getMainClass().convention(findMainClassFromDist(extractComponents));
+                    });
                 });
+
+
+                //IntelliJ verarschen, damit es die Pfade aus war-overlays auflöst.
+                if (IdeaUtils.isIntellJSync(project)) {
+
+                    project.getTasks().withType(War.class, war -> {
+                        war.from(extractComponents);
+                    });
+                }
             }
+
+        });
+    }
+
+    private Provider<String> findMainClassFromDist(TaskProvider<Sync> taskProvider) {
+        return taskProvider.map(sync -> {
+            File manifestFile = new File(sync.getDestinationDir(), "META-INF/MANIFEST.MF");
+            if (manifestFile.exists()) {
+                try (InputStream in = Files.newInputStream(manifestFile.toPath())) {
+                    String startClass = new Manifest(in).getMainAttributes().getValue("Start-Class");
+                    if (startClass == null) {
+                        project.getLogger().warn("Kein Start-Class in {} gefunden", manifestFile);
+                    } else {
+                        return startClass;
+                    }
+                } catch (IOException e) {
+                    sync.getLogger().warn("Fehler beim Lesen von {}", manifestFile, e);
+                }
+            }
+            return null;
         });
     }
 
@@ -402,6 +420,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
         }
 
         project.getPlugins().withType(WarPlugin.class, wp -> {
+            container.setAppRoot("/app");
             project.getPlugins().withId("org.springframework.boot", sbp -> {
                 configureJibForSpringBootWar(container);
             });
