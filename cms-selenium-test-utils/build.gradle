@@ -4,6 +4,8 @@ plugins {
     id "io.freefair.lombok"
 }
 
+description = "CMS Selenium Test Utils"
+
 dependencies {
     implementation platform("org.springframework.boot:spring-boot-dependencies:$springBootVersion")
 

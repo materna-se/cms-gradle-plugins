@@ -6,6 +6,7 @@ plugins {
     id "io.freefair.javadocs"
     id "io.freefair.okhttp"
     id 'io.freefair.lombok' apply false
+    id 'io.freefair.maven-central.validate-poms' apply false
 }
 
 allprojects {
@@ -46,16 +47,26 @@ allprojects {
     plugins.withId("com.gradle.plugin-publish") {
         gradlePlugin {
             website = "https://www.materna.de/"
-            vcsUrl = 'https://www.materna.de/'
+            vcsUrl = 'https://github.com/materna-se/cms-gradle-plugins'
         }
     }
 
     plugins.withId("maven-publish") {
+        project.apply plugin: 'io.freefair.maven-central.validate-poms'
+
         publishing {
             publications.withType(MavenPublication) {
                 pom {
-                    description = project.description
+                    name = provider { project.description }
+                    description = provider { project.description }
                     inceptionYear = '2022'
+                    url = "https://github.com/materna-se/cms-gradle-plugins"
+                    licenses {
+                        license {
+                            name = "Apache-2.0"
+                            url = "https://spdx.org/licenses/Apache-2.0.html"
+                        }
+                    }
                     organization {
                         name = 'Materna Information & Communications SE'
                         url = 'https://materna.de'

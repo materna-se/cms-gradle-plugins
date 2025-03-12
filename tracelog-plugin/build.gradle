@@ -2,6 +2,8 @@ plugins {
     id 'java-gradle-plugin'
 }
 
+description = "Tracelog Plugin"
+
 dependencies {
     implementation 'io.freefair.gradle:aspectj-plugin:8.12.1'
 }

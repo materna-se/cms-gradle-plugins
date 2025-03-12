@@ -5,6 +5,8 @@ plugins {
     id("com.gradle.plugin-publish") version "1.3.1"
 }
 
+description = "CMS Build Plugin"
+
 dependencies {
 
     implementation 'io.freefair.gradle:okhttp-plugin:8.12.1'

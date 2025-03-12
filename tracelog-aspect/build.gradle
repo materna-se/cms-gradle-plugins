@@ -4,6 +4,8 @@ plugins {
     id "io.freefair.maven-publish-java"
 }
 
+description = "Tracelog Aspect"
+
 dependencies {
     implementation 'org.aspectj:aspectjrt:1.9.7'
     implementation 'org.slf4j:slf4j-api:1.7.36'
