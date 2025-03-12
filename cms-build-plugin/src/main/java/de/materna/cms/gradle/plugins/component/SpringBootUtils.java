@@ -9,7 +9,7 @@ import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 /**
- * @see https://github.com/spring-projects/spring-boot/issues/22036
+ * @see <a href="https://github.com/spring-projects/spring-boot/issues/22036">spring-projects/spring-boot#22036</a>
  */
 @Slf4j
 @UtilityClass
