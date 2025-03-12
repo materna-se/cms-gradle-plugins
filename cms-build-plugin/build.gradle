@@ -12,7 +12,7 @@ dependencies {
     implementation 'io.freefair.gradle:okhttp-plugin:8.13'
     implementation "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
     implementation "com.google.cloud.tools:jib-gradle-plugin:3.4.4"
-    implementation "org.cyclonedx:cyclonedx-gradle-plugin:2.1.0"
+    implementation "org.cyclonedx:cyclonedx-gradle-plugin:2.2.0"
 
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
