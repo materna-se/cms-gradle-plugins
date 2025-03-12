@@ -47,6 +47,13 @@ allprojects {
         }
     }
 
+    plugins.withId("com.gradle.plugin-publish") {
+        gradlePlugin {
+            website = "https://www.materna.de/"
+            vcsUrl = 'https://www.materna.de/'
+        }
+    }
+
     plugins.withId("maven-publish") {
         publishing {
             publications.withType(MavenPublication) {

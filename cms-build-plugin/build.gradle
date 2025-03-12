@@ -3,6 +3,7 @@ plugins {
     id "de.materna.cms.internal.gsb-publishing"
     id 'io.freefair.lombok'
     id 'jacoco'
+    id("com.gradle.plugin-publish") version "1.3.1"
 }
 
 dependencies {
@@ -16,55 +17,93 @@ dependencies {
 }
 
 gradlePlugin {
+    website = "https://www.materna.de/"
+    vcsUrl = "https://www.materna.de/"
     // Define the plugin
     plugins {
         component {
             id = 'de.materna.cms.component'
             implementationClass = 'de.materna.cms.gradle.plugins.component.CmsComponentPlugin'
+            displayName = "CMS Component Plugin"
+            description = "Configures the project to build a cms component."
+            tags = ["materna", "cms"]
         }
         componentBundle {
             id = 'de.materna.cms.component-bundle'
             implementationClass = 'de.materna.cms.gradle.plugins.component.CmsComponentBundlePlugin'
+            displayName = "CMS Component-Bundle Plugin"
+            description = "Configures the project to build a cms component bundle."
+            tags = ["materna", "cms"]
         }
         warLibrary {
             id = 'de.materna.cms.war-library'
             implementationClass = 'de.materna.cms.gradle.plugins.WarLibraryPlugin'
+            displayName = "WAR-Library Plugin"
+            description = "war-variant of the java-library plugin."
+            tags = ["materna", "cms", "war"]
         }
         mavenRepo {
             id = 'de.materna.cms.maven-publish-repo'
             implementationClass = 'de.materna.cms.gradle.plugins.maven.MavenRepositoryPlugin'
+            displayName = "Maven Repo Publish Plugin"
+            description = "Builds a maven repo as zip-file"
+            tags = ["materna", "cms", "maven-repo", "maven-publish"]
         }
         ideaDownloadJavadocs {
             id = 'de.materna.cms.idea-download-javadocs'
             implementationClass = 'de.materna.cms.gradle.plugins.idea.IdeaDownloadJavadocsPlugin'
+            displayName = "Idea Download-Javadocs Plugin"
+            description = "Configures IntelliJ IDEA to download javadoc jars."
+            tags = ["materna", "cms", "idea", "javadoc"]
         }
         gitArchive {
             id = 'de.materna.cms.git-archive'
             implementationClass = 'de.materna.cms.gradle.plugins.git.GitArchivePlugin'
+            displayName = "Git Archive Plugin"
+            description = "Adds a gitArchive task."
+            tags = ["materna", "cms", "git"]
         }
         jibSemanticReleaseTags {
             id = 'de.materna.cms.jib.semantic-tags'
             implementationClass = "de.materna.cms.gradle.plugins.jib.JibSemanticTagsPlugin"
+            displayName = "Jib Semantic Release Tags Plugin"
+            description = "Jib Semantic Release Tags Plugin"
+            tags = ["materna", "cms", "jib"]
         }
         integrationTest {
             id = 'de.materna.cms.integration-test'
             implementationClass = 'de.materna.cms.gradle.plugins.test.IntegrationTestPlugin'
+            displayName = "CMS Integration Test Plugin"
+            description = "CMS Integration Test Plugin"
+            tags = ["materna", "cms", "test"]
         }
         seleniumTest {
             id = 'de.materna.cms.selenium-test'
             implementationClass = 'de.materna.cms.gradle.plugins.test.SeleniumTestPlugin'
+            displayName = "CMS Selenium Test Plugin"
+            description = "CMS Selenium Test Plugin"
+            tags = ["materna", "cms", "selenium"]
         }
         ciJavaLogs {
             id = 'de.materna.cms.ci.java-logs'
             implementationClass = 'de.materna.cms.gradle.plugins.ci.JavaLogsPlugin'
+            displayName = "CI Java Logs Plugin"
+            description = "Configures javac to log errors and warnings into files for further processing"
+            tags = ["materna", "cms", "ci", "logs"]
         }
         sbom {
             id = 'de.materna.cms.sbom'
             implementationClass = 'de.materna.cms.gradle.plugins.sbom.SbomPlugin'
+            displayName = "CMS SBOM Plugin"
+            description = "CMS SBOM Plugin"
+            tags = ["materna", "cms", "sbom"]
         }
         dockerDuplicateImages {
             id = 'de.materna.cms.duplicate-docker-images'
             implementationClass = 'de.materna.cms.gradle.plugins.docker.DuplicateDockerImagesPlugin'
+            displayName = "Duplicate Docker Images Plugin"
+            description = "Allows Docker Images to be pushed to different registries"
+            tags = ["materna", "cms", "docker"]
         }
     }
 }
