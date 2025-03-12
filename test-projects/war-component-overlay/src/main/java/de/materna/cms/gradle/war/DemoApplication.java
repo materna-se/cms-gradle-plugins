@@ -1,6 +1,5 @@
 package de.materna.cms.gradle.war;
 
-import de.materna.cms.cae.util.CMUtil;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -12,7 +11,4 @@ public class DemoApplication extends SpringBootServletInitializer {
         SpringApplication.run(DemoApplication.class, args);
     }
 
-    public void test() {
-        CMUtil.getApplicationContext();
-    }
 }

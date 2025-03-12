@@ -14,7 +14,7 @@ dependencies {
     implementation platform(SpringBootPlugin.BOM_COORDINATES)
     providedRuntime platform(SpringBootPlugin.BOM_COORDINATES)
 
-    implementation 'org.springframework.boot:spring-boot-starter-web'
+    api 'org.springframework.boot:spring-boot-starter-web'
     providedApi 'org.springframework.boot:spring-boot-starter-tomcat'
     providedRuntime 'org.apache.tomcat.embed:tomcat-embed-jasper'
 

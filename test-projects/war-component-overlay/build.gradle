@@ -12,10 +12,10 @@ cmsComponent.overlay = true
 cmsComponent.name = "cae"
 
 dependencies {
-    implementation platform("de.bund.gsb.cm:gsbcm-platform:7.5.1")
-    providedCompile platform("de.bund.gsb.cm:gsbcm-platform:7.5.1")
+    implementation platform(SpringBootPlugin.BOM_COORDINATES)
+    providedCompile platform(SpringBootPlugin.BOM_COORDINATES)
 
-    cmsComponent "de.bund.gsb.cm:cae:7.5.1"
+    cmsComponent project(":war-component")
 
     implementation 'io.github.classgraph:classgraph:4.8.147'
 
