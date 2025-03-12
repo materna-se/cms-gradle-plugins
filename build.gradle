@@ -65,6 +65,12 @@ allprojects {
                     }
                     developers {
                         developer {
+                            id = "tremonia-oss"
+                            name = "Tremonia OSS"
+                            email = "tremonia-oss@materna.de"
+                            timezone = "Europe/Berlin"
+                        }
+                        developer {
                             id = 'lgrefer'
                             name = 'Lars Grefer'
                             email = 'lars.grefer@materna.group'
@@ -72,9 +78,9 @@ allprojects {
                         }
                     }
                     scm {
-                        connection = 'scm:git:https://bitbucket.materna.net/scm/gsb/cms-gradle-plugins.git'
-                        developerConnection = 'scm:git:ssh://git@bitbucket.materna.net:7999/gsb/cms-gradle-plugins.git'
-                        url = 'https://bitbucket.materna.net/projects/GSB/repos/cms-gradle-plugins'
+                        connection = 'scm:git:https://github.com/materna-se/cms-gradle-plugins.git'
+                        developerConnection = 'scm:git:ssh://git@github.com:materna-se/cms-gradle-plugins.git'
+                        url = 'https://github.com/materna-se/cms-gradle-plugins'
                     }
                 }
             }
