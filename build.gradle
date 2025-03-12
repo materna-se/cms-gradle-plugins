@@ -31,6 +31,9 @@ allprojects {
                     "Implementation-Vendor-Id": project.group,
                     "X-Gradle-Version": gradle.gradleVersion
             )
+            into("META-INF") {
+                from rootProject.file("NOTICE")
+            }
         }
 
         dependencies {
