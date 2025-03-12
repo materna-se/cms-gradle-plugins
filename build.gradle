@@ -44,6 +44,10 @@ allprojects {
         }
     }
 
+    tasks.withType(Javadoc).configureEach {
+        failOnError = false
+    }
+
     plugins.withId("com.gradle.plugin-publish") {
         gradlePlugin {
             website = "https://www.materna.de/"
