@@ -6,7 +6,6 @@ plugins {
     id "io.freefair.javadocs"
     id "io.freefair.okhttp"
     id 'io.freefair.lombok' apply false
-    id "de.materna.cms.internal.gsb-publishing" version "1.5.3"
     id "de.materna.cms.internal.materna-metadata" version "1.5.3"
     id 'de.materna.cms.maven-publish-repo' version '3.6.2'
     id 'de.materna.cms.ci.java-logs' version '3.6.2'
@@ -79,50 +78,15 @@ allprojects {
                     }
                 }
             }
-
-            repositories {
-                maven {
-                    name = "artifactExtItz"
-                    url = "https://artifact-ext.materna.net/repository/gsb_itzbund_mixed/"
-                    credentials {
-                        username = project.findProperty("materna.artifact-ext.username")
-                        password = project.findProperty("materna.artifact-ext.password")
-                    }
-                }
-                maven {
-                    name = "artifactExtTremonia"
-                    url = "https://artifact-ext.materna.net/repository/tremonia_mixed/"
-                    credentials {
-                        username = project.findProperty("materna.artifact-ext.username")
-                        password = project.findProperty("materna.artifact-ext.password")
-                    }
-                }
-            }
         }
     }
 
-    tasks.withType(PublishToMavenRepository).configureEach {
-        onlyIf("Nur Releases nach artifact-ext deployen") {
-            def isArtifactExt = repository.name.contains("artifactExt") || repository.url.toString().contains("artifact-ext")
-            def isSnapshot = project.version.toString().endsWith("-SNAPSHOT")
-
-            return !(isSnapshot && isArtifactExt)
-        }
-    }
 }
 
 dependencies {
     javadoc project(":cms-build-plugin")
     javadoc project(":tracelog-aspect")
     javadoc project(":tracelog-plugin")
-}
-
-tasks.register('uploadDocumentation', UploadFile) {
-    dependsOn "javadocJar"
-    username = "user"
-    password = "pGVte3FZm6HfbJ"
-    file = javadocJar.archiveFile
-    url = "http://docs.gsb.dev.materna.net/api/$project.version?path=cms-gradle-plugin"
 }
 
 tasks.named('wrapper') {
