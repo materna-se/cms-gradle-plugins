@@ -1,6 +1,5 @@
 plugins {
     id 'java-gradle-plugin'
-    id "de.materna.cms.internal.gsb-publishing"
     id 'io.freefair.lombok'
     id 'jacoco'
     id("com.gradle.plugin-publish") version "1.3.1"

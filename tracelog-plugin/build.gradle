@@ -1,6 +1,5 @@
 plugins {
     id 'java-gradle-plugin'
-    id "de.materna.cms.internal.gsb-publishing"
 }
 
 dependencies {
