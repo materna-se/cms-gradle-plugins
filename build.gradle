@@ -6,7 +6,6 @@ plugins {
     id "io.freefair.javadocs"
     id "io.freefair.okhttp"
     id 'io.freefair.lombok' apply false
-    id "de.materna.cms.internal.materna-metadata" version "1.5.3"
     id 'de.materna.cms.maven-publish-repo' version '3.6.2'
     id 'de.materna.cms.ci.java-logs' version '3.6.2'
 }
