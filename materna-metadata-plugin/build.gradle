@@ -10,7 +10,7 @@ dependencies {
     compileOnly "org.cyclonedx:cyclonedx-gradle-plugin:1.8.2"
     compileOnly 'org.cyclonedx:cyclonedx-core-java:9.0.4'
 
-    compileOnly 'org.jreleaser:jreleaser-gradle-plugin:1.16.0'
+    compileOnly 'org.jreleaser:jreleaser-gradle-plugin:1.17.0'
 }
 
 gradlePlugin {
