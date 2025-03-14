@@ -7,7 +7,7 @@ description = "Materna Metadata Plugin"
 dependencies {
     compileOnly "com.google.cloud.tools:jib-gradle-plugin:3.4.4"
 
-    compileOnly "org.cyclonedx:cyclonedx-gradle-plugin:1.8.2"
+    compileOnly "org.cyclonedx:cyclonedx-gradle-plugin:2.2.0"
     compileOnly 'org.cyclonedx:cyclonedx-core-java:9.0.4'
 
     compileOnly 'org.jreleaser:jreleaser-gradle-plugin:1.17.0'
