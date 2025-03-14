@@ -142,7 +142,7 @@ jreleaser {
     }
     release {
         github {
-            owner = "materna-se"
+            repoOwner = "materna-se"
             name = "cms-gradle-plugins"
             tagName = "$version"
             skipTag = true
