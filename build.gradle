@@ -132,13 +132,30 @@ dependencies {
 }
 
 jreleaser {
+    project {
+        license = 'Apache-2.0'
+        inceptionYear = '2022'
+        vendor = 'Materna Information & Communications SE'
+    }
     signing {
         active = 'NEVER'
     }
     release {
         github {
-            skipTag = true
+            owner = "materna-se"
+            name = "cms-gradle-plugins"
             tagName = "$version"
+            skipTag = true
+            overwrite = false
+            update {
+                enabled = true
+            }
+            releaseNotes {
+                enabled = false
+            }
+            changelog {
+                enabled = true
+            }
         }
     }
     deploy {
