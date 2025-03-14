@@ -5,6 +5,7 @@ plugins {
 rootProject.name = 'cms-gradle-plugins'
 
 include "cms-build-plugin"
+include "materna-metadata-plugin"
 include "tracelog-aspect"
 include "tracelog-plugin"
 include "cms-selenium-test-utils"
