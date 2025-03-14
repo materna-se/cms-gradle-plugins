@@ -7,6 +7,7 @@ plugins {
     id "io.freefair.okhttp"
     id 'io.freefair.lombok' apply false
     id 'io.freefair.maven-central.validate-poms' apply false
+    id 'org.jreleaser' version '1.17.0'
 }
 
 allprojects {
@@ -22,6 +23,8 @@ allprojects {
             toolchain {
                 languageVersion.set(JavaLanguageVersion.of(8))
             }
+            withSourcesJar()
+            withJavadocJar()
         }
 
         tasks.withType(Jar).configureEach {
@@ -60,9 +63,20 @@ allprojects {
 
     plugins.withId("maven-publish") {
         project.apply plugin: 'io.freefair.maven-central.validate-poms'
+        project.apply plugin: 'signing'
+
+        signing {
+            required = { !version.endsWith('SNAPSHOT') && gradle.taskGraph.hasTask("publish") }
+
+            def signingKey = findProperty("signingKey")
+            def signingPassword = findProperty("signingPassword")
+
+            useInMemoryPgpKeys(signingKey, signingPassword)
+        }
 
         publishing {
             publications.withType(MavenPublication) {
+                signing.sign it
                 pom {
                     name = provider { project.description }
                     description = provider { project.description }
@@ -99,6 +113,13 @@ allprojects {
                     }
                 }
             }
+
+            repositories {
+                maven {
+                    name = "mavenCentralStaging"
+                    url = rootProject.layout.buildDirectory.dir('staging-deploy')
+                }
+            }
         }
     }
 
@@ -108,6 +129,27 @@ dependencies {
     javadoc project(":cms-build-plugin")
     javadoc project(":tracelog-aspect")
     javadoc project(":tracelog-plugin")
+}
+
+jreleaser {
+    signing {
+        active = 'NEVER'
+    }
+    deploy {
+        maven {
+            mavenCentral {
+                sonatype {
+                    active = 'RELEASE'
+                    namespace = "de.materna"
+                    url = 'https://central.sonatype.com/api/v1/publisher'
+                    sign = false //Already done by Gradle
+                    checksums = false //Already done by Gradle
+                    stagingRepository('build/staging-deploy')
+                    retryDelay = 20
+                }
+            }
+        }
+    }
 }
 
 tasks.named('wrapper') {
