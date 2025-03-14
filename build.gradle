@@ -135,6 +135,12 @@ jreleaser {
     signing {
         active = 'NEVER'
     }
+    release {
+        github {
+            skipTag = true
+            tagName = "$version"
+        }
+    }
     deploy {
         maven {
             mavenCentral {
