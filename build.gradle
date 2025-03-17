@@ -54,7 +54,7 @@ allprojects {
 
     plugins.withId("com.gradle.plugin-publish") {
         gradlePlugin {
-            website = "https://www.materna.de/"
+            website = 'https://github.com/materna-se/cms-gradle-plugins/wiki'
             vcsUrl = 'https://github.com/materna-se/cms-gradle-plugins'
         }
     }

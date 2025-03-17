@@ -18,8 +18,6 @@ dependencies {
 }
 
 gradlePlugin {
-    website = "https://www.materna.de/"
-    vcsUrl = "https://www.materna.de/"
     // Define the plugin
     plugins {
         component {
