@@ -38,14 +38,14 @@ gradlePlugin {
             id = 'de.materna.cms.war-library'
             implementationClass = 'de.materna.cms.gradle.plugins.WarLibraryPlugin'
             displayName = "WAR-Library Plugin"
-            description = "war-variant of the java-library plugin."
+            description = "war-variant of Gradles java-library plugin which adds a providedApi configuration."
             tags = ["materna", "cms", "war"]
         }
         mavenRepo {
             id = 'de.materna.cms.maven-publish-repo'
             implementationClass = 'de.materna.cms.gradle.plugins.maven.MavenRepositoryPlugin'
             displayName = "Maven Repo Publish Plugin"
-            description = "Builds a maven repo as zip-file"
+            description = "Builds a maven repo as zip-file containing all MavenPublications."
             tags = ["materna", "cms", "maven-repo", "maven-publish"]
         }
         ideaDownloadJavadocs {
@@ -59,49 +59,49 @@ gradlePlugin {
             id = 'de.materna.cms.git-archive'
             implementationClass = 'de.materna.cms.gradle.plugins.git.GitArchivePlugin'
             displayName = "Git Archive Plugin"
-            description = "Adds a gitArchive task."
+            description = "Adds a gitArchive task for a source-distribution using the 'git archive' command."
             tags = ["materna", "cms", "git"]
         }
         jibSemanticReleaseTags {
             id = 'de.materna.cms.jib.semantic-tags'
             implementationClass = "de.materna.cms.gradle.plugins.jib.JibSemanticTagsPlugin"
             displayName = "Jib Semantic Release Tags Plugin"
-            description = "Jib Semantic Release Tags Plugin"
+            description = "Configures jib to publish an image under multiple tags."
             tags = ["materna", "cms", "jib"]
         }
         integrationTest {
             id = 'de.materna.cms.integration-test'
             implementationClass = 'de.materna.cms.gradle.plugins.test.IntegrationTestPlugin'
             displayName = "CMS Integration Test Plugin"
-            description = "CMS Integration Test Plugin"
+            description = "Adds the jvm-test-suite 'integrationTest'"
             tags = ["materna", "cms", "test"]
         }
         seleniumTest {
             id = 'de.materna.cms.selenium-test'
             implementationClass = 'de.materna.cms.gradle.plugins.test.SeleniumTestPlugin'
             displayName = "CMS Selenium Test Plugin"
-            description = "CMS Selenium Test Plugin"
+            description = "Adds Selenium support to integration tests based on the 'de.materna.cms.integration-test' plugin."
             tags = ["materna", "cms", "selenium"]
         }
         ciJavaLogs {
             id = 'de.materna.cms.ci.java-logs'
             implementationClass = 'de.materna.cms.gradle.plugins.ci.JavaLogsPlugin'
             displayName = "CI Java Logs Plugin"
-            description = "Configures javac to log errors and warnings into files for further processing"
+            description = "Configures all Javadoc, JavaCompile and GroovyCompile tasks to write log-files for further processing."
             tags = ["materna", "cms", "ci", "logs"]
         }
         sbom {
             id = 'de.materna.cms.sbom'
             implementationClass = 'de.materna.cms.gradle.plugins.sbom.SbomPlugin'
             displayName = "CMS SBOM Plugin"
-            description = "CMS SBOM Plugin"
+            description = "Adds SBOM-publication support based on the CycloneDX Gradle plugin."
             tags = ["materna", "cms", "sbom"]
         }
         dockerDuplicateImages {
             id = 'de.materna.cms.duplicate-docker-images'
             implementationClass = 'de.materna.cms.gradle.plugins.docker.DuplicateDockerImagesPlugin'
             displayName = "Duplicate Docker Images Plugin"
-            description = "Allows Docker Images to be pushed to different registries"
+            description = "Duplicates Docker Images into different registries."
             tags = ["materna", "cms", "docker"]
         }
     }
