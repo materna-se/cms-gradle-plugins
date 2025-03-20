@@ -21,6 +21,9 @@ import com.google.cloud.tools.jib.gradle.JibExtension;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
+import static de.materna.cms.gradle.plugins.materna_metadata.MaternaMetadataPlugin.MATERNA_NAME;
+import static de.materna.cms.gradle.plugins.materna_metadata.MaternaMetadataPlugin.MATERNA_URL;
+
 public class JibMetadataPlugin implements Plugin<Project> {
 
     @Override
@@ -31,11 +34,11 @@ public class JibMetadataPlugin implements Plugin<Project> {
 
         container.getLabels().put("org.label-schema.schema-version", "1.0");
 
-        container.getLabels().put("maintainer", "Materna Information & Communications SE");
-        container.getLabels().put("org.label-schema.vendor", "Materna Information & Communications SE");
-        container.getLabels().put("org.opencontainers.image.vendor", "Materna Information & Communications SE");
+        container.getLabels().put("maintainer", MATERNA_NAME);
+        container.getLabels().put("org.label-schema.vendor", MATERNA_NAME);
+        container.getLabels().put("org.opencontainers.image.vendor", MATERNA_NAME);
 
-        container.getLabels().put("org.label-schema.url", "https://materna.de");
-        container.getLabels().put("org.opencontainers.image.url", "https://materna.de");
+        container.getLabels().put("org.label-schema.url", MATERNA_URL);
+        container.getLabels().put("org.opencontainers.image.url", MATERNA_URL);
     }
 }

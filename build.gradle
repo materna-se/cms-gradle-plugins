@@ -6,6 +6,7 @@ plugins {
     id 'io.freefair.lombok' apply false
     id 'io.freefair.maven-central.validate-poms' apply false
     id 'org.jreleaser' version '1.17.0'
+    id 'de.materna.cms.materna-metadata' version '3.8.1'
 }
 
 allprojects {
@@ -28,7 +29,6 @@ allprojects {
         tasks.withType(Jar).configureEach {
             manifest.attributes(
                     "Implementation-Version": project.version,
-                    "Implementation-Vendor": "Materna Information & Communications SE",
                     "Implementation-Vendor-Id": project.group,
                     "X-Gradle-Version": gradle.gradleVersion
             )
@@ -88,10 +88,6 @@ allprojects {
                             url = "https://spdx.org/licenses/Apache-2.0.html"
                         }
                     }
-                    organization {
-                        name = 'Materna Information & Communications SE'
-                        url = 'https://materna.de'
-                    }
                     developers {
                         developer {
                             id = "tremonia-oss"
@@ -135,7 +131,6 @@ jreleaser {
     project {
         license = 'Apache-2.0'
         inceptionYear = '2022'
-        vendor = 'Materna Information & Communications SE'
     }
     signing {
         active = 'NEVER'

@@ -28,6 +28,6 @@ public class JReleaserMetadataPlugin implements Plugin<Project> {
 
         JReleaserExtension jReleaserExtension = project.getExtensions().getByType(JReleaserExtension.class);
 
-        jReleaserExtension.getProject().getVendor().convention("Materna Information & Communications SE");
+        jReleaserExtension.getProject().getVendor().convention(MaternaMetadataPlugin.MATERNA_NAME);
     }
 }

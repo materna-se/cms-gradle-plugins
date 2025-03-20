@@ -27,6 +27,8 @@ import java.util.Collections;
 
 public class MaternaMetadataPlugin implements Plugin<Project> {
 
+    public static final String MATERNA_NAME = "Materna Information & Communications SE";
+    public static final String MATERNA_URL = "https://materna.de";
 
     @Override
     public void apply(Project project) {
@@ -36,8 +38,8 @@ public class MaternaMetadataPlugin implements Plugin<Project> {
     private void configureSubproject(Project project) {
 
         project.getTasks().withType(Jar.class).configureEach(jar -> {
-            jar.getManifest().attributes(Collections.singletonMap("Implementation-Vendor", "Materna Information & Commundations SE"));
-            jar.getManifest().attributes(Collections.singletonMap("Implementation-URL", "https://materna.de"));
+            jar.getManifest().attributes(Collections.singletonMap("Implementation-Vendor", MATERNA_NAME));
+            jar.getManifest().attributes(Collections.singletonMap("Implementation-URL", MATERNA_URL));
             jar.getManifest().attributes(Collections.singletonMap("Implementation-Vendor-Id", "de.materna"));
             jar.getManifest().attributes(Collections.singletonMap("Implementation-Version", project.getVersion()));
         });
@@ -45,8 +47,8 @@ public class MaternaMetadataPlugin implements Plugin<Project> {
         project.getPlugins().withType(MavenPublishPlugin.class, mpp -> {
             project.getExtensions().getByType(PublishingExtension.class).getPublications().withType(MavenPublication.class).configureEach(mavenPublication -> {
                 mavenPublication.getPom().organization(org -> {
-                    org.getName().convention("Materna Information & Commundations SE");
-                    org.getUrl().convention("https://materna.de");
+                    org.getName().convention(MATERNA_NAME);
+                    org.getUrl().convention(MATERNA_URL);
                 });
             });
         });

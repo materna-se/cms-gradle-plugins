@@ -22,14 +22,17 @@ import org.gradle.api.Project;
 
 import java.util.Collections;
 
+import static de.materna.cms.gradle.plugins.materna_metadata.MaternaMetadataPlugin.MATERNA_NAME;
+import static de.materna.cms.gradle.plugins.materna_metadata.MaternaMetadataPlugin.MATERNA_URL;
+
 public class CycloneDxMetadataPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
         project.getTasks().withType(CycloneDxTask.class)
                 .configureEach(cyclonedxBom -> cyclonedxBom.setOrganizationalEntity(organizationalEntity -> {
-                    organizationalEntity.setName("Materna Information & Communications SE");
-                    organizationalEntity.setUrls(Collections.singletonList("https://materna.de"));
+                    organizationalEntity.setName(MATERNA_NAME);
+                    organizationalEntity.setUrls(Collections.singletonList(MATERNA_URL));
                 }));
     }
 }
