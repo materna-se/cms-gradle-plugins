@@ -1,6 +1,6 @@
 plugins {
+    id 'base'
     id "io.freefair.git-version"
-    id "io.freefair.aggregate-javadoc"
     id "io.freefair.javadocs"
     id "io.freefair.okhttp"
     id 'io.freefair.lombok' apply false
@@ -115,12 +115,6 @@ allprojects {
         }
     }
 
-}
-
-dependencies {
-    javadoc project(":cms-build-plugin")
-    javadoc project(":tracelog-aspect")
-    javadoc project(":tracelog-plugin")
 }
 
 jreleaser {
