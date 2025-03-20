@@ -4,6 +4,13 @@ plugins {
 
 rootProject.name = 'cms-gradle-plugins'
 
+dependencyResolutionManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
 include "cms-build-plugin"
 include "materna-metadata-plugin"
 include "tracelog-aspect"

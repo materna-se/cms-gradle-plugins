@@ -10,10 +10,6 @@ plugins {
 }
 
 allprojects {
-    repositories {
-        mavenCentral()
-        gradlePluginPortal()
-    }
 
     group = "de.materna.cms.tools"
 
