@@ -26,6 +26,7 @@ import org.gradle.api.tasks.*;
 public abstract class TrivyFilesystem extends AbstractTrivyTask {
 
     @InputDirectory
+    @PathSensitive(PathSensitivity.RELATIVE)
     public abstract DirectoryProperty getSourceDirectory();
 
     @OutputFile
