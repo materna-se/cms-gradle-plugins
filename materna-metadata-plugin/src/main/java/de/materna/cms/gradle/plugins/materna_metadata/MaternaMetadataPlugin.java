@@ -59,6 +59,8 @@ public class MaternaMetadataPlugin implements Plugin<Project> {
 
         project.getPlugins().withId("org.jreleaser", plugin -> project.getPlugins().apply(JReleaserMetadataPlugin.class));
 
+        project.getPlugins().withId("org.springframework.boot", plugin -> project.getPlugins().apply(SpringBootMetadataPlugin.class));
+
     }
 
 }
