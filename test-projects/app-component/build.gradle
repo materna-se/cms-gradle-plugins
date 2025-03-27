@@ -3,6 +3,7 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 plugins {
     id "de.materna.cms.component"
     id "de.materna.cms.selenium-test"
+    id "de.materna.cms.materna-metadata"
     id "application"
     id "java-library"
     id "io.freefair.maven-publish-java"
