@@ -26,6 +26,7 @@ import de.materna.cms.gradle.plugins.idea.IdeaUtils;
 import de.materna.cms.gradle.plugins.jib.JibSemanticTagsPlugin;
 import de.materna.cms.gradle.plugins.jib.JibUtil;
 import de.materna.cms.gradle.plugins.sbom.SbomPlugin;
+import io.freefair.gradle.util.GitUtil;
 import org.codehaus.groovy.runtime.ProcessGroovyMethods;
 import org.cyclonedx.gradle.CycloneDxTask;
 import org.gradle.api.Plugin;
@@ -425,8 +426,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
         container.getLabels().put("de.materna.cms.from-image", project.provider(() -> jibExtension.getFrom().getImage()));
 
         try {
-            Process execute = ProcessGroovyMethods.execute("git rev-parse HEAD");
-            String gitSha = ProcessGroovyMethods.getText(execute).trim();
+            Provider<String> gitSha = GitUtil.getSha(project);
 
             container.getLabels().put("org.label-schema.vcs-ref", gitSha);
             container.getLabels().put("org.opencontainers.image.revision", gitSha);
