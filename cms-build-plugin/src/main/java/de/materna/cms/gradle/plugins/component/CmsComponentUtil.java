@@ -21,6 +21,7 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
+import org.gradle.api.component.AdhocComponentWithVariants;
 import org.gradle.api.model.ObjectFactory;
 
 @UtilityClass
@@ -46,5 +47,9 @@ public class CmsComponentUtil {
         cmsComponentBundle.getAttributes().attribute(Category.CATEGORY_ATTRIBUTE, objectFactory.named(Category.class, "cms-component-bundle"));
 
         return cmsComponentBundle;
+    }
+
+    public static AdhocComponentWithVariants getCmsComponentSoftwareComponent(Project project) {
+        return (AdhocComponentWithVariants) project.getComponents().getByName("cmsComponent");
     }
 }

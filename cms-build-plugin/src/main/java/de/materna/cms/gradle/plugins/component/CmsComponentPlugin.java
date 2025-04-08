@@ -27,7 +27,6 @@ import de.materna.cms.gradle.plugins.jib.JibSemanticTagsPlugin;
 import de.materna.cms.gradle.plugins.jib.JibUtil;
 import de.materna.cms.gradle.plugins.sbom.SbomPlugin;
 import io.freefair.gradle.util.GitUtil;
-import org.codehaus.groovy.runtime.ProcessGroovyMethods;
 import org.cyclonedx.gradle.CycloneDxTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -44,6 +43,7 @@ import org.gradle.api.distribution.plugins.DistributionPlugin;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.DuplicatesStrategy;
+import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.plugins.*;
 import org.gradle.api.plugins.jvm.internal.JvmPluginServices;
 import org.gradle.api.provider.Property;
@@ -80,6 +80,9 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
     @Inject
     protected abstract SoftwareComponentFactory getSoftwareComponentFactory();
 
+    @Inject
+    protected abstract FileSystemOperations getFileSystemOperations();
+
     private Project project;
     private Distribution mainDistribution;
     private CmsComponentExtension extension;
@@ -95,7 +98,6 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
     private TaskProvider<Sync> syncCoreResources;
     private TaskProvider<Exec> execFull;
     private TaskProvider<JavaExec> javaExecFull;
-    private AdhocComponentWithVariants cmsComponentSc;
 
     @Override
     public void apply(Project project) {
@@ -203,7 +205,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
             });
         });
 
-        cmsComponentSc = getSoftwareComponentFactory().adhoc("cmsComponent");
+        AdhocComponentWithVariants cmsComponentSc = getSoftwareComponentFactory().adhoc("cmsComponent");
         project.getComponents().add(cmsComponentSc);
         cmsComponentSc.addVariantsFromConfiguration(cmsComponent, details -> {
         });
@@ -222,7 +224,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
 
         createStartScriptsTaskProvider.configure(startScripts -> {
             startScripts.setUnixStartScriptGenerator(new CmsApplicationStartScriptGenerator());
-            StartScriptUtil.disableWindowsScript(startScripts);
+            StartScriptUtil.disableWindowsScript(startScripts, getFileSystemOperations());
             startScripts.setEnabled(!extension.getOverlay().get());
         });
 
@@ -300,7 +302,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
                 startScripts.setEnabled(!extension.getOverlay().getOrElse(false));
 
                 startScripts.setUnixStartScriptGenerator(new CmsBootWarStartScriptGenerator());
-                StartScriptUtil.disableWindowsScript(startScripts);
+                StartScriptUtil.disableWindowsScript(startScripts, getFileSystemOperations());
             });
 
             if (!extension.getOverlay().getOrElse(false)) {
@@ -558,7 +560,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
             });
         });
 
-        cmsComponentSc.addVariantsFromConfiguration(project.getConfigurations().getByName(SbomPlugin.SBOM_CONFIGURATION), details -> {
+        CmsComponentUtil.getCmsComponentSoftwareComponent(project).addVariantsFromConfiguration(project.getConfigurations().getByName(SbomPlugin.SBOM_CONFIGURATION), details -> {
         });
     }
 }

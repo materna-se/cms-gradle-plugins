@@ -16,23 +16,34 @@
 
 package de.materna.cms.gradle.plugins.component;
 
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.UtilityClass;
 import org.gradle.api.Action;
 import org.gradle.api.Task;
+import org.gradle.api.file.FileSystemOperations;
 import org.gradle.jvm.application.tasks.CreateStartScripts;
+
 
 @UtilityClass
 public class StartScriptUtil {
 
-    public static void disableWindowsScript(CreateStartScripts task) {
+    public static void disableWindowsScript(CreateStartScripts task, FileSystemOperations fileOperations) {
         task.setWindowsStartScriptGenerator((javaAppStartScriptGenerationDetails, writer) -> {});
-        //noinspection Convert2Lambda
-        task.doLast(new Action<Task>() {
-            @Override
-            public void execute(Task t) {
-                t.getProject().delete(task.getWindowsScript());
-            }
-        });
+
+        task.doLast(new DisableWindowsScriptAction(fileOperations));
+    }
+
+    @RequiredArgsConstructor
+    public static class DisableWindowsScriptAction implements Action<Task> {
+
+        private final FileSystemOperations fileOperations;
+
+        @Override
+        public void execute(Task task) {
+            fileOperations.delete(deleteSpec -> {
+                deleteSpec.delete(((CreateStartScripts)task).getWindowsScript());
+            });
+        }
     }
 
 

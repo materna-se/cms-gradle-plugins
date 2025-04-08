@@ -19,6 +19,7 @@ package de.materna.cms.gradle.plugins.component;
 
 import de.materna.cms.gradle.plugins.maven.MavenRepositoryPlugin;
 import org.cyclonedx.gradle.CycloneDxTask;
+import org.gradle.api.Action;
 import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;

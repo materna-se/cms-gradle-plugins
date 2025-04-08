@@ -22,13 +22,16 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import okio.Okio;
+import org.gradle.api.file.ArchiveOperations;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.TaskAction;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 
@@ -41,6 +44,12 @@ public abstract class PrepareGeckoDriver extends OkHttpTask {
 
   @OutputDirectory
   public abstract DirectoryProperty getOutputDir();
+
+  @Inject
+  public abstract FileSystemOperations getFileSystemOperations();
+
+  @Inject
+  public abstract ArchiveOperations getArchiveOperations();
 
   @TaskAction
   public void download() throws IOException {
@@ -64,8 +73,8 @@ public abstract class PrepareGeckoDriver extends OkHttpTask {
 
     response.body().source().readAll(Okio.sink(tmpFile));
 
-    getProject().sync(spec -> {
-      spec.from(getProject().tarTree(getProject().getResources().gzip(tmpFile)));
+    getFileSystemOperations().sync(spec -> {
+      spec.from(getArchiveOperations().tarTree(getArchiveOperations().gzip(tmpFile)));
       spec.into(getOutputDir());
     });
   }
