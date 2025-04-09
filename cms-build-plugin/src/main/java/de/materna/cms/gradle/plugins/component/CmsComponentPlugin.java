@@ -56,6 +56,7 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.bundling.Tar;
 import org.gradle.api.tasks.bundling.War;
 import org.gradle.api.tasks.bundling.Zip;
+import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.jvm.toolchain.JavaLauncher;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
@@ -175,6 +176,13 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
 
                 exec.systemProperty("java.io.tmpdir", exec.getTemporaryDir());
                 exec.doFirst(new CreateTempDirAction());
+            });
+
+            project.getTasks().withType(JavaCompile.class).configureEach(javaCompile -> {
+                List<String> compilerArgs = javaCompile.getOptions().getCompilerArgs();
+                if (!compilerArgs.contains("-parameters")) {
+                    compilerArgs.add("-parameters");
+                }
             });
         });
 
