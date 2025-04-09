@@ -27,7 +27,9 @@ import de.materna.cms.gradle.plugins.jib.JibSemanticTagsPlugin;
 import de.materna.cms.gradle.plugins.jib.JibUtil;
 import de.materna.cms.gradle.plugins.sbom.SbomPlugin;
 import io.freefair.gradle.util.GitUtil;
+import lombok.RequiredArgsConstructor;
 import org.cyclonedx.gradle.CycloneDxTask;
+import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -40,10 +42,7 @@ import org.gradle.api.component.SoftwareComponentFactory;
 import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.distribution.plugins.DistributionPlugin;
-import org.gradle.api.file.ConfigurableFileCollection;
-import org.gradle.api.file.CopySpec;
-import org.gradle.api.file.DuplicatesStrategy;
-import org.gradle.api.file.FileSystemOperations;
+import org.gradle.api.file.*;
 import org.gradle.api.plugins.*;
 import org.gradle.api.plugins.jvm.internal.JvmPluginServices;
 import org.gradle.api.provider.Property;
@@ -260,13 +259,26 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
         cmsComponentJavaApi.extendsFrom(cmsComponent);
         getJvmPluginServices().configureAsApiElements(cmsComponentJavaApi);
 
-        mainDistribution.getContents().eachFile(fileCopyDetails -> {
+        mainDistribution.getContents().eachFile(new ExcludeCmsComponentApiDependenciesAction(extension.getOverlay(), cmsComponentJavaApi));
+    }
+
+    /**
+     * Implemented as inner class, in order to better support the Gradle Configuration Cache.
+     */
+    @RequiredArgsConstructor
+    private static class ExcludeCmsComponentApiDependenciesAction implements Action<FileCopyDetails> {
+
+        private final Property<Boolean> overlay;
+        private final FileCollection cmsComponentJavaApi;
+
+        @Override
+        public void execute(FileCopyDetails fileCopyDetails) {
             if (fileCopyDetails.getPath().startsWith("lib/") && cmsComponentJavaApi.contains(fileCopyDetails.getFile())) {
-                if (extension.getOverlay().getOrElse(false)) {
+                if (overlay.getOrElse(false)) {
                     fileCopyDetails.exclude();
                 }
             }
-        });
+        }
     }
 
     void configureWarComponent(WarPlugin warPlugin) {
