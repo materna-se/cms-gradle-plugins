@@ -20,7 +20,7 @@ include "cms-selenium-test-utils"
 
 develocity {
     buildScan {
-        publishing.onlyIf { System.getenv("CI") }
+        publishing.onlyIf { System.getenv("CI") != null }
         termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
         termsOfUseAgree = "yes"
     }
