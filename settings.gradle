@@ -1,5 +1,6 @@
 plugins {
     id "io.freefair.settings.plugin-versions" version "8.13.1"
+    id "com.gradle.develocity" version "4.0"
 }
 
 rootProject.name = 'cms-gradle-plugins'
@@ -16,3 +17,11 @@ include "materna-metadata-plugin"
 include "tracelog-aspect"
 include "tracelog-plugin"
 include "cms-selenium-test-utils"
+
+develocity {
+    buildScan {
+        publishing.onlyIf { System.getenv("CI") }
+        termsOfUseUrl = "https://gradle.com/help/legal-terms-of-use"
+        termsOfUseAgree = "yes"
+    }
+}
