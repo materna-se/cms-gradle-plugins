@@ -257,7 +257,13 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
         project.afterEvaluate(p -> {
             javaApplication.setApplicationName(extension.getName().get());
             if (extension.getOverlay().get()) {
-                p.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class, jar -> jar.getArchiveAppendix().set(p.getRootProject().getName()));
+                p.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class, jar -> {
+                    Project baseProject = p.getParent();
+                    if (baseProject == null) {
+                        baseProject = p.getRootProject();
+                    }
+                    jar.getArchiveAppendix().set(baseProject.getName());
+                });
             }
         });
     }
