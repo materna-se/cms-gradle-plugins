@@ -262,7 +262,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
                     if (baseProject == null) {
                         baseProject = p.getRootProject();
                     }
-                    jar.getArchiveAppendix().set(baseProject.getName());
+                    jar.getArchiveAppendix().convention(baseProject.getName());
                 });
             }
         });
