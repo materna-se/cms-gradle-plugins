@@ -252,6 +252,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
             run.setClasspath(classpath);
 
             run.getMainClass().convention(javaApplication.getMainClass());
+            run.doFirst(new WarnOnMissingMainClassAction());
         });
 
         project.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class, jar -> {
@@ -369,6 +370,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
             run.setClasspath(classpath);
 
             run.getMainClass().convention(findMainClassFromDist(installFullDist));
+            run.doFirst(new WarnOnMissingMainClassAction());
         });
 
         project.afterEvaluate(p -> {
