@@ -538,7 +538,11 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
                     entrypoint.add("-cp");
                     entrypoint.add("/app/resources:/app/classes:/app/libs/*");
 
-                    entrypoint.add("@/app/jib-main-class-file");
+                    if (container.getMainClass() != null) {
+                        entrypoint.add(container.getMainClass());
+                    } else {
+                        entrypoint.add("@/app/jib-main-class-file");
+                    }
 
                     container.setEntrypoint(entrypoint);
                 }
