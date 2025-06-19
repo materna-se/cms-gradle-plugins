@@ -14,7 +14,7 @@ dependencies {
 
     compileOnly "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
 
-    testImplementation "org.springframework.boot:spring-boot-gradle-plugin:3.5.0"
+    testImplementation "org.springframework.boot:spring-boot-gradle-plugin:3.5.1"
 }
 
 gradlePlugin {
