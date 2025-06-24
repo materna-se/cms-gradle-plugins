@@ -61,6 +61,11 @@ public class MaternaMetadataPlugin implements Plugin<Project> {
 
         project.getPlugins().withId("org.springframework.boot", plugin -> project.getPlugins().apply(SpringBootMetadataPlugin.class));
 
+        project.getPlugins().withId("org.asciidoctor.jvm.convert", plugin -> project.getPlugins().apply(AsciidocMetadataPlugin.class));
+        project.getPlugins().withId("org.asciidoctor.jvm.pdf", plugin -> project.getPlugins().apply(AsciidocMetadataPlugin.class));
+        project.getPlugins().withId("org.asciidoctor.jvm.epub", plugin -> project.getPlugins().apply(AsciidocMetadataPlugin.class));
+        project.getPlugins().withId("org.asciidoctor.jvm.revealjs", plugin -> project.getPlugins().apply(AsciidocMetadataPlugin.class));
+
     }
 
 }
