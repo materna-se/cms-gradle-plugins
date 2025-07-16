@@ -21,7 +21,7 @@ dependencies {
     api platform(SpringBootPlugin.BOM_COORDINATES)
     integrationTestImplementation platform(SpringBootPlugin.BOM_COORDINATES)
 
-    implementation 'io.github.classgraph:classgraph:4.8.180'
+    implementation 'io.github.classgraph:classgraph:4.8.181'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
