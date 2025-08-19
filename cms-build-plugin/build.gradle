@@ -9,8 +9,8 @@ description = "CMS Build Plugin"
 
 dependencies {
 
-    implementation 'io.freefair.gradle:okhttp-plugin:8.14'
-    implementation 'io.freefair.gradle:plugin-utils:8.14'
+    implementation 'io.freefair.gradle:okhttp-plugin:8.14.2'
+    implementation 'io.freefair.gradle:plugin-utils:8.14.2'
     implementation "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
     implementation "com.google.cloud.tools:jib-gradle-plugin:3.4.5"
     implementation "org.cyclonedx:cyclonedx-gradle-plugin:2.3.1"
