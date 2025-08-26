@@ -17,7 +17,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v4.4.1
+        uses: gradle/actions/setup-gradle@v4.4.2
 
       - name: Publish package
         run: ./gradlew --no-configuration-cache --no-parallel publish publishPlugins jreleaserFullRelease
