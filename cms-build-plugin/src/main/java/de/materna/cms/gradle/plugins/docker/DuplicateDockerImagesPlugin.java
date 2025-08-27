@@ -22,15 +22,22 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.tasks.Exec;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.internal.deprecation.DeprecationLogger;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class DuplicateDockerImagesPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
 
+        DeprecationLogger.deprecatePlugin("de.materna.cms.duplicate-docker-images")
+                .replaceWith("https://regclient.org/usage/regsync/")
+                .willBeRemovedInGradle10()
+                .undocumented()
+                .nagUser();
 
         DuplicateDockerImagesExtension extension = project.getExtensions().create("duplicateDockerImages", DuplicateDockerImagesExtension.class);
         extension.getVersion().convention(project.getVersion().toString());
