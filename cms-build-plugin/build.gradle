@@ -81,13 +81,6 @@ gradlePlugin {
             description = "Adds the jvm-test-suite 'integrationTest'"
             tags = ["materna", "cms", "test"]
         }
-        seleniumTest {
-            id = 'de.materna.cms.selenium-test'
-            implementationClass = 'de.materna.cms.gradle.plugins.test.SeleniumTestPlugin'
-            displayName = "CMS Selenium Test Plugin"
-            description = "Adds Selenium support to integration tests based on the 'de.materna.cms.integration-test' plugin."
-            tags = ["materna", "cms", "selenium"]
-        }
         ciJavaLogs {
             id = 'de.materna.cms.ci.java-logs'
             implementationClass = 'de.materna.cms.gradle.plugins.ci.JavaLogsPlugin'
