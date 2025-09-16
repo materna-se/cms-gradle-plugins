@@ -4,6 +4,12 @@ plugins {
 
 description = "Materna Metadata Plugin"
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
 dependencies {
     compileOnly "com.google.cloud.tools:jib-gradle-plugin:3.4.5"
 

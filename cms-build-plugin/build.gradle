@@ -7,6 +7,12 @@ plugins {
 
 description = "CMS Build Plugin"
 
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
+
 dependencies {
 
     implementation 'io.freefair.gradle:okhttp-plugin:8.14.2'
