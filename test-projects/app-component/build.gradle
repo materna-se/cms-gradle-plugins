@@ -2,7 +2,6 @@ import org.springframework.boot.gradle.plugin.SpringBootPlugin
 
 plugins {
     id "de.materna.cms.component"
-    id "de.materna.cms.selenium-test"
     id "de.materna.cms.materna-metadata"
     id "application"
     id "java-library"
@@ -19,7 +18,6 @@ cyclonedxBom.outputFormat = "json"
 
 dependencies {
     api platform(SpringBootPlugin.BOM_COORDINATES)
-    integrationTestImplementation platform(SpringBootPlugin.BOM_COORDINATES)
 
     implementation 'io.github.classgraph:classgraph:4.8.181'
     implementation 'org.springframework.boot:spring-boot-starter-web'

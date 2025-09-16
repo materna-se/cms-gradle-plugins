@@ -43,6 +43,7 @@ import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.distribution.plugins.DistributionPlugin;
 import org.gradle.api.file.*;
+import org.gradle.api.internal.tasks.InputChangesAwareTaskAction;
 import org.gradle.api.plugins.*;
 import org.gradle.api.plugins.jvm.internal.JvmPluginServices;
 import org.gradle.api.provider.Property;
@@ -121,6 +122,15 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
 
         distZip.configure(task -> task.getArchiveVersion().set(""));
         distTar.configure(task -> task.getArchiveVersion().set(""));
+
+        //Workaround org.gradle.api.plugins.ApplicationPlugin.PreventDestinationOverwrite
+        project.getTasks().named(DistributionPlugin.TASK_INSTALL_NAME, Sync.class).configure(installDist -> {
+            installDist.doFirst("clean target dir when overlay", task -> {
+                if (extension.getOverlay().get()) {
+                    getFileSystemOperations().delete(ds -> ds.delete(installDist.getDestinationDir()));
+                }
+            });
+        });
 
         cmsComponent = CmsComponentUtil.maybeCreateCmsComponentConfiguration(project);
 
