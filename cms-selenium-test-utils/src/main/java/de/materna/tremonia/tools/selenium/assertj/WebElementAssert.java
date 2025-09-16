@@ -23,6 +23,7 @@ import org.openqa.selenium.WebElement;
 
 import java.util.Objects;
 
+@Deprecated
 public class WebElementAssert extends AbstractAssert<WebElementAssert, WebElement> {
 
   public WebElementAssert(WebElement actual) {

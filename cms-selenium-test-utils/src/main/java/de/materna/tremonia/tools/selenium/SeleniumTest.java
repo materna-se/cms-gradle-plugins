@@ -30,6 +30,7 @@ import org.openqa.selenium.chrome.ChromeOptions;
 /**
  * JUnit 5 Extension für Selenium-Tests
  */
+@Deprecated
 public class SeleniumTest implements BeforeEachCallback, ParameterResolver, AfterEachCallback {
 
   private WebDriver createDriver() {

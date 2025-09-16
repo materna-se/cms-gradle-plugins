@@ -23,6 +23,7 @@ import org.gradle.api.file.Directory;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.testing.Test;
+import org.gradle.internal.deprecation.DeprecationLogger;
 
 import java.io.File;
 
@@ -33,11 +34,17 @@ import java.io.File;
  *
  * @see IntegrationTestPlugin
  */
+@Deprecated
 public class SeleniumTestPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
         project.getPlugins().apply(IntegrationTestPlugin.class);
+
+        DeprecationLogger.deprecatePlugin("de.materna.cms.selenium-test")
+                .willBeRemovedInGradle9()
+                .undocumented()
+                .nagUser();
 
         project.getDependencies().add("integrationTestImplementation", "org.seleniumhq.selenium:selenium-java:4.13.0");
         project.getDependencies().add("integrationTestImplementation", "org.assertj:assertj-core");

@@ -37,6 +37,7 @@ import java.io.IOException;
 
 @Getter
 @CacheableTask
+@Deprecated
 public abstract class PrepareGeckoDriver extends OkHttpTask {
 
   @Input
