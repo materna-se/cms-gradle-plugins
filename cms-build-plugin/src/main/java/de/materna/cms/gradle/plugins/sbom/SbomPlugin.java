@@ -25,6 +25,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
 import org.gradle.api.attributes.Usage;
+import org.gradle.api.file.Directory;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.BasePluginExtension;
 import org.gradle.api.plugins.JavaPlugin;
@@ -32,8 +33,6 @@ import org.gradle.api.plugins.ReportingBasePlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.reporting.ReportingExtension;
 import org.gradle.api.tasks.TaskProvider;
-
-import java.io.File;
 
 public class SbomPlugin implements Plugin<Project> {
 
@@ -57,43 +56,34 @@ public class SbomPlugin implements Plugin<Project> {
             cycloneDxTask.getSchemaVersion().convention("1.6");
         });
 
-        project.getPlugins().withType(BasePlugin.class, basePlugin -> {
-            BasePluginExtension base = project.getExtensions().getByType(BasePluginExtension.class);
-
-            cyclonedxBom.configure(cdxBom -> {
-                cdxBom.getOutputName().convention(base.getArchivesName().map(name -> String.format("%s-%s.cdx", name, project.getVersion())));
-            });
-        });
+        project.getPlugins().apply(BasePlugin.class);
+        BasePluginExtension base = project.getExtensions().getByType(BasePluginExtension.class);
 
         ReportingExtension reporting = project.getExtensions().getByType(ReportingExtension.class);
 
         cyclonedxBom.configure(cdxBom -> {
-            cdxBom.getDestination().convention(reporting.getBaseDirectory().getAsFile().map(baseDir -> new File(baseDir, "sbom")));
-        });
 
-        Provider<File> jsonFile = cyclonedxBom.flatMap(CycloneDxTask::getDestination)
-                .zip(cyclonedxBom.flatMap(CycloneDxTask::getOutputName), (destination, outputName) -> new File(destination, outputName + ".json"));
-        Provider<File> xmlFile = cyclonedxBom.flatMap(CycloneDxTask::getDestination)
-                .zip(cyclonedxBom.flatMap(CycloneDxTask::getOutputName), (destination, outputName) -> new File(destination, outputName + ".xml"));
+            Provider<Directory> baseDir = reporting.getBaseDirectory().dir("sbom");
+
+            cdxBom.getJsonOutput().set(baseDir.flatMap(d -> d.file(base.getArchivesName().map(name -> String.format("%s-%s.cdx.json", name, project.getVersion())))));
+            cdxBom.getXmlOutput().set(baseDir.flatMap(d -> d.file(base.getArchivesName().map(name -> String.format("%s-%s.cdx.xml", name, project.getVersion())))));
+
+        });
 
         project.afterEvaluate(p -> {
 
             if (cyclonedxBom.get().isEnabled()) {
-                String outputFormat = cyclonedxBom.get().getOutputFormat().get();
-                if ("all".equalsIgnoreCase(outputFormat) || "json".equalsIgnoreCase(outputFormat)) {
-                    project.getArtifacts().add(sbomConfiguration.getName(), jsonFile, artifact -> {
-                        artifact.setExtension("cdx.json");
-                        artifact.setType("cdx");
-                        artifact.builtBy(cyclonedxBom);
-                    });
-                }
-                if ("all".equalsIgnoreCase(outputFormat) || "xml".equalsIgnoreCase(outputFormat)) {
-                    project.getArtifacts().add(sbomConfiguration.getName(), xmlFile, artifact -> {
-                        artifact.setExtension("cdx.xml");
-                        artifact.setType("cdx");
-                        artifact.builtBy(cyclonedxBom);
-                    });
-                }
+                project.getArtifacts().add(sbomConfiguration.getName(), cyclonedxBom.get().getJsonOutput(), artifact -> {
+                    artifact.setExtension("cdx.json");
+                    artifact.setType("cdx");
+                    artifact.builtBy(cyclonedxBom);
+                });
+
+                project.getArtifacts().add(sbomConfiguration.getName(), cyclonedxBom.get().getXmlOutput(), artifact -> {
+                    artifact.setExtension("cdx.xml");
+                    artifact.setType("cdx");
+                    artifact.builtBy(cyclonedxBom);
+                });
             }
 
             project.getPlugins().withType(JavaPlugin.class, jp -> {
