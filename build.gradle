@@ -6,7 +6,7 @@ plugins {
     id 'io.freefair.lombok' apply false
     id 'io.freefair.maven-central.validate-poms' apply false
     id 'org.jreleaser' version '1.20.0'
-    id 'de.materna.cms.materna-metadata' version '3.9.0'
+    id 'de.materna.cms.materna-metadata' version '3.9.1'
 }
 
 allprojects {
