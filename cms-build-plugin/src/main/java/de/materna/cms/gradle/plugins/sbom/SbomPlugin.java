@@ -65,6 +65,8 @@ public class SbomPlugin implements Plugin<Project> {
 
             Provider<Directory> baseDir = reporting.getBaseDirectory().dir("sbom");
 
+            cdxBom.getDestination().set(baseDir.map(Directory::getAsFile));
+
             cdxBom.getJsonOutput().set(baseDir.flatMap(d -> d.file(base.getArchivesName().map(name -> String.format("%s-%s.cdx.json", name, project.getVersion())))));
             cdxBom.getXmlOutput().set(baseDir.flatMap(d -> d.file(base.getArchivesName().map(name -> String.format("%s-%s.cdx.xml", name, project.getVersion())))));
 
