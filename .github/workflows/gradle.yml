@@ -31,7 +31,7 @@ jobs:
     # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v4.4.3
+      uses: gradle/actions/setup-gradle@v4.4.4
 
     - name: Build with Gradle Wrapper
       run: ./gradlew build
@@ -62,7 +62,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v4.4.3
+      uses: gradle/actions/setup-gradle@v4.4.4
 
     - name: Build with Gradle Wrapper
       run: ./gradlew build
@@ -84,4 +84,4 @@ jobs:
     # Generates and submits a dependency graph, enabling Dependabot Alerts for all project dependencies.
     # See: https://github.com/gradle/actions/blob/main/dependency-submission/README.md
     - name: Generate and submit dependency graph
-      uses: gradle/actions/dependency-submission@abc608cff69be5976b7da7964bec1fb81d6bd281 # v4.0.0
+      uses: gradle/actions/dependency-submission@e60655a8a03bf3b9a7ff400dc5ef49bed725bec8 # v4.0.0
