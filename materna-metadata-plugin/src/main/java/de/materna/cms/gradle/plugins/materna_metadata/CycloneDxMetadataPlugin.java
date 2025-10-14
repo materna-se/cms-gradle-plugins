@@ -16,23 +16,45 @@
 
 package de.materna.cms.gradle.plugins.materna_metadata;
 
-import org.cyclonedx.gradle.CycloneDxTask;
+import org.cyclonedx.gradle.BaseCyclonedxTask;
+import org.cyclonedx.model.OrganizationalEntity;
+import org.cyclonedx.model.organization.PostalAddress;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static de.materna.cms.gradle.plugins.materna_metadata.MaternaMetadataPlugin.MATERNA_NAME;
 import static de.materna.cms.gradle.plugins.materna_metadata.MaternaMetadataPlugin.MATERNA_URL;
 
 public class CycloneDxMetadataPlugin implements Plugin<Project> {
 
+    static OrganizationalEntity materna = getMaterna();
+
+    private static OrganizationalEntity getMaterna() {
+        OrganizationalEntity materna = new OrganizationalEntity();
+        materna.setName(MATERNA_NAME);
+        materna.setUrls(Collections.singletonList(MATERNA_URL));
+        materna.setAddress(getPostalAddress());
+        return materna;
+    }
+
+    private static @NotNull PostalAddress getPostalAddress() {
+        PostalAddress rss = new PostalAddress();
+        rss.setStreetAddress("Robert-Schuman-Straße 20");
+        rss.setPostalCode("44263");
+        rss.setLocality("Dortmund");
+        rss.setCountry("DE");
+        return rss;
+    }
+
     @Override
     public void apply(Project project) {
-        project.getTasks().withType(CycloneDxTask.class)
-                .configureEach(cyclonedxBom -> cyclonedxBom.setOrganizationalEntity(organizationalEntity -> {
-                    organizationalEntity.setName(MATERNA_NAME);
-                    organizationalEntity.setUrls(Collections.singletonList(MATERNA_URL));
-                }));
+        project.getTasks().withType(BaseCyclonedxTask.class)
+                .configureEach(cyclonedxBom -> cyclonedxBom.getOrganizationalEntity().convention(materna));
     }
 }

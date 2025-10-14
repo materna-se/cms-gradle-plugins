@@ -28,7 +28,9 @@ import de.materna.cms.gradle.plugins.jib.JibUtil;
 import de.materna.cms.gradle.plugins.sbom.SbomPlugin;
 import io.freefair.gradle.util.GitUtil;
 import lombok.RequiredArgsConstructor;
-import org.cyclonedx.gradle.CycloneDxTask;
+
+import org.cyclonedx.gradle.CyclonedxDirectTask;
+import org.cyclonedx.model.Component;
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -584,19 +586,17 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
 
         project.getPlugins().apply(SbomPlugin.class);
 
-        TaskProvider<CycloneDxTask> cyclonedxBomTask = project.getTasks().named("cyclonedxBom", CycloneDxTask.class);
+        TaskProvider<CyclonedxDirectTask> cyclonedxBomTask = project.getTasks().named("cyclonedxDirectBom", CyclonedxDirectTask.class);
 
         //Erst aus machen, und dann für War und Application wieder an machen.
         cyclonedxBomTask.configure(cyclonedxBom -> {
             cyclonedxBom.setEnabled(false);
-
-            cyclonedxBom.getOutputName().convention(extension.getName().map(name -> String.format("%s-%s.cdx", name, project.getVersion())));
         });
 
         project.getPlugins().withType(WarPlugin.class, warPlugin -> {
             cyclonedxBomTask.configure(cyclonedxBom -> {
                 cyclonedxBom.setEnabled(true);
-                cyclonedxBom.getProjectType().convention("application");
+                cyclonedxBom.getProjectType().convention(Component.Type.APPLICATION);
                 cyclonedxBom.getIncludeConfigs().convention(Collections.singletonList(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
                 cyclonedxBom.getSkipConfigs().convention(Arrays.asList(WarPlugin.PROVIDED_COMPILE_CONFIGURATION_NAME, WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME));
             });
@@ -605,7 +605,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
         project.getPlugins().withType(ApplicationPlugin.class, applicationPlugin -> {
             cyclonedxBomTask.configure(cyclonedxBom -> {
                 cyclonedxBom.setEnabled(true);
-                cyclonedxBom.getProjectType().convention("application");
+                cyclonedxBom.getProjectType().convention(Component.Type.APPLICATION);
                 cyclonedxBom.getIncludeConfigs().convention(Collections.singletonList(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
             });
         });

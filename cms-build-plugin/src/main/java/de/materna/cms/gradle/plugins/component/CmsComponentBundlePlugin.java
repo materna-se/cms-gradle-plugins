@@ -18,8 +18,8 @@ package de.materna.cms.gradle.plugins.component;
 
 
 import de.materna.cms.gradle.plugins.maven.MavenRepositoryPlugin;
-import org.cyclonedx.gradle.CycloneDxTask;
-import org.gradle.api.Action;
+import org.cyclonedx.gradle.CyclonedxDirectTask;
+import org.cyclonedx.model.Component;
 import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -101,12 +101,12 @@ public class CmsComponentBundlePlugin implements Plugin<Project> {
     }
 
     private void configureCycloneDx(Plugin<?> plugin) {
-        TaskProvider<CycloneDxTask> cyclonedxBomTask = project.getTasks().named("cyclonedxBom", CycloneDxTask.class);
+        TaskProvider<CyclonedxDirectTask> cyclonedxBomTask = project.getTasks().named("cyclonedxDirectBom", CyclonedxDirectTask.class);
 
         //Erst aus machen, und dann für War und Application wieder an machen.
         cyclonedxBomTask.configure(cyclonedxBom -> {
             cyclonedxBom.getIncludeConfigs().convention(Collections.singletonList("cmsComponent"));
-            cyclonedxBom.getProjectType().convention("application");
+            cyclonedxBom.getProjectType().convention(Component.Type.APPLICATION);
         });
     }
 
