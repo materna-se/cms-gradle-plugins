@@ -14,8 +14,6 @@ plugins {
 application.mainClass = "de.materna.cms.gradle.app.DemoApplication"
 application.applicationDefaultJvmArgs = ["-server"]
 
-cyclonedxBom.outputFormat = "json"
-
 dependencies {
     api platform(SpringBootPlugin.BOM_COORDINATES)
 

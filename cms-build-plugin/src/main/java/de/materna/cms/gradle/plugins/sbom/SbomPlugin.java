@@ -17,8 +17,9 @@
 package de.materna.cms.gradle.plugins.sbom;
 
 import de.materna.cms.gradle.plugins.Util;
-import org.cyclonedx.gradle.CycloneDxPlugin;
-import org.cyclonedx.gradle.CycloneDxTask;
+import org.cyclonedx.Version;
+import org.cyclonedx.gradle.CyclonedxPlugin;
+import org.cyclonedx.gradle.CyclonedxDirectTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -41,8 +42,7 @@ public class SbomPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         project.getPlugins().apply(ReportingBasePlugin.class);
-        project.getPlugins().apply(CycloneDxPlugin.class);
-        project.getPlugins().apply(SbomCachingPlugin.class);
+        project.getPlugins().apply(CyclonedxPlugin.class);
 
         Configuration sbomConfiguration = project.getConfigurations().maybeCreate(SBOM_CONFIGURATION);
         sbomConfiguration.setCanBeResolved(false);
@@ -52,8 +52,8 @@ public class SbomPlugin implements Plugin<Project> {
         sbomConfiguration.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EMBEDDED));
         sbomConfiguration.getAttributes().attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.VERSION_CATALOG));
 
-        TaskProvider<CycloneDxTask> cyclonedxBom = project.getTasks().named("cyclonedxBom", CycloneDxTask.class, cycloneDxTask -> {
-            cycloneDxTask.getSchemaVersion().convention("1.6");
+        TaskProvider<CyclonedxDirectTask> cyclonedxBom = project.getTasks().named("cyclonedxDirectBom", CyclonedxDirectTask.class, cycloneDxTask -> {
+            cycloneDxTask.getSchemaVersion().convention(Version.VERSION_16);
         });
 
         project.getPlugins().apply(BasePlugin.class);
@@ -64,8 +64,6 @@ public class SbomPlugin implements Plugin<Project> {
         cyclonedxBom.configure(cdxBom -> {
 
             Provider<Directory> baseDir = reporting.getBaseDirectory().dir("sbom");
-
-            cdxBom.getDestination().set(baseDir.map(Directory::getAsFile));
 
             cdxBom.getJsonOutput().set(baseDir.flatMap(d -> d.file(base.getArchivesName().map(name -> String.format("%s-%s.cdx.json", name, project.getVersion())))));
             cdxBom.getXmlOutput().set(baseDir.flatMap(d -> d.file(base.getArchivesName().map(name -> String.format("%s-%s.cdx.xml", name, project.getVersion())))));
