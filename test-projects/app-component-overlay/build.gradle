@@ -11,7 +11,7 @@ cmsComponent.name = "app-component"
 dependencies {
     cmsComponent project(":app-component")
 
-    implementation 'io.github.classgraph:classgraph:4.8.181'
+    implementation 'io.github.classgraph:classgraph:4.8.184'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
