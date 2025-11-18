@@ -18,7 +18,7 @@ dependencies {
     implementation 'io.freefair.gradle:okhttp-plugin:9.1.0'
     implementation 'io.freefair.gradle:plugin-utils:9.1.0'
     implementation "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
-    implementation "com.google.cloud.tools:jib-gradle-plugin:3.4.5"
+    implementation "com.google.cloud.tools:jib-gradle-plugin:3.5.0"
     implementation "org.cyclonedx:cyclonedx-gradle-plugin:3.0.2"
 }
 
