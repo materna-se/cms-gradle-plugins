@@ -22,7 +22,7 @@ dependencies {
 
     compileOnly "org.asciidoctor.jvm.convert:org.asciidoctor.jvm.convert.gradle.plugin:4.0.5"
 
-    testImplementation "org.springframework.boot:spring-boot-gradle-plugin:3.5.7"
+    testImplementation "org.springframework.boot:spring-boot-gradle-plugin:4.0.0"
     testImplementation "org.asciidoctor.jvm.convert:org.asciidoctor.jvm.convert.gradle.plugin:4.0.5"
 }
 
