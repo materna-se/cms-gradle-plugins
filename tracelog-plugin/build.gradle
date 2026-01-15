@@ -11,7 +11,7 @@ java {
 }
 
 dependencies {
-    implementation 'io.freefair.gradle:aspectj-plugin:9.1.0'
+    implementation 'io.freefair.gradle:aspectj-plugin:9.2.0'
 }
 
 gradlePlugin {
