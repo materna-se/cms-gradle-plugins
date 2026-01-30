@@ -43,7 +43,6 @@ import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
 import org.gradle.api.distribution.plugins.DistributionPlugin;
 import org.gradle.api.file.*;
-import org.gradle.api.internal.tasks.InputChangesAwareTaskAction;
 import org.gradle.api.plugins.*;
 import org.gradle.api.plugins.jvm.internal.JvmPluginServices;
 import org.gradle.api.provider.Property;
@@ -299,10 +298,18 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
 
         @Override
         public void execute(FileCopyDetails fileCopyDetails) {
-            if (fileCopyDetails.getPath().startsWith("lib/") && cmsComponentJavaApi.contains(fileCopyDetails.getFile())) {
-                if (overlay.getOrElse(false)) {
-                    fileCopyDetails.exclude();
-                }
+            boolean isOverlay = overlay.getOrElse(false);
+            if (!isOverlay) {
+                return;
+            }
+
+            if (!cmsComponentJavaApi.contains(fileCopyDetails.getFile())) {
+                return;
+            }
+
+            String path = fileCopyDetails.getPath();
+            if (path.startsWith("lib/") || path.contains("/lib/")) {
+                fileCopyDetails.exclude();
             }
         }
     }
