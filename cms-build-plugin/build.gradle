@@ -19,7 +19,7 @@ dependencies {
     implementation 'io.freefair.gradle:plugin-utils:9.2.0'
     implementation "org.springframework.boot:spring-boot-gradle-plugin:$springBootVersion"
     implementation "com.google.cloud.tools:jib-gradle-plugin:3.5.3"
-    implementation "org.cyclonedx:cyclonedx-gradle-plugin:3.1.0"
+    implementation "org.cyclonedx:cyclonedx-gradle-plugin:3.1.1"
 }
 
 gradlePlugin {
