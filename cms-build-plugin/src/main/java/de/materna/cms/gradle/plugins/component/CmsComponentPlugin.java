@@ -29,12 +29,10 @@ import de.materna.cms.gradle.plugins.sbom.SbomPlugin;
 import io.freefair.gradle.util.GitUtil;
 import lombok.RequiredArgsConstructor;
 
+import org.cyclonedx.gradle.BaseCyclonedxTask;
 import org.cyclonedx.gradle.CyclonedxDirectTask;
 import org.cyclonedx.model.Component;
-import org.gradle.api.Action;
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
-import org.gradle.api.Task;
+import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.LibraryElements;
@@ -49,10 +47,7 @@ import org.gradle.api.plugins.*;
 import org.gradle.api.plugins.jvm.internal.JvmPluginServices;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
-import org.gradle.api.tasks.Exec;
-import org.gradle.api.tasks.JavaExec;
-import org.gradle.api.tasks.Sync;
-import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.tasks.*;
 import org.gradle.api.tasks.application.CreateStartScripts;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.bundling.Tar;
@@ -591,6 +586,20 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
         //Erst aus machen, und dann für War und Application wieder an machen.
         cyclonedxBomTask.configure(cyclonedxBom -> {
             cyclonedxBom.setEnabled(false);
+        });
+
+        project.getPlugins().withType(JavaPlugin.class, javaPlugin -> {
+            project.getTasks().withType(BaseCyclonedxTask.class).configureEach(baseCyclonedxTask -> {
+
+                NamedDomainObjectProvider<Configuration> runtimeClasspath = project.getConfigurations().named(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+                baseCyclonedxTask.getInputs().files(runtimeClasspath)
+                        .withPropertyName("maternaCmsComponentClasspath")
+                        .optional(true)
+                        .withPathSensitivity(PathSensitivity.NAME_ONLY)
+                        .withNormalizer(ClasspathNormalizer.class)
+                        .ignoreEmptyDirectories();
+
+            });
         });
 
         project.getPlugins().withType(WarPlugin.class, warPlugin -> {
