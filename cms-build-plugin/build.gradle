@@ -102,5 +102,12 @@ gradlePlugin {
             description = "Duplicates Docker Images into different registries."
             tags = ["materna", "cms", "docker"]
         }
+        trivy {
+            id = 'de.materna.cms.trivy'
+            implementationClass = 'de.materna.cms.gradle.plugins.trivy.TrivyPlugin'
+            displayName = "Trivy Scan Plugin"
+            description = "Enables a Trivy scan for Gradle Distributions"
+            tags = ["materna", "trivy"]
+        }
     }
 }
