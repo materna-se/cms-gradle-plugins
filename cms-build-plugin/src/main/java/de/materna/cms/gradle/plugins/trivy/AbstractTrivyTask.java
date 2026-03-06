@@ -32,6 +32,7 @@ public abstract class AbstractTrivyTask extends Exec {
     /**
      * config path (default "trivy.yaml")
      */
+    @Optional
     @InputFile
     @PathSensitive(PathSensitivity.RELATIVE)
     public abstract RegularFileProperty getConfig();

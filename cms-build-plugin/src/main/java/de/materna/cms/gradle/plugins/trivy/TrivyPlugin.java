@@ -19,33 +19,23 @@ package de.materna.cms.gradle.plugins.trivy;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.distribution.plugins.DistributionPlugin;
-import org.gradle.api.tasks.Sync;
-import org.gradle.api.tasks.TaskProvider;
 
 public class TrivyPlugin implements Plugin<Project> {
 
     @Override
     public void apply(Project project) {
 
-        project.getPlugins().withType(DistributionPlugin.class, distributionPlugin -> {
-            this.configureDistribution(project);
-        });
-
-        project.getTasks().withType(TrivyFilesystem.class).configureEach(trivyFilesystem -> {
+        project.getTasks().withType(AbstractTrivyScanTask.class).configureEach(trivyFilesystem -> {
             trivyFilesystem.getOfflineScan().convention(project.getGradle().getStartParameter().isOffline());
             trivyFilesystem.getFormat().convention("cyclonedx");
+
+            trivyFilesystem.getOutputFile().convention(project.getLayout().getBuildDirectory().file("reports/trivy/" + project.getName() + "-" + project.getVersion() + ".json"));
+        });
+
+        project.getPlugins().withType(DistributionPlugin.class, distributionPlugin -> {
+            project.getPlugins().apply(TrivyDistributionPlugin.class);
         });
 
     }
 
-    private void configureDistribution(Project project) {
-
-        TaskProvider<Sync> installDist = project.getTasks().named("installDist", Sync.class);
-
-        project.getTasks().register("trivy", TrivyFilesystem.class, trivy -> {
-            trivy.dependsOn(installDist);
-            trivy.getSourceDirectory().set(installDist.get().getDestinationDir());
-        });
-
-    }
 }
