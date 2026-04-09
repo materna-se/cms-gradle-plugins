@@ -20,7 +20,9 @@ import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.*;
+import org.gradle.work.DisableCachingByDefault;
 
+@DisableCachingByDefault
 public abstract class AbstractTrivyTask extends Exec {
 
     /**
