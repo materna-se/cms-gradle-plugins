@@ -87,13 +87,7 @@ public class JavaLogsPlugin implements Plugin<Project> {
                 .getAsText()
                 .map(String::trim);
 
-        if (workspace.isPresent()) {
-            extension.getBaseDir().convention(workspace);
-        } else if (gitToplevel.isPresent()) {
-            extension.getBaseDir().convention(gitToplevel);
-        } else {
-            project.getLogger().warn("Konnte Workspace nicht bestimmen");
-        }
+        extension.getBaseDir().convention(workspace.orElse(gitToplevel));
     }
 
     @SuppressWarnings("Convert2Lambda")
