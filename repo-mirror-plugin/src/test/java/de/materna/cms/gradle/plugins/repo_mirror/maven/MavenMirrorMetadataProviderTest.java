@@ -16,6 +16,7 @@
 
 package de.materna.cms.gradle.plugins.repo_mirror.maven;
 
+import de.materna.cms.gradle.plugins.repo_mirror.MirrorMetadata;
 import de.materna.cms.gradle.plugins.repo_mirror.MirrorMetadataSource;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
@@ -41,7 +42,7 @@ class MavenMirrorMetadataProviderTest {
 
     @Test
     void getSources() {
-        List<MirrorMetadataSource> providers = provider.getMirrorMetadata(project.getGradle());
+        List<MirrorMetadata> providers = provider.getMirrorMetadata(project.getGradle());
 
         assertThat(providers).isNotNull();
     }
