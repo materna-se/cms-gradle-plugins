@@ -315,6 +315,10 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
 
         warTask.convention(project.getTasks().named("war", War.class));
 
+        //JSP Updates
+        project.getTasks().withType(War.class).configureEach(war -> war.setPreserveFileTimestamps(true));
+        distZip.configure(zip -> zip.setPreserveFileTimestamps(true));
+
         project.getPlugins().withId("java-library", jlp -> {
             project.getPlugins().apply(WarLibraryPlugin.class);
         });
