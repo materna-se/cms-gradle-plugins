@@ -1,0 +1,44 @@
+plugins {
+    id("com.gradle.plugin-publish") version "2.1.1"
+    id("io.freefair.lombok")
+}
+
+description = "Repository Mirror Plugin"
+
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
+
+dependencies {
+    implementation("org.apache.maven:maven-settings-builder:3.9.15")
+    implementation 'org.tomlj:tomlj:1.1.1'
+
+    testImplementation "org.springframework.boot:spring-boot-gradle-plugin:4.0.3"
+    testImplementation "org.asciidoctor.jvm.convert:org.asciidoctor.jvm.convert.gradle.plugin:4.0.5"
+}
+
+gradlePlugin {
+    plugins {
+        maternaMetadata {
+            id = 'de.materna.cms.repository-mirrors'
+            implementationClass = 'de.materna.cms.gradle.plugins.repo_mirror.RepositoryMirrorsPlugin'
+            displayName = "Repository Mirror Plugin"
+            description = "Mirrors"
+            tags = ["materna", "maven", "repository", "mirror"]
+        }
+    }
+}
+
+tasks.named("compileTestJava", JavaCompile) {
+    javaCompiler = javaToolchains.compilerFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+tasks.named("test", Test) {
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}

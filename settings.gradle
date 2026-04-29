@@ -17,6 +17,8 @@ include "materna-metadata-plugin"
 include "tracelog-aspect"
 include "tracelog-plugin"
 
+include "repo-mirror-plugin"
+
 develocity {
     buildScan {
         publishing.onlyIf { System.getenv("CI") != null }

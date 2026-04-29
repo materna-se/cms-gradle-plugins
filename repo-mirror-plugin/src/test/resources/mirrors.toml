@@ -1,0 +1,3 @@
+[my-mirror]
+source-repository-urls = ["https://repo1.maven.org/", "https://repo.maven.apache.org/maven2/"]
+mirror-url = "https://artifactory.my-corp.com/libs-release"
