@@ -12,10 +12,10 @@ java {
 }
 
 dependencies {
-    implementation("org.apache.maven:maven-settings-builder:3.9.15")
+    implementation("org.apache.maven:maven-settings-builder:3.9.16")
     implementation 'org.tomlj:tomlj:1.1.1'
 
-    testImplementation "org.springframework.boot:spring-boot-gradle-plugin:4.0.3"
+    testImplementation "org.springframework.boot:spring-boot-gradle-plugin:4.0.6"
     testImplementation "org.asciidoctor.jvm.convert:org.asciidoctor.jvm.convert.gradle.plugin:4.0.5"
 }
 

@@ -5,8 +5,8 @@ plugins {
     id "io.freefair.okhttp"
     id 'io.freefair.lombok' apply false
     id 'io.freefair.maven-central.validate-poms' apply false
-    id 'org.jreleaser' version '1.23.0'
-    id 'de.materna.cms.materna-metadata' version '4.2.0'
+    id 'org.jreleaser' version '1.24.0'
+    id 'de.materna.cms.materna-metadata' version '4.3.0'
 }
 
 allprojects {
@@ -31,7 +31,7 @@ allprojects {
         }
 
         dependencies {
-            testImplementation platform("org.junit:junit-bom:6.0.3")
+            testImplementation platform("org.junit:junit-bom:6.1.0")
             testImplementation 'org.junit.jupiter:junit-jupiter'
             testImplementation 'org.assertj:assertj-core:3.27.7'
 
