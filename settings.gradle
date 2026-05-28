@@ -17,7 +17,7 @@ include "materna-metadata-plugin"
 include "tracelog-aspect"
 include "tracelog-plugin"
 
-include "repo-mirror-plugin"
+include "repository-mirrors-plugin"
 
 develocity {
     buildScan {
