@@ -26,6 +26,7 @@ import de.materna.cms.gradle.plugins.idea.IdeaUtils;
 import de.materna.cms.gradle.plugins.jib.JibSemanticTagsPlugin;
 import de.materna.cms.gradle.plugins.jib.JibUtil;
 import de.materna.cms.gradle.plugins.sbom.SbomPlugin;
+import de.materna.cms.gradle.plugins.trivy.TrivyDistributionPlugin;
 import io.freefair.gradle.util.GitUtil;
 import lombok.RequiredArgsConstructor;
 import org.cyclonedx.gradle.BaseCyclonedxTask;
@@ -200,6 +201,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
         project.getPlugins().withId("com.google.cloud.tools.jib", this::configureJib);
 
         project.getPlugins().withId("org.cyclonedx.bom", this::configureCycloneDx);
+        project.getPlugins().withType(TrivyDistributionPlugin.class, this::configureTrivy);
 
         project.getPlugins().apply(DuplicateStartScriptsPlugin.class);
 
@@ -578,6 +580,11 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
             }
 
         });
+    }
+
+
+    private void configureTrivy(TrivyDistributionPlugin trivyDistributionPlugin) {
+        project.getPlugins().apply(SbomPlugin.class);
     }
 
     private void configureCycloneDx(Plugin<?> plugin) {

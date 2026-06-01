@@ -17,9 +17,11 @@
 package de.materna.cms.gradle.plugins.sbom;
 
 import de.materna.cms.gradle.plugins.Util;
+import de.materna.cms.gradle.plugins.trivy.TrivyDistributionPlugin;
+import de.materna.cms.gradle.plugins.trivy.TrivyRootfs;
 import org.cyclonedx.Version;
-import org.cyclonedx.gradle.CyclonedxPlugin;
 import org.cyclonedx.gradle.CyclonedxDirectTask;
+import org.cyclonedx.gradle.CyclonedxPlugin;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -39,12 +41,14 @@ public class SbomPlugin implements Plugin<Project> {
 
     public static final String SBOM_CONFIGURATION = "sbom";
 
+    private Project project;
+    private Configuration sbomConfiguration;
+
     @Override
     public void apply(Project project) {
-        project.getPlugins().apply(ReportingBasePlugin.class);
-        project.getPlugins().apply(CyclonedxPlugin.class);
+        this.project = project;
 
-        Configuration sbomConfiguration = project.getConfigurations().maybeCreate(SBOM_CONFIGURATION);
+        sbomConfiguration = project.getConfigurations().maybeCreate(SBOM_CONFIGURATION);
         sbomConfiguration.setCanBeResolved(false);
         sbomConfiguration.setCanBeConsumed(true);
 
@@ -52,22 +56,49 @@ public class SbomPlugin implements Plugin<Project> {
         sbomConfiguration.getAttributes().attribute(Bundling.BUNDLING_ATTRIBUTE, project.getObjects().named(Bundling.class, Bundling.EMBEDDED));
         sbomConfiguration.getAttributes().attribute(Usage.USAGE_ATTRIBUTE, project.getObjects().named(Usage.class, Usage.VERSION_CATALOG));
 
-        TaskProvider<CyclonedxDirectTask> cyclonedxBom = project.getTasks().named("cyclonedxDirectBom", CyclonedxDirectTask.class, cycloneDxTask -> {
-            cycloneDxTask.getSchemaVersion().convention(Version.VERSION_16);
+        project.getPlugins().withType(CyclonedxPlugin.class, this::configureCycloneDx);
+
+        project.getPlugins().withType(TrivyDistributionPlugin.class, this::configureTrivy);
+
+        project.afterEvaluate(p -> {
+
+            project.getPlugins().withType(JavaPlugin.class, jp -> {
+                Util.getJavaSoftwareComponent(project).addVariantsFromConfiguration(sbomConfiguration, details -> {
+                });
+            });
+
         });
+
+    }
+
+    private void configureTrivy(TrivyDistributionPlugin trivyDistributionPlugin) {
+
+        TaskProvider<TrivyRootfs> trivyTask = project.getTasks().named("trivy", TrivyRootfs.class);
+
+        project.getArtifacts().add(sbomConfiguration.getName(), trivyTask, trivy -> {
+            trivy.setExtension("cdx.json");
+            trivy.setType("cdx");
+            trivy.builtBy(trivyTask);
+        });
+
+    }
+
+    private void configureCycloneDx(CyclonedxPlugin c) {
 
         project.getPlugins().apply(BasePlugin.class);
         BasePluginExtension base = project.getExtensions().getByType(BasePluginExtension.class);
 
+        project.getPlugins().apply(ReportingBasePlugin.class);
         ReportingExtension reporting = project.getExtensions().getByType(ReportingExtension.class);
 
-        cyclonedxBom.configure(cdxBom -> {
+
+        TaskProvider<CyclonedxDirectTask> cyclonedxBom = project.getTasks().named("cyclonedxDirectBom", CyclonedxDirectTask.class, cycloneDxTask -> {
+            cycloneDxTask.getSchemaVersion().convention(Version.VERSION_16);
 
             Provider<Directory> baseDir = reporting.getBaseDirectory().dir("sbom");
 
-            cdxBom.getJsonOutput().set(baseDir.flatMap(d -> d.file(base.getArchivesName().map(name -> String.format("%s-%s.cdx.json", name, project.getVersion())))));
-            cdxBom.getXmlOutput().set(baseDir.flatMap(d -> d.file(base.getArchivesName().map(name -> String.format("%s-%s.cdx.xml", name, project.getVersion())))));
-
+            cycloneDxTask.getJsonOutput().set(baseDir.flatMap(d -> d.file(base.getArchivesName().map(name -> String.format("%s-%s.cdx.json", name, project.getVersion())))));
+            cycloneDxTask.getXmlOutput().set(baseDir.flatMap(d -> d.file(base.getArchivesName().map(name -> String.format("%s-%s.cdx.xml", name, project.getVersion())))));
         });
 
         project.afterEvaluate(p -> {
@@ -86,12 +117,6 @@ public class SbomPlugin implements Plugin<Project> {
                 });
             }
 
-            project.getPlugins().withType(JavaPlugin.class, jp -> {
-                Util.getJavaSoftwareComponent(project).addVariantsFromConfiguration(sbomConfiguration, details -> {
-                });
-            });
-
         });
-
     }
 }
