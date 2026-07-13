@@ -98,7 +98,6 @@ public class SbomPlugin implements Plugin<Project> {
             Provider<Directory> baseDir = reporting.getBaseDirectory().dir("sbom");
 
             cycloneDxTask.getJsonOutput().set(baseDir.flatMap(d -> d.file(base.getArchivesName().map(name -> String.format("%s-%s.cdx.json", name, project.getVersion())))));
-            cycloneDxTask.getXmlOutput().set(baseDir.flatMap(d -> d.file(base.getArchivesName().map(name -> String.format("%s-%s.cdx.xml", name, project.getVersion())))));
         });
 
         project.afterEvaluate(p -> {
