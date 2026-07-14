@@ -29,6 +29,7 @@ import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.Category;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.Directory;
+import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.BasePluginExtension;
 import org.gradle.api.plugins.JavaPlugin;
@@ -98,22 +99,29 @@ public class SbomPlugin implements Plugin<Project> {
             Provider<Directory> baseDir = reporting.getBaseDirectory().dir("sbom");
 
             cycloneDxTask.getJsonOutput().set(baseDir.flatMap(d -> d.file(base.getArchivesName().map(name -> String.format("%s-%s.cdx.json", name, project.getVersion())))));
+            cycloneDxTask.getXmlOutput().unsetConvention();
         });
 
         project.afterEvaluate(p -> {
 
             if (cyclonedxBom.get().isEnabled()) {
-                project.getArtifacts().add(sbomConfiguration.getName(), cyclonedxBom.get().getJsonOutput(), artifact -> {
-                    artifact.setExtension("cdx.json");
-                    artifact.setType("cdx");
-                    artifact.builtBy(cyclonedxBom);
-                });
+                RegularFileProperty jsonOutput = cyclonedxBom.get().getJsonOutput();
+                if (jsonOutput.isPresent()) {
+                    project.getArtifacts().add(sbomConfiguration.getName(), jsonOutput, artifact -> {
+                        artifact.setExtension("cdx.json");
+                        artifact.setType("cdx");
+                        artifact.builtBy(cyclonedxBom);
+                    });
+                }
 
-                project.getArtifacts().add(sbomConfiguration.getName(), cyclonedxBom.get().getXmlOutput(), artifact -> {
-                    artifact.setExtension("cdx.xml");
-                    artifact.setType("cdx");
-                    artifact.builtBy(cyclonedxBom);
-                });
+                RegularFileProperty xmlOutput = cyclonedxBom.get().getXmlOutput();
+                if (xmlOutput.isPresent()) {
+                    project.getArtifacts().add(sbomConfiguration.getName(), xmlOutput, artifact -> {
+                        artifact.setExtension("cdx.xml");
+                        artifact.setType("cdx");
+                        artifact.builtBy(cyclonedxBom);
+                    });
+                }
             }
 
         });
