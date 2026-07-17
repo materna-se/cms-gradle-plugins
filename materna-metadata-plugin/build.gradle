@@ -14,7 +14,7 @@ dependencies {
     compileOnly "com.google.cloud.tools:jib-gradle-plugin:3.5.3"
 
     compileOnly "org.cyclonedx:cyclonedx-gradle-plugin:3.2.4"
-    compileOnly 'org.cyclonedx:cyclonedx-core-java:12.1.0'
+    compileOnly 'org.cyclonedx:cyclonedx-core-java:13.0.0'
 
     compileOnly 'org.jreleaser:jreleaser-gradle-plugin:1.25.0'
 
