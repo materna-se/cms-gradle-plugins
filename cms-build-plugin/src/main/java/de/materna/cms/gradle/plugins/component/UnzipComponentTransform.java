@@ -17,21 +17,22 @@
 package de.materna.cms.gradle.plugins.component;
 
 import de.materna.cms.gradle.plugins.Util;
-import org.gradle.api.artifacts.transform.InputArtifact;
-import org.gradle.api.artifacts.transform.TransformAction;
-import org.gradle.api.artifacts.transform.TransformOutputs;
-import org.gradle.api.artifacts.transform.TransformParameters;
+import org.gradle.api.artifacts.transform.*;
 import org.gradle.api.file.ArchiveOperations;
 import org.gradle.api.file.FileSystemLocation;
 import org.gradle.api.file.FileSystemOperations;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 
 import javax.inject.Inject;
 import java.io.File;
 
+@CacheableTransform
 public abstract class UnzipComponentTransform implements TransformAction<TransformParameters.None> {
 
     @InputArtifact
+    @PathSensitive(PathSensitivity.NAME_ONLY)
     protected abstract Provider<FileSystemLocation> getInputArtifact();
 
     @Inject
