@@ -33,8 +33,11 @@ import org.cyclonedx.gradle.BaseCyclonedxTask;
 import org.cyclonedx.gradle.CyclonedxDirectTask;
 import org.cyclonedx.model.Component;
 import org.gradle.api.*;
+import org.gradle.api.artifacts.ArtifactView;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.type.ArtifactTypeDefinition;
 import org.gradle.api.attributes.Bundling;
+import org.gradle.api.attributes.Category;
 import org.gradle.api.attributes.LibraryElements;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.component.AdhocComponentWithVariants;
@@ -86,6 +89,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
 
     private TaskProvider<CreateStartScripts> createStartScriptsTaskProvider;
     private Configuration cmsComponent;
+    private ArtifactView cmsComponentAsDirectories;
 
     private TaskProvider<Zip> distZip;
     private TaskProvider<Tar> distTar;
@@ -121,16 +125,31 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
 
         //Workaround org.gradle.api.plugins.ApplicationPlugin.PreventDestinationOverwrite
         project.getTasks().named(DistributionPlugin.TASK_INSTALL_NAME, Sync.class).configure(installDist -> {
-            installDist.doFirst("clean target dir when overlay", task -> {
-                if (extension.getOverlay().get()) {
-                    getFileSystemOperations().delete(ds -> ds.delete(installDist.getDestinationDir()));
-                }
-            });
+            installDist.doFirst("clean target dir when overlay", new CleanTargetDirAction(extension, getFileSystemOperations()));
         });
 
         cmsComponent = CmsComponentUtil.maybeCreateCmsComponentConfiguration(project);
 
         project.getArtifacts().add(cmsComponent.getName(), distZip);
+
+        cmsComponent.getOutgoing().getVariants().create("installedDist", idVariant -> {
+            idVariant.artifact(project.getTasks().named(DistributionPlugin.TASK_INSTALL_NAME, Sync.class).map(Sync::getDestinationDirectory), configurablePublishArtifact -> {
+                configurablePublishArtifact.setType("directory");
+                configurablePublishArtifact.builtBy(project.getTasks().named(DistributionPlugin.TASK_INSTALL_NAME));
+            });
+            idVariant.getAttributes().attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, project.getObjects().named(LibraryElements.class, LibraryElements.CLASSES_AND_RESOURCES));
+        });
+
+        project.getDependencies().registerTransform(UnzipComponentTransform.class, c -> {
+            c.getFrom().attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, "cms-component"));
+            c.getFrom().attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.ZIP_TYPE);
+            c.getTo().attribute(Category.CATEGORY_ATTRIBUTE, project.getObjects().named(Category.class, "cms-component"));
+            c.getTo().attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.DIRECTORY_TYPE);
+        });
+
+        cmsComponentAsDirectories = cmsComponent.getIncoming().artifactView(config -> {
+            config.getAttributes().attribute(ArtifactTypeDefinition.ARTIFACT_TYPE_ATTRIBUTE, ArtifactTypeDefinition.DIRECTORY_TYPE);
+        });
 
         extractComponents = project.getTasks().register("extractComponents", Sync.class, task -> {
             task.setGroup("cms");
@@ -146,7 +165,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
 
         Distribution fullDistribution = distributions.create("full");
 
-        fullDistribution.getContents().from(extractComponents);
+        fullDistribution.getContents().from(cmsComponentAsDirectories.getFiles());
         fullDistribution.getContents().setDuplicatesStrategy(DuplicatesStrategy.WARN);
         fullDistribution.getContents().with(mainDistribution.getContents());
 
@@ -403,6 +422,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
                     if (extension.getOverlay().getOrElse(false)) {
                         spec.exclude("META-INF/MANIFEST.MF");
                     }
+                    spec.dirPermissions(dp -> dp.unix("755"));
                     spec.setIncludeEmptyDirs(false);
                 });
             });
@@ -420,7 +440,7 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
                 if (IdeaUtils.isIntellJSync(project)) {
 
                     project.getTasks().withType(War.class, war -> {
-                        war.from(extractComponents);
+                        war.from(cmsComponentAsDirectories.getFiles());
                     });
                 }
             }
@@ -631,5 +651,21 @@ public abstract class CmsComponentPlugin implements Plugin<Project> {
 
         CmsComponentUtil.getCmsComponentSoftwareComponent(project).addVariantsFromConfiguration(project.getConfigurations().getByName(SbomPlugin.SBOM_CONFIGURATION), details -> {
         });
+    }
+
+    @RequiredArgsConstructor
+    private static class CleanTargetDirAction implements Action<Task> {
+
+        private final CmsComponentExtension extension;
+        private final FileSystemOperations fileSystemOperations;
+
+        @Override
+        public void execute(Task task) {
+            if (task instanceof Sync installDist) {
+                if (extension.getOverlay().get()) {
+                    fileSystemOperations.delete(ds -> ds.delete(installDist.getDestinationDir()));
+                }
+            }
+        }
     }
 }
