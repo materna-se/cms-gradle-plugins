@@ -16,7 +16,7 @@
 
 package de.materna.cms.gradle.plugins.trivy;
 
-import org.apache.commons.lang3.StringUtils;
+import org.codehaus.groovy.runtime.StringGroovyMethods;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.distribution.Distribution;
@@ -49,7 +49,7 @@ public class TrivyDistributionPlugin implements Plugin<Project> {
         if (distribution.getName().equals("main")) {
             return DistributionPlugin.TASK_INSTALL_NAME;
         } else {
-            return "install" + StringUtils.capitalize(distribution.getName()) + "Dist";
+            return "install" + StringGroovyMethods.capitalize(distribution.getName()) + "Dist";
         }
     }
 
